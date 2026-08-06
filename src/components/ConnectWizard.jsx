@@ -262,7 +262,6 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
         if (data.subType !== undefined) setSubType(data.subType);
         if (data.name !== undefined) setName(data.name);
         if (data.stars !== undefined) setStars(data.stars);
-        if (data.contactName !== undefined) setContactName(data.contactName);
         if (data.emailId !== undefined) setEmailId(data.emailId);
         if (data.mobileNumber !== undefined) setMobileNumber(data.mobileNumber);
         if (data.useWhatsapp !== undefined) setUseWhatsapp(data.useWhatsapp);
@@ -321,7 +320,7 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
 
   useEffect(() => {
     const autosaveData = {
-      wizardStep, propertyType, subType, name, stars, contactName, emailId, mobileNumber,
+      wizardStep, propertyType, subType, name, stars, emailId, mobileNumber,
       useWhatsapp, landlineNumber, locationSearch, houseNumber, locality, pincode, country,
       city, amenitiesAnswers, rooms, uploadedPhotos, photoTags, coverPhoto, checkInTime,
       checkOutTime, cancelPolicy, unmarriedCouples, guestsBelow18, maleOnlyGroups, allowedIds,
@@ -334,7 +333,7 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
     };
     localStorage.setItem('connect_wizard_autosave', JSON.stringify(autosaveData));
   }, [
-    wizardStep, propertyType, subType, name, stars, contactName, emailId, mobileNumber,
+    wizardStep, propertyType, subType, name, stars, emailId, mobileNumber,
     useWhatsapp, landlineNumber, locationSearch, houseNumber, locality, pincode, country,
     city, amenitiesAnswers, rooms, uploadedPhotos, photoTags, coverPhoto, checkInTime,
     checkOutTime, cancelPolicy, unmarriedCouples, guestsBelow18, maleOnlyGroups, allowedIds,
