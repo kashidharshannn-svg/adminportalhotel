@@ -189,6 +189,10 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
   const [photoTags, setPhotoTags] = useState({}); // e.g. { "url1": ["Bedroom"] }
   const [activePreviewPhoto, setActivePreviewPhoto] = useState(null);
   const [isPhotoUploadSummaryActive, setIsPhotoUploadSummaryActive] = useState(false);
+  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+  const [tagDropdownOpen, setTagDropdownOpen] = useState(false);
+  const [tagSearchQuery, setTagSearchQuery] = useState('');
+  const [tempSelectedTags, setTempSelectedTags] = useState([]);
 
   // Policies (Step 6)
   const [checkInTime, setCheckInTime] = useState('12:00 PM (noon)');
@@ -1129,205 +1133,315 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
                         style={{ display: 'none' }}
                       />
 
-                      <div 
-                        onDragOver={(e) => e.preventDefault()}
-                        onDrop={(e) => {
-                          e.preventDefault();
-                          const files = Array.from(e.dataTransfer.files || []);
-                          if (files.length > 0) {
-                            const newPhotoUrls = files.map(file => URL.createObjectURL(file));
-                            setUploadedPhotos([...uploadedPhotos, ...newPhotoUrls]);
-                            if (!coverPhoto) setCoverPhoto(newPhotoUrls[0]);
-                            if (!activePreviewPhoto) setActivePreviewPhoto(newPhotoUrls[0]);
-                          }
-                        }}
-                        onClick={() => fileInputRef.current?.click()}
-                        style={{
-                          border: '2px dashed #cbd5e1', borderRadius: '12px', padding: '30px 20px', background: '#f8fafc',
-                          textAlign: 'center', cursor: 'pointer', transition: 'all 0.2s', marginBottom: '24px'
-                        }}
-                      >
-                        <div style={{ fontSize: '32px', marginBottom: '8px' }}>📸</div>
-                        <h4 style={{ fontWeight: '800', fontSize: '14px', color: '#1e293b' }}>Drag & Drop the photos and videos</h4>
-                        <span style={{ fontSize: '11px', color: '#64748b', display: 'block', margin: '2px 0' }}>or</span>
-                        <button type="button" style={{ background: '#ff4f5a', color: 'white', border: 'none', padding: '4px 12px', borderRadius: '4px', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer' }}>
-                          click here
-                        </button>
-                        <span style={{ fontSize: '10px', color: '#94a3b8', display: 'block', marginTop: '6px' }}>(Upload JPEG/PNG files up to 30 MB each)</span>
-                      </div>
-
                       {uploadedPhotos.length === 0 ? (
-                        <div style={{ background: '#f1f5f9', padding: '30px', borderRadius: '8px', textAlign: 'center', color: '#64748b', fontSize: '13px' }}>
-                          No photos uploaded yet. Drop files or use the auto-upload helper.
+                        <div 
+                          onDragOver={(e) => e.preventDefault()}
+                          onDrop={(e) => {
+                            e.preventDefault();
+                            const files = Array.from(e.dataTransfer.files || []);
+                            if (files.length > 0) {
+                              const newPhotoUrls = files.map(file => URL.createObjectURL(file));
+                              setUploadedPhotos([...uploadedPhotos, ...newPhotoUrls]);
+                              if (!coverPhoto) setCoverPhoto(newPhotoUrls[0]);
+                              if (!activePreviewPhoto) setActivePreviewPhoto(newPhotoUrls[0]);
+                            }
+                          }}
+                          onClick={() => fileInputRef.current?.click()}
+                          style={{
+                            border: '2px dashed #cbd5e1', borderRadius: '12px', padding: '60px 20px', background: '#f8fafc',
+                            textAlign: 'center', cursor: 'pointer', transition: 'all 0.2s', minHeight: '300px', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center'
+                          }}
+                        >
+                          <div style={{ fontSize: '28px', color: '#64748b', marginBottom: '12px' }}>📤</div>
+                          <h4 style={{ fontWeight: '800', fontSize: '15px', color: '#1e293b', margin: '4px 0' }}>Drag & Drop the photos and videos</h4>
+                          <span style={{ fontSize: '12px', color: '#64748b' }}>
+                            or <span style={{ color: '#008cff', textDecoration: 'underline', fontWeight: '700' }}>click here</span> to upload
+                          </span>
+                          <span style={{ fontSize: '10px', color: '#94a3b8', marginTop: '12px' }}>(Upload JPEG/PNG files up to 30 MB each)</span>
                         </div>
                       ) : (
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', maxHeight: '420px', overflowY: 'auto' }}>
-                          {uploadedPhotos.map((url, idx) => {
-                            const isCover = coverPhoto === url;
-                            const tags = photoTags[url] || [];
-                            const isSelected = activePreviewPhoto === url;
-                            
-                            return (
-                              <div 
-                                key={idx}
-                                style={{
-                                  display: 'grid', gridTemplateColumns: '90px 1fr auto', gap: '16px', padding: '12px',
-                                  borderRadius: '8px', border: '1px solid' + (isSelected ? ' #ff4f5a' : ' #cbd5e1'),
-                                  background: isSelected ? 'rgba(255, 79, 90, 0.01)' : 'white',
-                                  alignItems: 'center'
-                                }}
-                              >
-                                <div style={{ width: '90px', height: '60px', borderRadius: '4px', overflow: 'hidden', border: '1px solid #e2e8f0', position: 'relative' }}>
-                                  <img src={url} alt={`thumb-${idx}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                                  {isCover && (
-                                    <span style={{ position: 'absolute', bottom: '2px', left: '2px', background: '#ff4f5a', color: 'white', fontSize: '7px', fontWeight: 'bold', padding: '1px 3px', borderRadius: '2px' }}>COVER</span>
-                                  )}
-                                </div>
-
-                                <div style={{ textAlign: 'left' }}>
-                                  <div style={{ display: 'flex', gap: '10px', fontSize: '11px' }}>
-                                    <button 
-                                      type="button" 
-                                      onClick={() => {
-                                        setUploadedPhotos(uploadedPhotos.filter(x => x !== url));
-                                        if (coverPhoto === url) setCoverPhoto(uploadedPhotos[0] || '');
-                                        if (activePreviewPhoto === url) setActivePreviewPhoto(uploadedPhotos[0] || null);
-                                        const nextTags = { ...photoTags };
-                                        delete nextTags[url];
-                                        setPhotoTags(nextTags);
-                                      }}
-                                      style={{ color: '#ef4444', background: 'transparent', border: 'none', padding: 0, cursor: 'pointer', textDecoration: 'underline' }}
-                                    >
-                                      delete
-                                    </button>
-                                    
-                                    <button 
-                                      type="button" 
-                                      onClick={() => setActivePreviewPhoto(url)}
-                                      style={{ color: 'var(--primary-color)', background: 'transparent', border: 'none', padding: 0, cursor: 'pointer', textDecoration: 'underline', fontWeight: 'bold' }}
-                                    >
-                                      Click To View
-                                    </button>
-                                  </div>
-
-                                  <div style={{ marginTop: '8px' }}>
-                                    <span style={{ fontSize: '11px', color: '#64748b' }}>Tags: </span>
-                                    {tags.length === 0 ? (
-                                      <span style={{ fontSize: '11px', color: '#ef4444', fontWeight: '700' }}>⚠️ No tags attached</span>
-                                    ) : (
-                                      tags.map(tag => (
-                                        <span key={tag} style={{ background: '#e2e8f0', color: '#334155', padding: '2px 6px', borderRadius: '4px', fontSize: '10px', marginRight: '4px', fontWeight: '600' }}>{tag}</span>
-                                      ))
-                                    )}
-                                  </div>
-                                </div>
-
-                                <button 
-                                  type="button"
-                                  onClick={() => setCoverPhoto(url)}
-                                  style={{
-                                    fontSize: '10px', fontWeight: '700', padding: '4px 8px', borderRadius: '4px', cursor: 'pointer',
-                                    background: isCover ? '#ff4f5a' : '#f1f5f9',
-                                    color: isCover ? 'white' : '#475569',
-                                    border: '1px solid' + (isCover ? '#ff4f5a' : '#cbd5e1')
-                                  }}
-                                >
-                                  {isCover ? 'Cover Active' : 'Set Cover'}
-                                </button>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Right Area: Preview of Media & Tags Selector */}
-                    <div style={{ background: '#f8fafc', padding: '24px', borderRadius: '12px', border: '1px solid #cbd5e1' }}>
-                      <h4 style={{ fontWeight: '850', fontSize: '14px', color: '#1e293b', marginBottom: '14px', borderBottom: '1px dashed #cbd5e1', paddingBottom: '6px' }}>
-                        Preview of Media
-                      </h4>
-
-                      {activePreviewPhoto ? (
                         <div>
-                          <div style={{ width: '100%', height: '180px', borderRadius: '8px', overflow: 'hidden', border: '1px solid #cbd5e1', background: '#e2e8f0', marginBottom: '16px' }}>
-                            <img src={activePreviewPhoto} alt="Active Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                          {/* Header Row with Upload More */}
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #e2e8f0', paddingBottom: '14px', marginBottom: '24px' }}>
+                            <div>
+                              <h3 style={{ fontFamily: 'var(--font-display)', fontWeight: '800', fontSize: '18px', margin: 0 }}>
+                                Photos & Videos Uploaded ({uploadedPhotos.length})
+                              </h3>
+                              <p style={{ fontSize: '12px', color: '#64748b', marginTop: '2px', textAlign: 'left' }}>Add tags to the below items</p>
+                            </div>
+                            
+                            <button 
+                              type="button"
+                              onClick={() => setIsUploadModalOpen(true)}
+                              style={{ background: 'transparent', color: '#008cff', border: '1px solid #008cff', padding: '8px 18px', borderRadius: '6px', fontSize: '13px', fontWeight: '800', cursor: 'pointer' }}
+                            >
+                              Upload More
+                            </button>
                           </div>
 
-                          <div style={{ textAlign: 'left' }}>
-                            <h5 style={{ fontWeight: '800', fontSize: '12px', color: '#1e293b', marginBottom: '6px' }}>Selected Tags</h5>
-                            
-                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '16px' }}>
-                              {["Bedroom", "Bathroom", "Reception", "Exterior", "Swimming Pool", "Dining/Kitchen", "Lounge", "Activities & Experiences", "Banquet", "Bar", "Barbeque", "Club house", "Kitchen"].map((tag) => {
-                                const tags = photoTags[activePreviewPhoto] || [];
-                                const isTagged = tags.includes(tag);
+                          {/* Main Grid workspace */}
+                          <div style={{ display: 'grid', gridTemplateColumns: '120px 1fr', gap: '20px', alignItems: 'start' }}>
+                            {/* Left Thumbnails List */}
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', maxHeight: '480px', overflowY: 'auto', paddingRight: '6px' }}>
+                              {uploadedPhotos.map((url, idx) => {
+                                const isSelected = activePreviewPhoto === url;
                                 return (
-                                  <button
-                                    type="button"
-                                    key={tag}
+                                  <div 
+                                    key={idx}
                                     onClick={() => {
-                                      let nextTags = [...tags];
-                                      if (isTagged) {
-                                        nextTags = nextTags.filter(t => t !== tag);
-                                      } else {
-                                        if (tags.length >= 2) {
-                                          alert("You can add a maximum of 2 tags!");
-                                          return;
-                                        }
-                                        nextTags.push(tag);
-                                      }
-                                      setPhotoTags({ ...photoTags, [activePreviewPhoto]: nextTags });
+                                      setActivePreviewPhoto(url);
+                                      setTempSelectedTags([]);
+                                      setTagDropdownOpen(false);
                                     }}
                                     style={{
-                                      padding: '6px 12px', borderRadius: '20px', fontSize: '11px', fontWeight: '700', cursor: 'pointer',
-                                      background: isTagged ? '#ff4f5a' : '#ffffff',
-                                      color: isTagged ? 'white' : '#475569',
-                                      border: '1px solid' + (isTagged ? '#ff4f5a' : '#cbd5e1'),
-                                      transition: 'all 0.15s'
+                                      width: '100px', height: '75px', borderRadius: '6px', overflow: 'hidden',
+                                      border: isSelected ? '3px solid #008cff' : '1px solid #cbd5e1',
+                                      cursor: 'pointer', transition: 'all 0.15s', opacity: isSelected ? 1 : 0.8
                                     }}
                                   >
-                                    {tag} {isTagged && '✓'}
-                                  </button>
+                                    <img src={url} alt={`thumb-${idx}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                  </div>
                                 );
                               })}
                             </div>
 
-                            <div style={{ background: '#fffbeb', border: '1px solid #fef3c7', padding: '12px', borderRadius: '6px', fontSize: '11px', color: '#b45309', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                              <span>💡 <strong>You can add a maximum of 2 tags</strong></span>
-                              <span>⚠️ <strong>To continue, please attach a tag to all the photos and videos</strong></span>
+                            {/* Right Workspace Card */}
+                            <div style={{ border: '1px solid #008cff', borderRadius: '8px', padding: '24px', background: '#ffffff', display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '24px', position: 'relative' }}>
+                              
+                              {/* Left: Selected Large Image Preview */}
+                              <div style={{ position: 'relative', width: '100%', height: '240px', borderRadius: '8px', overflow: 'hidden', border: '1px solid #cbd5e1' }}>
+                                <img src={activePreviewPhoto} alt="Selected preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                
+                                {/* Delete Button */}
+                                <button 
+                                  type="button"
+                                  onClick={() => {
+                                    const remaining = uploadedPhotos.filter(x => x !== activePreviewPhoto);
+                                    setUploadedPhotos(remaining);
+                                    const nextTags = { ...photoTags };
+                                    delete nextTags[activePreviewPhoto];
+                                    setPhotoTags(nextTags);
+                                    
+                                    if (coverPhoto === activePreviewPhoto) setCoverPhoto(remaining[0] || '');
+                                    setActivePreviewPhoto(remaining[0] || null);
+                                  }}
+                                  style={{
+                                    position: 'absolute', top: '10px', right: '10px', background: 'rgba(255,255,255,0.9)',
+                                    border: 'none', borderRadius: '4px', padding: '6px 8px', cursor: 'pointer', fontSize: '14px', boxShadow: '0 1px 3px rgba(0,0,0,0.15)'
+                                  }}
+                                >
+                                  🗑️
+                                </button>
+                              </div>
+
+                              {/* Right: Selected Tags Panel */}
+                              <div style={{ textAlign: 'left', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                                <div>
+                                  <h5 style={{ fontWeight: '850', fontSize: '13px', color: '#1e293b', marginBottom: '6px' }}>Selected Tags</h5>
+                                  
+                                  {/* Search box with checkboxes dropdown */}
+                                  <div style={{ position: 'relative' }}>
+                                    {tagDropdownOpen && (
+                                      <div 
+                                        onClick={() => { setTagDropdownOpen(false); setTempSelectedTags([]); }} 
+                                        style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 40 }}
+                                      />
+                                    )}
+
+                                    <input 
+                                      type="text" 
+                                      placeholder="🔍 Search tags"
+                                      value={tagSearchQuery}
+                                      onChange={(e) => {
+                                        setTagSearchQuery(e.target.value);
+                                        setTagDropdownOpen(true);
+                                      }}
+                                      onFocus={() => setTagDropdownOpen(true)}
+                                      style={{ width: '100%', padding: '10px 12px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '13px', zIndex: 45, position: 'relative' }}
+                                    />
+
+                                    {/* Dropdown list */}
+                                    {tagDropdownOpen && (
+                                      <div style={{
+                                        position: 'absolute', top: '105%', left: 0, right: 0, background: '#ffffff',
+                                        border: '1px solid #cbd5e1', borderRadius: '6px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                                        zIndex: 50, padding: '12px', maxHeight: '200px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '8px'
+                                      }}>
+                                        {["Bedroom", "Bathroom", "Reception", "Exterior", "Swimming Pool", "Dining/Kitchen", "Lounge", "Activities & Experiences", "Banquet", "Bar", "Barbeque", "Club house", "Kitchen", "Lobby/Common Area"]
+                                          .filter(tag => tag.toLowerCase().includes(tagSearchQuery.toLowerCase()))
+                                          .map(tag => {
+                                            const isChecked = tempSelectedTags.includes(tag);
+                                            return (
+                                              <label key={tag} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', color: '#334155', cursor: 'pointer' }}>
+                                                <input 
+                                                  type="checkbox" 
+                                                  checked={isChecked} 
+                                                  onChange={() => {
+                                                    if (isChecked) {
+                                                      setTempSelectedTags(tempSelectedTags.filter(t => t !== tag));
+                                                    } else {
+                                                      setTempSelectedTags([...tempSelectedTags, tag]);
+                                                    }
+                                                  }}
+                                                  style={{ accentColor: '#ff4f5a' }}
+                                                />
+                                                {tag}
+                                              </label>
+                                            );
+                                          })}
+                                        
+                                        <button 
+                                          type="button" 
+                                          onClick={() => {
+                                            const currentTags = photoTags[activePreviewPhoto] || [];
+                                            const newTags = [...currentTags];
+                                            tempSelectedTags.forEach(tag => {
+                                              if (!newTags.includes(tag)) newTags.push(tag);
+                                            });
+                                            if (newTags.length > 2) {
+                                              alert("You can add a maximum of 2 tags!");
+                                              return;
+                                            }
+                                            setPhotoTags({ ...photoTags, [activePreviewPhoto]: newTags });
+                                            setTempSelectedTags([]);
+                                            setTagDropdownOpen(false);
+                                          }}
+                                          style={{
+                                            background: tempSelectedTags.length > 0 ? '#ff4f5a' : '#cbd5e1',
+                                            color: 'white', border: 'none', borderRadius: '4px', padding: '6px 12px',
+                                            fontSize: '11px', fontWeight: 'bold', cursor: 'pointer', marginTop: '6px'
+                                          }}
+                                        >
+                                          Add Tag
+                                        </button>
+                                      </div>
+                                    )}
+                                  </div>
+
+                                  {/* Currently attached pills */}
+                                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '12px' }}>
+                                    {(photoTags[activePreviewPhoto] || []).map(tag => (
+                                      <span 
+                                        key={tag} 
+                                        style={{ background: '#eff6ff', color: '#1e40af', border: '1px solid #bfdbfe', padding: '4px 10px', borderRadius: '20px', fontSize: '11px', fontWeight: '700', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+                                      >
+                                        {tag}
+                                        <button 
+                                          type="button" 
+                                          onClick={() => {
+                                            const next = (photoTags[activePreviewPhoto] || []).filter(t => t !== tag);
+                                            setPhotoTags({ ...photoTags, [activePreviewPhoto]: next });
+                                          }}
+                                          style={{ border: 'none', background: 'transparent', color: '#3b82f6', fontSize: '12px', cursor: 'pointer', padding: 0, fontWeight: 'bold' }}
+                                        >
+                                          ×
+                                        </button>
+                                      </span>
+                                    ))}
+                                  </div>
+                                  
+                                  <span style={{ fontSize: '10px', color: '#64748b', display: 'block', marginTop: '6px' }}>You can add a maximum of 2 tags</span>
+                                </div>
+
+                                {/* Recommended Tags */}
+                                <div>
+                                  <span style={{ fontSize: '11.5px', fontWeight: '800', color: '#475569', display: 'block', marginBottom: '8px' }}>
+                                    Recommended Tags <span style={{ fontSize: '10px', color: '#008cff', fontWeight: 'bold' }}>✨ powered by Generative AI</span>
+                                  </span>
+                                  <div style={{ display: 'flex', gap: '8px' }}>
+                                    {["Reception", "Lobby/Common Area"].map(recTag => {
+                                      const currentTags = photoTags[activePreviewPhoto] || [];
+                                      const isAlreadyTagged = currentTags.includes(recTag);
+                                      if (isAlreadyTagged) return null;
+                                      return (
+                                        <button
+                                          key={recTag}
+                                          type="button"
+                                          onClick={() => {
+                                            if (currentTags.length >= 2) {
+                                              alert("You can add a maximum of 2 tags!");
+                                              return;
+                                            }
+                                            setPhotoTags({ ...photoTags, [activePreviewPhoto]: [...currentTags, recTag] });
+                                          }}
+                                          style={{ padding: '6px 12px', borderRadius: '20px', border: '1px solid #cbd5e1', background: '#ffffff', color: '#475569', fontSize: '11.5px', fontWeight: '600', cursor: 'pointer' }}
+                                        >
+                                          + {recTag}
+                                        </button>
+                                      );
+                                    })}
+                                  </div>
+                                </div>
+                              </div>
+
                             </div>
                           </div>
-                        </div>
-                      ) : (
-                        <div style={{ textAlign: 'center', padding: '40px', color: '#64748b', fontSize: '12px' }}>
-                          Click on any uploaded item to preview it and attach category tags.
                         </div>
                       )}
                     </div>
 
+                    {/* Right Column: Tips Panel (Only shown if no photos are uploaded yet) */}
+                    {uploadedPhotos.length === 0 && (
+                      <div style={{ borderLeft: '1px solid #e2e8f0', paddingLeft: '24px', textAlign: 'left' }}>
+                        <h4 style={{ fontWeight: '850', fontSize: '13px', color: '#008cff', marginBottom: '14px', letterSpacing: '0.5px' }}>TIPS TO UPLOAD PHOTOS & VIDEOS</h4>
+                        
+                        <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', padding: '14px', borderRadius: '8px', fontSize: '12px', color: '#1e3a8a', marginBottom: '16px', lineHeight: 1.5 }}>
+                          Adding high-quality photos to your listing can make a big difference. Properties with good images are likely to get more clicks from users interested in booking a property. Here's how you can improve your photos & videos:
+                        </div>
+
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', fontSize: '12px', color: '#475569' }}>
+                          <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                            <span style={{ fontSize: '18px' }}>🖼️</span>
+                            <span>The size should not exceed 30 MB.</span>
+                          </div>
+                          <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                            <span style={{ fontSize: '18px' }}>☀️</span>
+                            <span>Always take the picture in bright natural light.</span>
+                          </div>
+                          <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                            <span style={{ fontSize: '18px' }}>📸</span>
+                            <span>Capture images of a well-organized rooms from various angles.</span>
+                          </div>
+                          <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                            <span style={{ fontSize: '18px' }}>🌄</span>
+                            <span>Upload minimum 10 photos (Including 1 photo in landscape mode)</span>
+                          </div>
+                          <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                            <span style={{ fontSize: '18px' }}>📱</span>
+                            <span>Shoot photos & videos in landscape mode to make them look professional.</span>
+                          </div>
+                          <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                            <span style={{ fontSize: '18px' }}>🚫</span>
+                            <span>Avoid watermarking your photos & videos.</span>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
 
-                  <div style={{ borderTop: '1px solid #e2e8f0', marginTop: '40px', paddingTop: '20px', display: 'flex', justifyContent: 'space-between' }}>
+                  {/* Actions Footer */}
+                  <div style={{ borderTop: '1px solid #cbd5e1', marginTop: '40px', paddingTop: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <button onClick={handleBack} className="btn-secondary" style={{ padding: '10px 24px', fontSize: '13px' }}>Back</button>
-                    <button 
-                      onClick={() => {
-                        if (uploadedPhotos.length < 10) {
-                          alert("MMT guidelines require minimum 10 photos to list! Please upload at least 10 photos.");
-                          return;
-                        }
-                        
-                        const untaggedExists = uploadedPhotos.some(url => !photoTags[url] || photoTags[url].length === 0);
-                        if (untaggedExists) {
-                          alert("To continue, please attach a tag to all the photos and videos!");
-                          return;
-                        }
-                        
-                        setIsPhotoUploadSummaryActive(true); // Switch to State B!
-                      }} 
-                      className="btn-primary" 
-                      style={{ padding: '10px 30px', fontSize: '13px', background: '#ff4f5a', border: 'none' }}
-                    >
-                      Continue
-                    </button>
+                    
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                      <span style={{ fontSize: '11.5px', color: '#b45309' }}>
+                        To continue, please attach a tag to all the photos and videos
+                      </span>
+                      <button 
+                        onClick={() => {
+                          const untaggedExists = uploadedPhotos.some(url => !photoTags[url] || photoTags[url].length === 0);
+                          if (untaggedExists) {
+                            alert("To continue, please attach a tag to all the photos and videos!");
+                            return;
+                          }
+                          setIsPhotoUploadSummaryActive(true);
+                        }} 
+                        className="btn-primary" 
+                        style={{ padding: '10px 30px', fontSize: '13px', background: '#ff4f5a', border: 'none', color: 'white', fontWeight: '700' }}
+                      >
+                        Save
+                      </button>
+                    </div>
                   </div>
                 </div>
               ) : (
@@ -1448,6 +1562,113 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
 
                 </div>
               )}
+
+              {/* Upload Modal (Screenshot 1 overlay) */}
+              {isUploadModalOpen && (
+                <div className="modal-overlay" style={{ zIndex: 1100 }}>
+                  <div className="modal-content animate-scale-in" style={{ width: '90%', maxWidth: '850px', height: '80vh', display: 'grid', gridTemplateRows: 'auto 1fr' }}>
+                    {/* Modal Header */}
+                    <div className="modal-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #cbd5e1', padding: '16px 24px' }}>
+                      <h3 style={{ fontSize: '18px', fontWeight: '850', color: '#1e293b' }}>Upload Photos & Videos</h3>
+                      <button 
+                        type="button" 
+                        onClick={() => setIsUploadModalOpen(false)} 
+                        style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: '#64748b' }}
+                      >
+                        <X size={20} />
+                      </button>
+                    </div>
+
+                    {/* Modal Body */}
+                    <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '30px', padding: '24px', overflowY: 'auto', background: '#ffffff' }}>
+                      {/* Left Column: Drag Box */}
+                      <div>
+                        <input 
+                          type="file"
+                          ref={fileInputRef}
+                          accept="image/*"
+                          multiple
+                          onChange={(e) => {
+                            const files = Array.from(e.target.files || []);
+                            if (files.length > 0) {
+                              const newPhotoUrls = files.map(file => URL.createObjectURL(file));
+                              setUploadedPhotos([...uploadedPhotos, ...newPhotoUrls]);
+                              if (!coverPhoto) setCoverPhoto(newPhotoUrls[0]);
+                              if (!activePreviewPhoto) setActivePreviewPhoto(newPhotoUrls[0]);
+                              setIsUploadModalOpen(false); // close modal after upload
+                            }
+                          }}
+                          style={{ display: 'none' }}
+                        />
+
+                        <div 
+                          onDragOver={(e) => e.preventDefault()}
+                          onDrop={(e) => {
+                            e.preventDefault();
+                            const files = Array.from(e.dataTransfer.files || []);
+                            if (files.length > 0) {
+                              const newPhotoUrls = files.map(file => URL.createObjectURL(file));
+                              setUploadedPhotos([...uploadedPhotos, ...newPhotoUrls]);
+                              if (!coverPhoto) setCoverPhoto(newPhotoUrls[0]);
+                              if (!activePreviewPhoto) setActivePreviewPhoto(newPhotoUrls[0]);
+                              setIsUploadModalOpen(false);
+                            }
+                          }}
+                          onClick={() => fileInputRef.current?.click()}
+                          style={{
+                            border: '2px dashed #cbd5e1', borderRadius: '12px', padding: '60px 20px', background: '#f8fafc',
+                            textAlign: 'center', cursor: 'pointer', transition: 'all 0.2s', minHeight: '300px', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center'
+                          }}
+                        >
+                          <div style={{ fontSize: '28px', color: '#64748b', marginBottom: '12px' }}>📤</div>
+                          <h4 style={{ fontWeight: '800', fontSize: '15px', color: '#1e293b', margin: '4px 0' }}>Drag & Drop the photos and videos</h4>
+                          <span style={{ fontSize: '12px', color: '#64748b' }}>
+                            or <span style={{ color: '#008cff', textDecoration: 'underline', fontWeight: '700' }}>click here</span> to upload
+                          </span>
+                          <span style={{ fontSize: '10px', color: '#94a3b8', marginTop: '12px' }}>(Upload JPEG/PNG files up to 30 MB each)</span>
+                        </div>
+                      </div>
+
+                      {/* Right Column: Tips */}
+                      <div style={{ borderLeft: '1px solid #e2e8f0', paddingLeft: '24px', textAlign: 'left' }}>
+                        <h4 style={{ fontWeight: '850', fontSize: '13px', color: '#008cff', marginBottom: '14px', letterSpacing: '0.5px' }}>TIPS TO UPLOAD PHOTOS & VIDEOS</h4>
+                        
+                        <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', padding: '14px', borderRadius: '8px', fontSize: '12px', color: '#1e3a8a', marginBottom: '16px', lineHeight: 1.5 }}>
+                          Adding high-quality photos to your listing can make a big difference. Properties with good images are likely to get more clicks from users interested in booking a property. Here's how you can improve your photos & videos:
+                        </div>
+
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', fontSize: '12px', color: '#475569' }}>
+                          <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                            <span style={{ fontSize: '18px' }}>🖼️</span>
+                            <span>The size should not exceed 30 MB.</span>
+                          </div>
+                          <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                            <span style={{ fontSize: '18px' }}>☀️</span>
+                            <span>Always take the picture in bright natural light.</span>
+                          </div>
+                          <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                            <span style={{ fontSize: '18px' }}>📸</span>
+                            <span>Capture images of a well-organized rooms from various angles.</span>
+                          </div>
+                          <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                            <span style={{ fontSize: '18px' }}>🌄</span>
+                            <span>Upload minimum 10 photos (Including 1 photo in landscape mode)</span>
+                          </div>
+                          <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                            <span style={{ fontSize: '18px' }}>📱</span>
+                            <span>Shoot photos & videos in landscape mode to make them look professional.</span>
+                          </div>
+                          <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                            <span style={{ fontSize: '18px' }}>🚫</span>
+                            <span>Avoid watermarking your photos & videos.</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
             </div>
           )}
 
