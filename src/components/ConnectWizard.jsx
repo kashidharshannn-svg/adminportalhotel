@@ -52,6 +52,25 @@ const HOTEL_TYPES = [
   }
 ];
 
+const HOMESTAY_TYPES = [
+  { id: "Villa", title: "Villa", desc: "A spacious, independent property or entire estate for private rental, ideal for families or groups", img: "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=600&q=80" },
+  { id: "Homestay", title: "Homestay", desc: "A private residence offering rooms or the entire house for guests, where the host may or may not reside on-site.", img: "https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&w=600&q=80" },
+  { id: "Cottage", title: "Cottage", desc: "A charming, private standalone house, typically found in leisure destinations, offering a cozy and intimate stay.", img: "https://images.unsplash.com/photo-1587061949409-02df41d5e562?auto=format&fit=crop&w=600&q=80" },
+  { id: "Apartment", title: "Apartment", desc: "A private flat or a group of connected rooms (e.g., 1BHK, 2BHK) within a building, usually with a kitchen or living area.", img: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=600&q=80" },
+  { id: "Apart-Hotel", title: "Apart-Hotel", desc: "Hotel-like accommodation offering apartment-style units (e.g., studio, 1-bedroom) with hotel services.", img: "https://images.unsplash.com/photo-1566665797739-1674de7a421a?auto=format&fit=crop&w=600&q=80" },
+  { id: "Hostel", title: "Hostel", desc: "Budget-friendly accommodation with shared dormitory beds or private rooms, featuring communal spaces like kitchens and lounges.", img: "https://images.unsplash.com/photo-1555854877-bab0e564b8d5?auto=format&fit=crop&w=600&q=80" },
+  { id: "Bed and B'fast", title: "Bed and B'fast", desc: "A private home offering overnight lodging in rooms, and serving breakfast, often run by resident hosts.", img: "https://images.unsplash.com/photo-1498503182468-3b51cbb6cb24?auto=format&fit=crop&w=600&q=80" },
+  { id: "Farmhouse", title: "Farmhouse", desc: "A large, independent property located in a rural setting, offering expansive private outdoor spaces and scenic views.", img: "https://images.unsplash.com/photo-1500076656116-558758c991c1?auto=format&fit=crop&w=600&q=80" },
+  { id: "Camp", title: "Camp", desc: "Outdoor or temporary accommodations (e.g., tents) in scenic natural locations like mountains, deserts, or beaches.", img: "https://images.unsplash.com/photo-1510312305653-8ed496efae75?auto=format&fit=crop&w=600&q=80" },
+  { id: "Beach Hut", title: "Beach Hut", desc: "A rustic cabin or small structure, often made of wood, situated near a beach with ocean views.", img: "https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?auto=format&fit=crop&w=600&q=80" },
+  { id: "Treehouse", title: "Treehouse", desc: "Unique accommodation built among trees, with the main living area elevated above ground level, typically made of natural materials.", img: "https://images.unsplash.com/photo-1508193638397-1c4234db14d8?auto=format&fit=crop&w=600&q=80" },
+  { id: "Dharamshala", title: "Dharamshala", desc: "A charitable rest-house or lodging primarily for pilgrims, offering simple and affordable accommodation.", img: "https://images.unsplash.com/photo-1601004890684-d8cbf643f5f2?auto=format&fit=crop&w=600&q=80" },
+  { id: "Ashram", title: "Ashram", desc: "A spiritual retreat or sanctuary offering simple lodging for individuals seeking meditation, yoga, or religious activities.", img: "https://images.unsplash.com/photo-1545205597-3d9d02c29597?auto=format&fit=crop&w=600&q=80" },
+  { id: "Holiday Home", title: "Holiday Home", desc: "An independent house or bungalow available for short-term rental by guests, perfect for leisure vacations.", img: "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=600&q=80" },
+  { id: "RV(Recreational Vehicle)", title: "RV(Recreational Vehicle)", desc: "A recreational vehicle (e.g., caravan, campervan) available for stay, equipped with basic living amenities.", img: "https://images.unsplash.com/photo-1523987355523-c7b5b0dd90a7?auto=format&fit=crop&w=600&q=80" },
+  { id: "Luxury Camps", title: "Luxury Camps", desc: "High-end outdoor accommodations, often featuring large, well-appointed tents with premium amenities (e.g., comfortable beds, private ...)", img: "https://images.unsplash.com/photo-1533577116850-9cc662ad428a?auto=format&fit=crop&w=600&q=80" }
+];
+
 // Room Amenities data as specified in user request
 const ROOM_AMENITIES_CATEGORIES = [
   { id: "mandatory", label: "Mandatory", count: 16 },
@@ -372,8 +391,8 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
               <p style={{ fontSize: '13px', color: '#64748b', marginBottom: '30px' }}>Please select your property type from below options to get started</p>
               
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '40px' }}>
-                <div 
-                  onClick={() => setPropertyType('Hotel')}
+                 <div 
+                  onClick={() => { setPropertyType('Hotel'); setSubType('Hotel'); }}
                   style={{
                     border: '2px solid' + (propertyType === 'Hotel' ? ' #ff4f5a' : ' #e2e8f0'),
                     background: propertyType === 'Hotel' ? 'rgba(255, 79, 90, 0.02)' : 'white',
@@ -393,7 +412,7 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
                 </div>
 
                 <div 
-                  onClick={() => setPropertyType('Homestay')}
+                  onClick={() => { setPropertyType('Homestay'); setSubType('Villa'); }}
                   style={{
                     border: '2px solid' + (propertyType === 'Homestay' ? ' #ff4f5a' : ' #e2e8f0'),
                     background: propertyType === 'Homestay' ? 'rgba(255, 79, 90, 0.02)' : 'white',
@@ -419,6 +438,72 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
                   
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px' }}>
                     {HOTEL_TYPES.map((type) => (
+                      <div
+                        key={type.id}
+                        onClick={() => setSubType(type.id)}
+                        style={{
+                          border: '1px solid' + (subType === type.id ? ' #008cff' : ' #e2e8f0'),
+                          background: '#ffffff',
+                          borderRadius: '8px',
+                          padding: '16px',
+                          cursor: 'pointer',
+                          transition: 'all 0.2s',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          gap: '10px',
+                          textAlign: 'left',
+                          boxShadow: subType === type.id ? '0 4px 10px rgba(0,140,255,0.06)' : '0 2px 4px rgba(0,0,0,0.01)'
+                        }}
+                      >
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <h5 style={{ fontWeight: '750', fontSize: '13px', color: '#1a1a1a', margin: 0 }}>{type.title}</h5>
+                          <div style={{
+                            width: '18px',
+                            height: '18px',
+                            borderRadius: '50%',
+                            border: '2px solid' + (subType === type.id ? ' #008cff' : '#cbd5e1'),
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            background: subType === type.id ? '#008cff' : 'transparent'
+                          }}>
+                            {subType === type.id && (
+                              <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#ffffff' }} />
+                            )}
+                          </div>
+                        </div>
+                        
+                        <img 
+                          src={type.img} 
+                          alt={type.title} 
+                          style={{ width: '100%', height: '80px', objectFit: 'cover', borderRadius: '4px' }}
+                        />
+                        
+                        <p style={{
+                          fontSize: '11px',
+                          color: '#64748b',
+                          lineHeight: 1.4,
+                          margin: 0,
+                          height: '52px',
+                          overflow: 'hidden',
+                          display: '-webkit-box',
+                          WebkitLineClamp: 3,
+                          WebkitBoxOrient: 'vertical'
+                        }}>
+                          {type.desc}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {propertyType === 'Homestay' && (
+                <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: '30px' }}>
+                  <h3 style={{ fontWeight: '800', fontSize: '18px', color: '#1a1a1a', marginBottom: '16px' }}>Type of Homestays & Villas</h3>
+                  
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px' }}>
+                    {HOMESTAY_TYPES.map((type) => (
                       <div
                         key={type.id}
                         onClick={() => setSubType(type.id)}
