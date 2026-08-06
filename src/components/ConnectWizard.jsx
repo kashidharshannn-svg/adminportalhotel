@@ -1429,18 +1429,25 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
                                         {["Bedroom", "Bathroom", "Reception", "Exterior", "Swimming Pool", "Dining/Kitchen", "Lounge", "Activities & Experiences", "Banquet", "Bar", "Barbeque", "Club house", "Kitchen", "Lobby/Common Area"]
                                           .filter(tag => tag.toLowerCase().includes(tagSearchQuery.toLowerCase()))
                                           .map(tag => {
-                                            const isChecked = tempSelectedTags.includes(tag);
+                                            const currentTags = photoTags[activePreviewPhoto] || [];
+                                            const isChecked = currentTags.includes(tag);
                                             return (
                                               <label key={tag} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', color: '#334155', cursor: 'pointer' }}>
                                                 <input 
                                                   type="checkbox" 
                                                   checked={isChecked} 
                                                   onChange={() => {
+                                                    let nextTags;
                                                     if (isChecked) {
-                                                      setTempSelectedTags(tempSelectedTags.filter(t => t !== tag));
+                                                      nextTags = currentTags.filter(t => t !== tag);
                                                     } else {
-                                                      setTempSelectedTags([...tempSelectedTags, tag]);
+                                                      if (currentTags.length >= 2) {
+                                                        alert("You can add a maximum of 2 tags!");
+                                                        return;
+                                                      }
+                                                      nextTags = [...currentTags, tag];
                                                     }
+                                                    setPhotoTags({ ...photoTags, [activePreviewPhoto]: nextTags });
                                                   }}
                                                   style={{ accentColor: '#ff4f5a' }}
                                                 />
@@ -1448,31 +1455,6 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
                                               </label>
                                             );
                                           })}
-                                        
-                                        <button 
-                                          type="button" 
-                                          onClick={() => {
-                                            const currentTags = photoTags[activePreviewPhoto] || [];
-                                            const newTags = [...currentTags];
-                                            tempSelectedTags.forEach(tag => {
-                                              if (!newTags.includes(tag)) newTags.push(tag);
-                                            });
-                                            if (newTags.length > 2) {
-                                              alert("You can add a maximum of 2 tags!");
-                                              return;
-                                            }
-                                            setPhotoTags({ ...photoTags, [activePreviewPhoto]: newTags });
-                                            setTempSelectedTags([]);
-                                            setTagDropdownOpen(false);
-                                          }}
-                                          style={{
-                                            background: tempSelectedTags.length > 0 ? '#ff4f5a' : '#cbd5e1',
-                                            color: 'white', border: 'none', borderRadius: '4px', padding: '6px 12px',
-                                            fontSize: '11px', fontWeight: 'bold', cursor: 'pointer', marginTop: '6px'
-                                          }}
-                                        >
-                                          Add Tag
-                                        </button>
                                       </div>
                                     )}
                                   </div>
