@@ -1208,30 +1208,51 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
                             {/* Right Workspace Card */}
                             <div style={{ border: '1px solid #008cff', borderRadius: '8px', padding: '24px', background: '#ffffff', display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '24px', position: 'relative' }}>
                               
-                              {/* Left: Selected Large Image Preview */}
-                              <div style={{ position: 'relative', width: '100%', height: '240px', borderRadius: '8px', overflow: 'hidden', border: '1px solid #cbd5e1' }}>
-                                <img src={activePreviewPhoto} alt="Selected preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                              {/* Left: Selected Large Image Preview with Checkbox under it */}
+                              <div style={{ width: '100%', borderRadius: '8px', overflow: 'hidden', border: '1px solid #cbd5e1', display: 'flex', flexDirection: 'column' }}>
+                                <div style={{ position: 'relative', width: '100%', height: '200px' }}>
+                                  <img src={activePreviewPhoto} alt="Selected preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                  
+                                  {/* Delete Button */}
+                                  <button 
+                                    type="button"
+                                    onClick={() => {
+                                      const remaining = uploadedPhotos.filter(x => x !== activePreviewPhoto);
+                                      setUploadedPhotos(remaining);
+                                      const nextTags = { ...photoTags };
+                                      delete nextTags[activePreviewPhoto];
+                                      setPhotoTags(nextTags);
+                                      
+                                      if (coverPhoto === activePreviewPhoto) setCoverPhoto(remaining[0] || '');
+                                      setActivePreviewPhoto(remaining[0] || null);
+                                    }}
+                                    style={{
+                                      position: 'absolute', top: '10px', right: '10px', background: 'rgba(255,255,255,0.9)',
+                                      border: 'none', borderRadius: '4px', padding: '6px 8px', cursor: 'pointer', fontSize: '14px', boxShadow: '0 1px 3px rgba(0,0,0,0.15)'
+                                    }}
+                                  >
+                                    🗑️
+                                  </button>
+                                </div>
                                 
-                                {/* Delete Button */}
-                                <button 
-                                  type="button"
-                                  onClick={() => {
-                                    const remaining = uploadedPhotos.filter(x => x !== activePreviewPhoto);
-                                    setUploadedPhotos(remaining);
-                                    const nextTags = { ...photoTags };
-                                    delete nextTags[activePreviewPhoto];
-                                    setPhotoTags(nextTags);
-                                    
-                                    if (coverPhoto === activePreviewPhoto) setCoverPhoto(remaining[0] || '');
-                                    setActivePreviewPhoto(remaining[0] || null);
-                                  }}
-                                  style={{
-                                    position: 'absolute', top: '10px', right: '10px', background: 'rgba(255,255,255,0.9)',
-                                    border: 'none', borderRadius: '4px', padding: '6px 8px', cursor: 'pointer', fontSize: '14px', boxShadow: '0 1px 3px rgba(0,0,0,0.15)'
-                                  }}
-                                >
-                                  🗑️
-                                </button>
+                                {/* Bottom Checkbox Bar */}
+                                <div style={{ background: '#f1f5f9', padding: '10px 14px', display: 'flex', alignItems: 'center', borderTop: '1px solid #cbd5e1' }}>
+                                  <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', fontWeight: '700', color: '#475569', cursor: 'pointer' }}>
+                                    <input 
+                                      type="checkbox" 
+                                      checked={coverPhoto === activePreviewPhoto} 
+                                      onChange={(e) => {
+                                        if (e.target.checked) {
+                                          setCoverPhoto(activePreviewPhoto);
+                                        } else {
+                                          setCoverPhoto('');
+                                        }
+                                      }}
+                                      style={{ width: '15px', height: '15px', accentColor: '#ff4f5a' }}
+                                    />
+                                    Set as cover photo
+                                  </label>
+                                </div>
                               </div>
 
                               {/* Right: Selected Tags Panel */}
@@ -1248,17 +1269,59 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
                                       />
                                     )}
 
-                                    <input 
-                                      type="text" 
-                                      placeholder="🔍 Search tags"
-                                      value={tagSearchQuery}
-                                      onChange={(e) => {
-                                        setTagSearchQuery(e.target.value);
-                                        setTagDropdownOpen(true);
+                                    {/* Wrapper div styled to look like an input box */}
+                                    <div 
+                                      onClick={() => setTagDropdownOpen(true)}
+                                      style={{
+                                        display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '6px',
+                                        padding: '6px 12px', borderRadius: '6px', border: '1px solid #cbd5e1',
+                                        background: '#ffffff', minHeight: '40px', zIndex: 45, position: 'relative',
+                                        cursor: 'text'
                                       }}
-                                      onFocus={() => setTagDropdownOpen(true)}
-                                      style={{ width: '100%', padding: '10px 12px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '13px', zIndex: 45, position: 'relative' }}
-                                    />
+                                    >
+                                      {/* Selected chip pills inside the input wrapper */}
+                                      {(photoTags[activePreviewPhoto] || []).map(tag => (
+                                        <span 
+                                          key={tag} 
+                                          style={{
+                                            background: '#eff6ff', color: '#1e40af', border: '1px solid #bfdbfe',
+                                            padding: '2px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: '700',
+                                            display: 'inline-flex', alignItems: 'center', gap: '4px'
+                                          }}
+                                        >
+                                          {tag}
+                                          <button 
+                                            type="button" 
+                                            onClick={(e) => {
+                                              e.stopPropagation();
+                                              const next = (photoTags[activePreviewPhoto] || []).filter(t => t !== tag);
+                                              setPhotoTags({ ...photoTags, [activePreviewPhoto]: next });
+                                            }}
+                                            style={{ border: 'none', background: 'transparent', color: '#3b82f6', fontSize: '11px', cursor: 'pointer', padding: 0, fontWeight: 'bold' }}
+                                          >
+                                            ×
+                                          </button>
+                                        </span>
+                                      ))}
+
+                                      {/* Search Icon */}
+                                      <span style={{ color: '#94a3b8', fontSize: '14px', display: 'flex', alignItems: 'center' }}>🔍</span>
+
+                                      {/* Actual Input */}
+                                      <input 
+                                        type="text" 
+                                        placeholder={(photoTags[activePreviewPhoto] || []).length === 0 ? "Search tags" : ""}
+                                        value={tagSearchQuery}
+                                        onChange={(e) => {
+                                          setTagSearchQuery(e.target.value);
+                                          setTagDropdownOpen(true);
+                                        }}
+                                        style={{
+                                          border: 'none', outline: 'none', flexGrow: 1, fontSize: '13px',
+                                          padding: '4px 0', minWidth: '60px', background: 'transparent'
+                                        }}
+                                      />
+                                    </div>
 
                                     {/* Dropdown list */}
                                     {tagDropdownOpen && (
@@ -1316,28 +1379,6 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
                                         </button>
                                       </div>
                                     )}
-                                  </div>
-
-                                  {/* Currently attached pills */}
-                                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '12px' }}>
-                                    {(photoTags[activePreviewPhoto] || []).map(tag => (
-                                      <span 
-                                        key={tag} 
-                                        style={{ background: '#eff6ff', color: '#1e40af', border: '1px solid #bfdbfe', padding: '4px 10px', borderRadius: '20px', fontSize: '11px', fontWeight: '700', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
-                                      >
-                                        {tag}
-                                        <button 
-                                          type="button" 
-                                          onClick={() => {
-                                            const next = (photoTags[activePreviewPhoto] || []).filter(t => t !== tag);
-                                            setPhotoTags({ ...photoTags, [activePreviewPhoto]: next });
-                                          }}
-                                          style={{ border: 'none', background: 'transparent', color: '#3b82f6', fontSize: '12px', cursor: 'pointer', padding: 0, fontWeight: 'bold' }}
-                                        >
-                                          ×
-                                        </button>
-                                      </span>
-                                    ))}
                                   </div>
                                   
                                   <span style={{ fontSize: '10px', color: '#64748b', display: 'block', marginTop: '6px' }}>You can add a maximum of 2 tags</span>
