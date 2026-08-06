@@ -2449,7 +2449,10 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
                           <label style={{ fontSize: '11px', fontWeight: '700', color: '#334155' }}>Select Leased Property Document Type to Upload</label>
                           <select 
                             value={leasedDocType} 
-                            onChange={(e) => setLeasedDocType(e.target.value)}
+                            onChange={(e) => {
+                              setLeasedDocType(e.target.value);
+                              setUploadedLeasedDoc(null);
+                            }}
                             style={{ width: '100%', padding: '10px', border: '1px solid #cbd5e1', borderRadius: '6px', fontSize: '12px', marginTop: '6px', marginBottom: '10px' }}
                           >
                             <option value="Leave & License Agreement (must be valid & signed)">Leave & License Agreement (must be valid & signed)</option>
@@ -2458,7 +2461,14 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
                           </select>
 
                           <div 
-                            onClick={() => setUploadedLeasedDoc("Leave_License_Agreement_Signed.pdf")}
+                            onClick={() => {
+                              if (!leasedDocType) {
+                                alert("Please select a document type first!");
+                                return;
+                              }
+                              const cleanType = leasedDocType.split('(')[0].trim().replace(/\s+/g, '_');
+                              setUploadedLeasedDoc(`${cleanType}_Signed.pdf`);
+                            }}
                             style={{ border: '2px dashed #cbd5e1', borderRadius: '8px', padding: '18px', textAlign: 'center', background: '#f8fafc', cursor: 'pointer' }}
                           >
                             {uploadedLeasedDoc ? (
@@ -2479,7 +2489,10 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
                           <label style={{ fontSize: '11px', fontWeight: '700', color: '#334155' }}>Select Address cum Relationship Proof Document Type to Upload</label>
                           <select 
                             value={relationshipDocType} 
-                            onChange={(e) => setRelationshipDocType(e.target.value)}
+                            onChange={(e) => {
+                              setRelationshipDocType(e.target.value);
+                              setUploadedRelationshipDoc(null);
+                            }}
                             style={{ width: '100%', padding: '10px', border: '1px solid #cbd5e1', borderRadius: '6px', fontSize: '12px', marginTop: '6px', marginBottom: '10px' }}
                           >
                             <option value="">Select Document Type</option>
