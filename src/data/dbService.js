@@ -255,14 +255,19 @@ export async function dbGetBookingsForVendor(vendorId) {
   return bookings.filter(b => b.item && b.item.vendorId === vendorId);
 }
 
-export async function dbUpdatePropertyRooms(propertyId, updatedRooms) {
+export async function dbUpdatePropertyDetails(propertyId, updatedRooms, updatedPhotos, updatedCoverPhoto) {
   if (IS_FIREBASE_ACTIVE && db) {
     const propertiesRef = collection(db, "connect_properties");
     const q = query(propertiesRef, where("id", "==", propertyId));
     const snap = await getDocs(q);
     if (!snap.empty) {
       const docRef = snap.docs[0].ref;
-      await updateDoc(docRef, { rooms: updatedRooms });
+      await updateDoc(docRef, { 
+        rooms: updatedRooms,
+        uploadedPhotos: updatedPhotos,
+        coverPhoto: updatedCoverPhoto,
+        image: updatedCoverPhoto // Keep the thumbnail cover in sync
+      });
       return true;
     }
     return false;
@@ -271,7 +276,13 @@ export async function dbUpdatePropertyRooms(propertyId, updatedRooms) {
   const properties = JSON.parse(localStorage.getItem('connect_properties')) || [];
   const updated = properties.map(p => {
     if (p.id === propertyId) {
-      return { ...p, rooms: updatedRooms };
+      return { 
+        ...p, 
+        rooms: updatedRooms,
+        uploadedPhotos: updatedPhotos,
+        coverPhoto: updatedCoverPhoto,
+        image: updatedCoverPhoto
+      };
     }
     return p;
   });

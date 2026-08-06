@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { connectGetPropertiesForPartner, dbUpdatePropertyRooms } from '../data/dbService';
+import { connectGetPropertiesForPartner, dbUpdatePropertyDetails } from '../data/dbService';
 import { LayoutGrid, Mail, PlusCircle, LogOut, ShieldCheck, Home, ArrowRight, CheckCircle2, X } from 'lucide-react';
 
 export default function ConnectDashboard({ activeUser, onLogout, onStartOnboarding }) {
   const [properties, setProperties] = useState([]);
   const [activeSidebarTab, setActiveSidebarTab] = useState('properties'); // 'properties', 'inbox'
 
-  // Edit Prices Modal States
+  // Edit Prices & Photos Modal States
   const [editingProperty, setEditingProperty] = useState(null);
   const [editingRooms, setEditingRooms] = useState([]);
+  const [editingPhotos, setEditingPhotos] = useState([]);
+  const [editingCoverPhoto, setEditingCoverPhoto] = useState('');
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   const loadProperties = async () => {
@@ -27,6 +29,8 @@ export default function ConnectDashboard({ activeUser, onLogout, onStartOnboardi
   const handleOpenEditModal = (property) => {
     setEditingProperty(property);
     setEditingRooms(JSON.parse(JSON.stringify(property.rooms || [])));
+    setEditingPhotos(JSON.parse(JSON.stringify(property.uploadedPhotos || [])));
+    setEditingCoverPhoto(property.coverPhoto || '');
     setIsEditModalOpen(true);
   };
 
@@ -42,6 +46,31 @@ export default function ConnectDashboard({ activeUser, onLogout, onStartOnboardi
     setEditingRooms(updated);
   };
 
+  const handleRemovePhoto = (photoUrl) => {
+    const filtered = editingPhotos.filter(url => url !== photoUrl);
+    setEditingPhotos(filtered);
+    if (editingCoverPhoto === photoUrl) {
+      setEditingCoverPhoto(filtered[0] || '');
+    }
+  };
+
+  const handleAddPhoto = (e) => {
+    const files = Array.from(e.target.files);
+    files.forEach(file => {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setEditingPhotos(prev => {
+          const updated = [...prev, event.target.result];
+          if (!editingCoverPhoto) {
+            setEditingCoverPhoto(event.target.result);
+          }
+          return updated;
+        });
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
   const handleSaveChanges = async () => {
     try {
       const hasInvalid = editingRooms.some(r => !r.price || Number(r.price) <= 0);
@@ -49,14 +78,22 @@ export default function ConnectDashboard({ activeUser, onLogout, onStartOnboardi
         alert("Please enter a valid price greater than 0 for all rooms.");
         return;
       }
-      await dbUpdatePropertyRooms(editingProperty.id, editingRooms);
-      alert("Property room configurations updated successfully!");
+      if (editingPhotos.length === 0) {
+        alert("Please upload/keep at least one property photo.");
+        return;
+      }
+      if (!editingCoverPhoto && editingPhotos.length > 0) {
+        await dbUpdatePropertyDetails(editingProperty.id, editingRooms, editingPhotos, editingPhotos[0]);
+      } else {
+        await dbUpdatePropertyDetails(editingProperty.id, editingRooms, editingPhotos, editingCoverPhoto);
+      }
+      alert("Property details and configurations updated successfully!");
       setIsEditModalOpen(false);
       setEditingProperty(null);
       loadProperties();
     } catch (err) {
       console.error(err);
-      alert("Failed to update prices.");
+      alert("Failed to update property details.");
     }
   };
 
@@ -254,7 +291,7 @@ export default function ConnectDashboard({ activeUser, onLogout, onStartOnboardi
         </main>
       </div>
 
-      {/* ================= EDIT PRICE & ROOMS MODAL ================= */}
+      {/* ================= EDIT PRICE, INVENTORY & PHOTOS MODAL ================= */}
       {isEditModalOpen && editingProperty && (
         <div style={{
           position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
@@ -263,14 +300,14 @@ export default function ConnectDashboard({ activeUser, onLogout, onStartOnboardi
           padding: '20px'
         }}>
           <div style={{
-            background: '#ffffff', width: '100%', maxWidth: '500px', borderRadius: '16px',
+            background: '#ffffff', width: '100%', maxWidth: '520px', borderRadius: '16px',
             boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
-            overflow: 'hidden', textAlign: 'left'
+            overflow: 'hidden', textAlign: 'left', display: 'flex', flexDirection: 'column', maxHeight: '90vh'
           }}>
             {/* Header */}
-            <div style={{ padding: '20px 24px', borderBottom: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#f8fafc' }}>
+            <div style={{ padding: '20px 24px', borderBottom: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#f8fafc', flexShrink: 0 }}>
               <div>
-                <h3 style={{ fontSize: '16px', fontWeight: '800', color: '#0f172a', margin: 0 }}>Update Price & Inventory</h3>
+                <h3 style={{ fontSize: '16px', fontWeight: '800', color: '#0f172a', margin: 0 }}>Edit Property & Price Details</h3>
                 <p style={{ fontSize: '11px', color: '#64748b', marginTop: '2px', margin: 0 }}>Property: {editingProperty.name}</p>
               </div>
               <button 
@@ -281,47 +318,128 @@ export default function ConnectDashboard({ activeUser, onLogout, onStartOnboardi
               </button>
             </div>
 
-            {/* Content */}
-            <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px', maxHeight: '400px', overflowY: 'auto' }}>
-              {editingRooms.length === 0 ? (
-                <p style={{ fontSize: '12px', color: '#64748b', textAlign: 'center' }}>No rooms configured for this property.</p>
-              ) : (
-                editingRooms.map((room, idx) => (
-                  <div key={idx} style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '16px' }}>
-                    <div style={{ fontWeight: '700', fontSize: '13px', color: '#1e293b', marginBottom: '12px' }}>
-                      🚪 {room.type || room.roomType || `Room Category ${idx + 1}`}
-                    </div>
-                    
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-                      <div className="input-group">
-                        <label style={{ fontSize: '11px', fontWeight: '700', color: '#475569', display: 'block', marginBottom: '6px' }}>Base Rate (₹)</label>
-                        <input 
-                          type="text" 
-                          placeholder="e.g. 5000"
-                          value={room.price}
-                          onChange={(e) => handlePriceChange(idx, e.target.value)}
-                          style={{ padding: '8px 12px', border: '1px solid #cbd5e1', borderRadius: '6px', fontSize: '13px', width: '100%', fontWeight: '600', boxSizing: 'border-box' }}
-                        />
+            {/* Scrollable Content */}
+            <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '24px', overflowY: 'auto', flexGrow: 1 }}>
+              
+              {/* SECTION 1: ROOM RATES & INVENTORY */}
+              <div>
+                <h4 style={{ fontWeight: '800', fontSize: '13px', color: '#1e293b', margin: '0 0 12px 0', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                  🔑 Room Rates & Inventory
+                </h4>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                  {editingRooms.length === 0 ? (
+                    <p style={{ fontSize: '12px', color: '#64748b', textAlign: 'center' }}>No rooms configured.</p>
+                  ) : (
+                    editingRooms.map((room, idx) => (
+                      <div key={idx} style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '14px' }}>
+                        <div style={{ fontWeight: '700', fontSize: '12px', color: '#334155', marginBottom: '8px' }}>
+                          🚪 {room.type || room.roomType || `Room Category ${idx + 1}`}
+                        </div>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                          <div>
+                            <label style={{ fontSize: '10px', fontWeight: '700', color: '#64748b', display: 'block', marginBottom: '4px' }}>Base Price (₹)</label>
+                            <input 
+                              type="text" 
+                              value={room.price}
+                              onChange={(e) => handlePriceChange(idx, e.target.value)}
+                              style={{ padding: '8px 10px', border: '1px solid #cbd5e1', borderRadius: '6px', fontSize: '12px', width: '100%', fontWeight: '600', boxSizing: 'border-box' }}
+                            />
+                          </div>
+                          <div>
+                            <label style={{ fontSize: '10px', fontWeight: '700', color: '#64748b', display: 'block', marginBottom: '4px' }}>Rooms Count (Inventory)</label>
+                            <input 
+                              type="text" 
+                              value={room.count}
+                              onChange={(e) => handleInventoryChange(idx, e.target.value)}
+                              style={{ padding: '8px 10px', border: '1px solid #cbd5e1', borderRadius: '6px', fontSize: '12px', width: '100%', fontWeight: '600', boxSizing: 'border-box' }}
+                            />
+                          </div>
+                        </div>
                       </div>
+                    ))
+                  )}
+                </div>
+              </div>
 
-                      <div className="input-group">
-                        <label style={{ fontSize: '11px', fontWeight: '700', color: '#475569', display: 'block', marginBottom: '6px' }}>Inventory (Rooms Count)</label>
-                        <input 
-                          type="text" 
-                          placeholder="e.g. 5"
-                          value={room.count}
-                          onChange={(e) => handleInventoryChange(idx, e.target.value)}
-                          style={{ padding: '8px 12px', border: '1px solid #cbd5e1', borderRadius: '6px', fontSize: '13px', width: '100%', fontWeight: '600', boxSizing: 'border-box' }}
-                        />
+              {/* SECTION 2: MANAGE PHOTOS */}
+              <div>
+                <h4 style={{ fontWeight: '800', fontSize: '13px', color: '#1e293b', margin: '0 0 4px 0', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                  📷 Manage Property Photos
+                </h4>
+                <p style={{ fontSize: '11px', color: '#64748b', margin: '0 0 12px 0' }}>
+                  Click a photo to set it as the cover photo. Use the "×" overlay to delete.
+                </p>
+
+                {/* Photo Grid */}
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', alignItems: 'center' }}>
+                  {editingPhotos.map((photo, index) => {
+                    const isCover = editingCoverPhoto === photo;
+                    return (
+                      <div 
+                        key={index} 
+                        style={{
+                          width: '76px', height: '76px', position: 'relative', borderRadius: '8px',
+                          border: isCover ? '3px solid #10b981' : '1px solid #cbd5e1',
+                          boxSizing: 'border-box', cursor: 'pointer', overflow: 'hidden',
+                          boxShadow: isCover ? '0 0 8px rgba(16,185,129,0.3)' : 'none'
+                        }}
+                        onClick={() => setEditingCoverPhoto(photo)}
+                      >
+                        <img src={photo} alt="property" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        
+                        {/* Cover Badge */}
+                        {isCover && (
+                          <span style={{
+                            position: 'absolute', bottom: 0, left: 0, width: '100%', background: '#10b981',
+                            color: 'white', fontSize: '8px', fontWeight: '800', textAlign: 'center', padding: '1px 0'
+                          }}>
+                            COVER
+                          </span>
+                        )}
+
+                        {/* Delete cross button */}
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleRemovePhoto(photo);
+                          }}
+                          style={{
+                            position: 'absolute', top: '2px', right: '2px', width: '16px', height: '16px',
+                            borderRadius: '50%', background: 'rgba(239, 68, 68, 0.9)', color: 'white',
+                            border: 'none', fontSize: '10px', display: 'flex', alignItems: 'center',
+                            justifyContent: 'center', cursor: 'pointer', fontWeight: '800'
+                          }}
+                        >
+                          ×
+                        </button>
                       </div>
-                    </div>
-                  </div>
-                ))
-              )}
+                    );
+                  })}
+
+                  {/* Add photo square uploader */}
+                  <label style={{
+                    width: '76px', height: '76px', border: '2px dashed #cbd5e1', borderRadius: '8px',
+                    display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                    cursor: 'pointer', background: '#f8fafc', gap: '4px', boxSizing: 'border-box'
+                  }}>
+                    <span style={{ fontSize: '18px', color: '#94a3b8', fontWeight: '600' }}>+</span>
+                    <span style={{ fontSize: '9px', fontWeight: '700', color: '#64748b' }}>Add Photo</span>
+                    <input 
+                      type="file" 
+                      multiple 
+                      accept="image/*" 
+                      onChange={handleAddPhoto} 
+                      style={{ display: 'none' }} 
+                    />
+                  </label>
+                </div>
+              </div>
+
             </div>
 
             {/* Footer */}
-            <div style={{ padding: '16px 24px', borderTop: '1px solid #e2e8f0', background: '#f8fafc', display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
+            <div style={{ padding: '16px 24px', borderTop: '1px solid #e2e8f0', background: '#f8fafc', display: 'flex', justifyContent: 'flex-end', gap: '12px', flexShrink: 0 }}>
               <button 
                 onClick={() => { setIsEditModalOpen(false); setEditingProperty(null); }}
                 style={{ padding: '8px 16px', fontSize: '12px', fontWeight: '700', color: '#475569', background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '6px', cursor: 'pointer' }}
