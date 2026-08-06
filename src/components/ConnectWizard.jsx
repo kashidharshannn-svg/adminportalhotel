@@ -251,6 +251,101 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
 
   const years = Array.from({ length: 40 }, (_, i) => String(2026 - i));
 
+  // --- AUTOSAVE PERSISTENCE ---
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('connect_wizard_autosave');
+      if (saved) {
+        const data = JSON.parse(saved);
+        if (data.wizardStep !== undefined) setWizardStep(data.wizardStep);
+        if (data.propertyType !== undefined) setPropertyType(data.propertyType);
+        if (data.subType !== undefined) setSubType(data.subType);
+        if (data.name !== undefined) setName(data.name);
+        if (data.stars !== undefined) setStars(data.stars);
+        if (data.contactName !== undefined) setContactName(data.contactName);
+        if (data.emailId !== undefined) setEmailId(data.emailId);
+        if (data.mobileNumber !== undefined) setMobileNumber(data.mobileNumber);
+        if (data.useWhatsapp !== undefined) setUseWhatsapp(data.useWhatsapp);
+        if (data.landlineNumber !== undefined) setLandlineNumber(data.landlineNumber);
+        if (data.locationSearch !== undefined) setLocationSearch(data.locationSearch);
+        if (data.houseNumber !== undefined) setHouseNumber(data.houseNumber);
+        if (data.locality !== undefined) setLocality(data.locality);
+        if (data.pincode !== undefined) setPincode(data.pincode);
+        if (data.country !== undefined) setCountry(data.country);
+        if (data.city !== undefined) setCity(data.city);
+        if (data.amenitiesAnswers !== undefined) setAmenitiesAnswers(data.amenitiesAnswers);
+        if (data.rooms !== undefined) setRooms(data.rooms);
+        if (data.uploadedPhotos !== undefined) setUploadedPhotos(data.uploadedPhotos);
+        if (data.photoTags !== undefined) setPhotoTags(data.photoTags);
+        if (data.coverPhoto !== undefined) setCoverPhoto(data.coverPhoto);
+        if (data.checkInTime !== undefined) setCheckInTime(data.checkInTime);
+        if (data.checkOutTime !== undefined) setCheckOutTime(data.checkOutTime);
+        if (data.cancelPolicy !== undefined) setCancelPolicy(data.cancelPolicy);
+        if (data.unmarriedCouples !== undefined) setUnmarriedCouples(data.unmarriedCouples);
+        if (data.guestsBelow18 !== undefined) setGuestsBelow18(data.guestsBelow18);
+        if (data.maleOnlyGroups !== undefined) setMaleOnlyGroups(data.maleOnlyGroups);
+        if (data.allowedIds !== undefined) setAllowedIds(data.allowedIds);
+        if (data.sameCityIds !== undefined) setSameCityIds(data.sameCityIds);
+        if (data.smokingAllowed !== undefined) setSmokingAllowed(data.smokingAllowed);
+        if (data.wheelchairAccessible !== undefined) setWheelchairAccessible(data.wheelchairAccessible);
+        if (data.partiesAllowed !== undefined) setPartiesAllowed(data.partiesAllowed);
+        if (data.outsideVisitors !== undefined) setOutsideVisitors(data.outsideVisitors);
+        if (data.petsOnProperty !== undefined) setPetsOnProperty(data.petsOnProperty);
+        if (data.petsAllowed !== undefined) setPetsAllowed(data.petsAllowed);
+        if (data.twentyFourHourCheckIn !== undefined) setTwentyFourHourCheckIn(data.twentyFourHourCheckIn);
+        if (data.infantFree !== undefined) setInfantFree(data.infantFree);
+        if (data.complimentaryInfantFood !== undefined) setComplimentaryInfantFood(data.complimentaryInfantFood);
+        if (data.extraBedInRates !== undefined) setExtraBedInRates(data.extraBedInRates);
+        if (data.extraKidsBed !== undefined) setExtraKidsBed(data.extraKidsBed);
+        if (data.extraAdultsBed !== undefined) setExtraAdultsBed(data.extraAdultsBed);
+        if (data.breakfastPrice !== undefined) setBreakfastPrice(data.breakfastPrice);
+        if (data.lunchPrice !== undefined) setLunchPrice(data.lunchPrice);
+        if (data.dinnerPrice !== undefined) setDinnerPrice(data.dinnerPrice);
+        if (data.panNumber !== undefined) setPanNumber(data.panNumber);
+        if (data.panHolderName !== undefined) setPanHolderName(data.panHolderName);
+        if (data.gstNumber !== undefined) setGstNumber(data.gstNumber);
+        if (data.accountNumber !== undefined) setAccountNumber(data.accountNumber);
+        if (data.accountHolderName !== undefined) setAccountHolderName(data.accountHolderName);
+        if (data.bankIfscCode !== undefined) setBankIfscCode(data.bankIfscCode);
+        if (data.bankName !== undefined) setBankName(data.bankName);
+        if (data.ownershipType !== undefined) setOwnershipType(data.ownershipType);
+        if (data.leasedDocType !== undefined) setLeasedDocType(data.leasedDocType);
+        if (data.relationshipDocType !== undefined) setRelationshipDocType(data.relationshipDocType);
+        if (data.uploadedLeasedDoc !== undefined) setUploadedLeasedDoc(data.uploadedLeasedDoc);
+        if (data.uploadedRelationshipDoc !== undefined) setUploadedRelationshipDoc(data.uploadedRelationshipDoc);
+      }
+    } catch (e) {
+      console.error("Autosave load error", e);
+    }
+  }, []);
+
+  useEffect(() => {
+    const autosaveData = {
+      wizardStep, propertyType, subType, name, stars, contactName, emailId, mobileNumber,
+      useWhatsapp, landlineNumber, locationSearch, houseNumber, locality, pincode, country,
+      city, amenitiesAnswers, rooms, uploadedPhotos, photoTags, coverPhoto, checkInTime,
+      checkOutTime, cancelPolicy, unmarriedCouples, guestsBelow18, maleOnlyGroups, allowedIds,
+      sameCityIds, smokingAllowed, wheelchairAccessible, partiesAllowed, outsideVisitors,
+      petsOnProperty, petsAllowed, twentyFourHourCheckIn, infantFree, complimentaryInfantFood,
+      extraBedInRates, extraKidsBed, extraAdultsBed, breakfastPrice, lunchPrice, dinnerPrice,
+      panNumber, panHolderName, gstNumber, accountNumber, accountHolderName, bankIfscCode,
+      bankName, ownershipType, leasedDocType, relationshipDocType, uploadedLeasedDoc,
+      uploadedRelationshipDoc
+    };
+    localStorage.setItem('connect_wizard_autosave', JSON.stringify(autosaveData));
+  }, [
+    wizardStep, propertyType, subType, name, stars, contactName, emailId, mobileNumber,
+    useWhatsapp, landlineNumber, locationSearch, houseNumber, locality, pincode, country,
+    city, amenitiesAnswers, rooms, uploadedPhotos, photoTags, coverPhoto, checkInTime,
+    checkOutTime, cancelPolicy, unmarriedCouples, guestsBelow18, maleOnlyGroups, allowedIds,
+    sameCityIds, smokingAllowed, wheelchairAccessible, partiesAllowed, outsideVisitors,
+    petsOnProperty, petsAllowed, twentyFourHourCheckIn, infantFree, complimentaryInfantFood,
+    extraBedInRates, extraKidsBed, extraAdultsBed, breakfastPrice, lunchPrice, dinnerPrice,
+    panNumber, panHolderName, gstNumber, accountNumber, accountHolderName, bankIfscCode,
+    bankName, ownershipType, leasedDocType, relationshipDocType, uploadedLeasedDoc,
+    uploadedRelationshipDoc
+  ]);
+
   // Amenities Answer getter
   const getSelectedCountForCategory = (categoryItems) => {
     return categoryItems.filter(item => amenitiesAnswers[item] === 'Yes').length;
@@ -439,6 +534,7 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
 
     try {
       await connectAddProperty(newProperty, activeUser.uid);
+      localStorage.removeItem('connect_wizard_autosave'); // Clear autosave on success!
       alert("Congratulations! Your property onboarding is complete and listing is saved.");
       onFinished();
     } catch (err) {
