@@ -821,7 +821,7 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
                   
                   <div style={{ display: 'flex', flexDirection: 'column' }}>
                     {AMENITIES_CATEGORIES.find(c => c.id === activeAmenityCategory)?.items.map((item) => {
-                      const answer = amenitiesAnswers[item] || 'No';
+                      const answer = amenitiesAnswers[item];
                       return (
                         <div 
                           key={item} 
