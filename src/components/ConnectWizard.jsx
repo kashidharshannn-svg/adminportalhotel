@@ -86,6 +86,20 @@ const ROOM_AMENITIES_CATEGORIES = [
   { id: "other", label: "Other Facilities", items: ["Room Service", "Daily Housekeeping", "Laundry Service"] }
 ];
 
+const formatDateDisplay = (dateString) => {
+  if (!dateString) return 'Select Date';
+  try {
+    const d = new Date(dateString);
+    if (isNaN(d.getTime())) return dateString;
+    const day = d.getDate();
+    const month = d.toLocaleDateString('en-US', { month: 'short' });
+    const year = d.getFullYear();
+    return `${day} ${month}, ${year}`;
+  } catch (e) {
+    return dateString;
+  }
+};
+
 export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
   const [wizardStep, setWizardStep] = useState(0); 
 
@@ -2688,14 +2702,82 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
                   <div style={{ border: '1px solid #e2e8f0', borderRadius: '8px', padding: '16px', background: '#ffffff' }}>
                     <h5 style={{ fontWeight: '800', fontSize: '14px', color: '#1a1a1a', marginBottom: '12px' }}>Inventory Calendar</h5>
                     <p style={{ fontSize: '11px', color: '#64748b', marginTop: '-4px', marginBottom: '12px' }}>Select a date range</p>
+                    
                     <div style={{ display: 'flex', gap: '14px' }}>
-                      <div className="input-group" style={{ flexGrow: 1 }}>
-                        <label style={{ fontSize: '11px' }}>Start Date</label>
-                        <input type="date" value={roomStartDate} onChange={(e) => setRoomStartDate(e.target.value)} style={{ padding: '8px 12px', border: '1px solid #cbd5e1', borderRadius: '6px', width: '100%' }} />
+                      {/* Start Date input wrapper */}
+                      <div className="input-group" style={{ flexGrow: 1, position: 'relative' }}>
+                        <label style={{ fontSize: '11.5px', fontWeight: '700', color: '#475569', display: 'block', marginBottom: '6px' }}>Start Date</label>
+                        
+                        <div style={{ position: 'relative', width: '100%' }}>
+                          <div style={{
+                            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                            border: '1px solid #cbd5e1', borderRadius: '6px', padding: '10px 14px',
+                            background: '#ffffff', minHeight: '42px', fontSize: '13px', color: '#1e293b',
+                            fontWeight: '600'
+                          }}>
+                            <span>{formatDateDisplay(roomStartDate)}</span>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                              {roomStartDate && (
+                                <button 
+                                  type="button" 
+                                  onClick={(e) => { e.stopPropagation(); setRoomStartDate(''); }} 
+                                  style={{ border: 'none', background: 'transparent', color: '#94a3b8', fontSize: '16px', cursor: 'pointer', padding: 0 }}
+                                >
+                                  ×
+                                </button>
+                              )}
+                              <span style={{ color: '#64748b', fontSize: '14px' }}>📅</span>
+                            </div>
+                          </div>
+                          
+                          <input 
+                            type="date" 
+                            value={roomStartDate} 
+                            onChange={(e) => setRoomStartDate(e.target.value)} 
+                            style={{
+                              position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
+                              opacity: 0, cursor: 'pointer', zIndex: 5
+                            }} 
+                          />
+                        </div>
                       </div>
-                      <div className="input-group" style={{ flexGrow: 1 }}>
-                        <label style={{ fontSize: '11px' }}>End Date</label>
-                        <input type="date" value={roomEndDate} onChange={(e) => setRoomEndDate(e.target.value)} style={{ padding: '8px 12px', border: '1px solid #cbd5e1', borderRadius: '6px', width: '100%' }} />
+
+                      {/* End Date input wrapper */}
+                      <div className="input-group" style={{ flexGrow: 1, position: 'relative' }}>
+                        <label style={{ fontSize: '11.5px', fontWeight: '700', color: '#475569', display: 'block', marginBottom: '6px' }}>End Date</label>
+                        
+                        <div style={{ position: 'relative', width: '100%' }}>
+                          <div style={{
+                            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                            border: '1px solid #cbd5e1', borderRadius: '6px', padding: '10px 14px',
+                            background: '#ffffff', minHeight: '42px', fontSize: '13px', color: '#1e293b',
+                            fontWeight: '600'
+                          }}>
+                            <span>{formatDateDisplay(roomEndDate)}</span>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                              {roomEndDate && (
+                                <button 
+                                  type="button" 
+                                  onClick={(e) => { e.stopPropagation(); setRoomEndDate(''); }} 
+                                  style={{ border: 'none', background: 'transparent', color: '#94a3b8', fontSize: '16px', cursor: 'pointer', padding: 0 }}
+                                >
+                                  ×
+                                </button>
+                              )}
+                              <span style={{ color: '#64748b', fontSize: '14px' }}>📅</span>
+                            </div>
+                          </div>
+                          
+                          <input 
+                            type="date" 
+                            value={roomEndDate} 
+                            onChange={(e) => setRoomEndDate(e.target.value)} 
+                            style={{
+                              position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
+                              opacity: 0, cursor: 'pointer', zIndex: 5
+                            }} 
+                          />
+                        </div>
                       </div>
                     </div>
                   </div>
