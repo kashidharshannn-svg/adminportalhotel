@@ -36,7 +36,7 @@ const HOTEL_TYPES = [
     id: "Palace", 
     title: "Palace", 
     desc: "A palace, when used as accommodation, is a luxurious property, often a converted royal residence, offering opulent rooms, grand archi...", 
-    img: "https://images.unsplash.com/photo-1585983224974-084a8e065e76?auto=format&fit=crop&w=600&q=80" 
+    img: "https://images.unsplash.com/photo-1564507592333-c60657eea523?auto=format&fit=crop&w=600&q=80" 
   },
   { 
     id: "Houseboat", 
@@ -64,7 +64,7 @@ const HOMESTAY_TYPES = [
   { id: "Camp", title: "Camp", desc: "Outdoor or temporary accommodations (e.g., tents) in scenic natural locations like mountains, deserts, or beaches.", img: "https://images.unsplash.com/photo-1510312305653-8ed496efae75?auto=format&fit=crop&w=600&q=80" },
   { id: "Beach Hut", title: "Beach Hut", desc: "A rustic cabin or small structure, often made of wood, situated near a beach with ocean views.", img: "https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?auto=format&fit=crop&w=600&q=80" },
   { id: "Treehouse", title: "Treehouse", desc: "Unique accommodation built among trees, with the main living area elevated above ground level, typically made of natural materials.", img: "https://images.unsplash.com/photo-1508193638397-1c4234db14d8?auto=format&fit=crop&w=600&q=80" },
-  { id: "Dharamshala", title: "Dharamshala", desc: "A charitable rest-house or lodging primarily for pilgrims, offering simple and affordable accommodation.", img: "https://images.unsplash.com/photo-1627664813838-5699c37570aa?auto=format&fit=crop&w=600&q=80" },
+  { id: "Dharamshala", title: "Dharamshala", desc: "A charitable rest-house or lodging primarily for pilgrims, offering simple and affordable accommodation.", img: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=600&q=80" },
   { id: "Ashram", title: "Ashram", desc: "A spiritual retreat or sanctuary offering simple lodging for individuals seeking meditation, yoga, or religious activities.", img: "https://images.unsplash.com/photo-1545205597-3d9d02c29597?auto=format&fit=crop&w=600&q=80" },
   { id: "Holiday Home", title: "Holiday Home", desc: "An independent house or bungalow available for short-term rental by guests, perfect for leisure vacations.", img: "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=600&q=80" },
   { id: "RV(Recreational Vehicle)", title: "RV(Recreational Vehicle)", desc: "A recreational vehicle (e.g., caravan, campervan) available for stay, equipped with basic living amenities.", img: "https://images.unsplash.com/photo-1523987355523-c7b5b0dd90a7?auto=format&fit=crop&w=600&q=80" },
