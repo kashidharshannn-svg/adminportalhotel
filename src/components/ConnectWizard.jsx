@@ -642,34 +642,28 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                     <div className="input-group">
                       <label style={{ fontSize: '12px' }}>Email ID</label>
-                      <div style={{ display: 'flex', gap: '8px' }}>
-                        <input 
-                          type="email" 
-                          required 
-                          placeholder="Enter email ID" 
-                          value={emailId} 
-                          onChange={(e) => setEmailId(e.target.value)} 
-                          style={{ flexGrow: 1, border: '1px solid #cbd5e1', padding: '10px', borderRadius: '6px' }}
-                        />
-                        <button type="button" onClick={() => alert("Verification link sent!")} style={{ color: 'var(--primary-color)', background: 'transparent', fontWeight: '700', fontSize: '12px' }}>Verify</button>
-                      </div>
+                      <input 
+                        type="email" 
+                        required 
+                        placeholder="Enter email ID" 
+                        value={emailId} 
+                        onChange={(e) => setEmailId(e.target.value)} 
+                        style={{ border: '1px solid #cbd5e1', padding: '10px', borderRadius: '6px', width: '100%' }}
+                      />
                     </div>
 
                     <div className="input-group">
                       <label style={{ fontSize: '12px' }}>Mobile number</label>
-                      <div style={{ display: 'flex', gap: '8px' }}>
-                        <div style={{ display: 'flex', border: '1px solid #cbd5e1', borderRadius: '6px', overflow: 'hidden', flexGrow: 1 }}>
-                          <span style={{ padding: '10px', background: '#e2e8f0', fontSize: '13px', borderRight: '1px solid #cbd5e1' }}>+91</span>
-                          <input 
-                            type="tel" 
-                            required 
-                            placeholder="Enter number" 
-                            value={mobileNumber} 
-                            onChange={(e) => setMobileNumber(e.target.value.replace(/\D/g,''))} 
-                            style={{ padding: '10px', width: '100%', border: 'none' }}
-                          />
-                        </div>
-                        <button type="button" onClick={() => alert("SMS verification dispatched!")} style={{ color: 'var(--primary-color)', background: 'transparent', fontWeight: '700', fontSize: '12px' }}>Verify</button>
+                      <div style={{ display: 'flex', border: '1px solid #cbd5e1', borderRadius: '6px', overflow: 'hidden' }}>
+                        <span style={{ padding: '10px', background: '#e2e8f0', fontSize: '13px', borderRight: '1px solid #cbd5e1' }}>+91</span>
+                        <input 
+                          type="tel" 
+                          required 
+                          placeholder="Enter number" 
+                          value={mobileNumber} 
+                          onChange={(e) => setMobileNumber(e.target.value.replace(/\D/g,''))} 
+                          style={{ padding: '10px', width: '100%', border: 'none' }}
+                        />
                       </div>
                       
                       <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11px', color: '#64748b', marginTop: '8px' }}>
