@@ -12,25 +12,25 @@ const HOTEL_TYPES = [
     id: "Hotel", 
     title: "Hotel", 
     desc: "A hotel is a commercial establishment providing lodging with various amenities like dining, room service, and sometimes conference fa...", 
-    img: "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80" 
+    img: "https://promos.makemytrip.com/images/HOTEL.png" 
   },
   { 
     id: "Resort", 
     title: "Resort", 
     desc: "A resort is a self-contained property offering luxurious lodging and extensive amenities, such as pools, spas, dining, and recreation...", 
-    img: "https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=600&q=80" 
+    img: "https://promos.makemytrip.com/images/RESORT.png" 
   },
   { 
     id: "Lodge", 
     title: "Lodge", 
     desc: "A lodge is a type of accommodation typically located in natural or remote settings, offering rustic or comfortable lodging. It serves...", 
-    img: "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=600&q=80" 
+    img: "https://promos.makemytrip.com/images/LODGE.png" 
   },
   { 
     id: "Guest House", 
     title: "Guest House", 
     desc: "A guest house is a small, often privately-owned accommodation offering cozy, home-like lodging. It provides personalized service, few...", 
-    img: "https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=600&q=80" 
+    img: "https://promos.makemytrip.com/images/GUEST%20HOME.png" 
   },
   { 
     id: "Palace", 
@@ -42,13 +42,13 @@ const HOTEL_TYPES = [
     id: "Houseboat", 
     title: "Houseboat", 
     desc: "Accommodation on a floating structure that has bedrooms, a living room, a kitchen, and often a terrace or deck. Typically found in lo...", 
-    img: "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=600&q=80" 
+    img: "https://promos.makemytrip.com/images/HOUSEBOAT.png" 
   },
   { 
     id: "Motel", 
     title: "Motel", 
     desc: "A motel is a budget-friendly accommodation typically located along highways, offering easy access and parking near guest rooms. Desig...", 
-    img: "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&w=600&q=80" 
+    img: "https://promos.makemytrip.com/images/MOTEL.png" 
   }
 ];
 
@@ -65,7 +65,7 @@ const HOMESTAY_TYPES = [
   { id: "Beach Hut", title: "Beach Hut", desc: "A rustic cabin or small structure, often made of wood, situated near a beach with ocean views.", img: "https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?auto=format&fit=crop&w=600&q=80" },
   { id: "Treehouse", title: "Treehouse", desc: "Unique accommodation built among trees, with the main living area elevated above ground level, typically made of natural materials.", img: "https://images.unsplash.com/photo-1508193638397-1c4234db14d8?auto=format&fit=crop&w=600&q=80" },
   { id: "Dharamshala", title: "Dharamshala", desc: "A charitable rest-house or lodging primarily for pilgrims, offering simple and affordable accommodation.", img: "https://promos.makemytrip.com/images/DHARAMSHALA.png" },
-  { id: "Ashram", title: "Ashram", desc: "A spiritual retreat or sanctuary offering simple lodging for individuals seeking meditation, yoga, or religious activities.", img: "https://images.unsplash.com/photo-1545205597-3d9d02c29597?auto=format&fit=crop&w=600&q=80" },
+  { id: "Ashram", title: "Ashram", desc: "A spiritual retreat or sanctuary offering simple lodging for individuals seeking meditation, yoga, or religious activities.", img: "https://promos.makemytrip.com/images/ASHRAM.png" },
   { id: "Holiday Home", title: "Holiday Home", desc: "An independent house or bungalow available for short-term rental by guests, perfect for leisure vacations.", img: "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=600&q=80" },
   { id: "RV(Recreational Vehicle)", title: "RV(Recreational Vehicle)", desc: "A recreational vehicle (e.g., caravan, campervan) available for stay, equipped with basic living amenities.", img: "https://images.unsplash.com/photo-1523987355523-c7b5b0dd90a7?auto=format&fit=crop&w=600&q=80" },
   { id: "Luxury Camps", title: "Luxury Camps", desc: "High-end outdoor accommodations, often featuring large, well-appointed tents with premium amenities (e.g., comfortable beds, private ...)", img: "https://images.unsplash.com/photo-1478131143081-80f7f84ca84d?auto=format&fit=crop&w=600&q=80" }
