@@ -68,7 +68,7 @@ const HOMESTAY_TYPES = [
   { id: "Ashram", title: "Ashram", desc: "A spiritual retreat or sanctuary offering simple lodging for individuals seeking meditation, yoga, or religious activities.", img: "https://images.unsplash.com/photo-1545205597-3d9d02c29597?auto=format&fit=crop&w=600&q=80" },
   { id: "Holiday Home", title: "Holiday Home", desc: "An independent house or bungalow available for short-term rental by guests, perfect for leisure vacations.", img: "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=600&q=80" },
   { id: "RV(Recreational Vehicle)", title: "RV(Recreational Vehicle)", desc: "A recreational vehicle (e.g., caravan, campervan) available for stay, equipped with basic living amenities.", img: "https://images.unsplash.com/photo-1523987355523-c7b5b0dd90a7?auto=format&fit=crop&w=600&q=80" },
-  { id: "Luxury Camps", title: "Luxury Camps", desc: "High-end outdoor accommodations, often featuring large, well-appointed tents with premium amenities (e.g., comfortable beds, private ...)", img: "https://images.unsplash.com/photo-1533577116850-9cc662ad428a?auto=format&fit=crop&w=600&q=80" }
+  { id: "Luxury Camps", title: "Luxury Camps", desc: "High-end outdoor accommodations, often featuring large, well-appointed tents with premium amenities (e.g., comfortable beds, private ...)", img: "https://images.unsplash.com/photo-1478131143081-80f7f84ca84d?auto=format&fit=crop&w=600&q=80" }
 ];
 
 // Room Amenities data as specified in user request
