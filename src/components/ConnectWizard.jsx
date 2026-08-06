@@ -203,13 +203,13 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
   const [expandedFaq, setExpandedFaq] = useState(null);
 
   // Finance & Legal (Step 7)
-  const [panNumber, setPanNumber] = useState('CJPPJ6346G');
-  const [panHolderName, setPanHolderName] = useState('RISHABH JAISWAL');
+  const [panNumber, setPanNumber] = useState('');
+  const [panHolderName, setPanHolderName] = useState('');
   const [gstNumber, setGstNumber] = useState('');
-  const [accountNumber, setAccountNumber] = useState('765102120000355');
-  const [accountHolderName, setAccountHolderName] = useState('RISHABH SO RAJENDRA JAISWAL');
-  const [bankIfscCode, setBankIfscCode] = useState('UBIN0576514');
-  const [bankName, setBankName] = useState('UNION BANK OF INDIA');
+  const [accountNumber, setAccountNumber] = useState('');
+  const [accountHolderName, setAccountHolderName] = useState('');
+  const [bankIfscCode, setBankIfscCode] = useState('');
+  const [bankName, setBankName] = useState('');
   
   const [ownershipType, setOwnershipType] = useState('Leased Property');
   const [leasedDocType, setLeasedDocType] = useState('Leave & License Agreement (must be valid & signed)');
