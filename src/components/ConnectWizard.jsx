@@ -558,12 +558,26 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
           </span>
         </div>
         
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '13px' }}>
-          <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#e0e6ff', color: 'var(--primary-color)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '700' }}>
-            {activeUser?.name ? activeUser.name.substring(0, 2).toUpperCase() : 'RJ'}
-          </div>
-          <div>
-            Hi, <strong>{activeUser?.name || 'Rishabh Jaiswal'}</strong>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', fontSize: '13px' }}>
+          <button 
+            type="button"
+            onClick={() => {
+              if (confirm("Are you sure you want to reset the form and clear all saved progress?")) {
+                localStorage.removeItem('connect_wizard_autosave');
+                window.location.reload();
+              }
+            }}
+            style={{ background: 'transparent', border: '1px solid #ff4f5a', color: '#ff4f5a', padding: '6px 12px', borderRadius: '6px', fontSize: '11.5px', fontWeight: '800', cursor: 'pointer', transition: 'all 0.2s' }}
+          >
+            🧹 Reset Form / Start Fresh
+          </button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#e0e6ff', color: 'var(--primary-color)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '700' }}>
+              {activeUser?.name ? activeUser.name.substring(0, 2).toUpperCase() : 'RJ'}
+            </div>
+            <div>
+              Hi, <strong>{activeUser?.name || 'Rishabh Jaiswal'}</strong>
+            </div>
           </div>
         </div>
       </header>
