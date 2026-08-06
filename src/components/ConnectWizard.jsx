@@ -86,8 +86,8 @@ const ROOM_AMENITIES_CATEGORIES = [
   { id: "other", label: "Other Facilities", items: ["Room Service", "Daily Housekeeping", "Laundry Service"] }
 ];
 
-const formatDateDisplay = (dateString) => {
-  if (!dateString) return 'Select Date';
+const formatDateDisplay = (dateString, placeholder = 'Select Date') => {
+  if (!dateString) return placeholder;
   try {
     const d = new Date(dateString);
     if (isNaN(d.getTime())) return dateString;
@@ -174,8 +174,8 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
   const [selectedMealPlan, setSelectedMealPlan] = useState('');
   const [extraAdultCharge, setExtraAdultCharge] = useState('');
   const [paidChildCharge, setPaidChildCharge] = useState('');
-  const [roomStartDate, setRoomStartDate] = useState('2026-08-06');
-  const [roomEndDate, setRoomEndDate] = useState('2027-08-06');
+  const [roomStartDate, setRoomStartDate] = useState('');
+  const [roomEndDate, setRoomEndDate] = useState('');
 
   // Room Amenities Category tracking (Room Step 5)
   const [activeRoomAmenityCategory, setActiveRoomAmenityCategory] = useState(ROOM_AMENITIES_CATEGORIES[0].id);
@@ -2787,10 +2787,10 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
                           <div style={{
                             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                             border: '1px solid #cbd5e1', borderRadius: '6px', padding: '10px 14px',
-                            background: '#ffffff', minHeight: '42px', fontSize: '13px', color: '#1e293b',
+                            background: '#ffffff', minHeight: '42px', fontSize: '13px', color: roomStartDate ? '#1e293b' : '#94a3b8',
                             fontWeight: '600'
                           }}>
-                            <span>{formatDateDisplay(roomStartDate)}</span>
+                            <span>{formatDateDisplay(roomStartDate, 'Select start date')}</span>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                               {roomStartDate && (
                                 <button 
@@ -2825,10 +2825,10 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
                           <div style={{
                             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                             border: '1px solid #cbd5e1', borderRadius: '6px', padding: '10px 14px',
-                            background: '#ffffff', minHeight: '42px', fontSize: '13px', color: '#1e293b',
+                            background: '#ffffff', minHeight: '42px', fontSize: '13px', color: roomEndDate ? '#1e293b' : '#94a3b8',
                             fontWeight: '600'
                           }}>
-                            <span>{formatDateDisplay(roomEndDate)}</span>
+                            <span>{formatDateDisplay(roomEndDate, 'Select end date')}</span>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                               {roomEndDate && (
                                 <button 
