@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { AMENITIES_CATEGORIES } from '../data/amenitiesData';
 import { connectAddProperty } from '../data/dbService';
 import { ShieldCheck, ArrowLeft, Check, Landmark, Info, Sparkles, MapPin, X, PlusCircle, HelpCircle } from 'lucide-react';
