@@ -36,7 +36,7 @@ const HOTEL_TYPES = [
     id: "Palace", 
     title: "Palace", 
     desc: "A palace, when used as accommodation, is a luxurious property, often a converted royal residence, offering opulent rooms, grand archi...", 
-    img: "https://images.unsplash.com/photo-1598977123418-45f04b61582e?auto=format&fit=crop&w=600&q=80" 
+    img: "https://images.unsplash.com/photo-1585983224974-084a8e065e76?auto=format&fit=crop&w=600&q=80" 
   },
   { 
     id: "Houseboat", 
