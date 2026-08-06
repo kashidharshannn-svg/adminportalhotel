@@ -121,11 +121,11 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
   const [isRoomModalOpen, setIsRoomModalOpen] = useState(false);
   const [roomWizardStep, setRoomWizardStep] = useState(1); // 1: Details, 2: Occupants, 3: Bathrooms, 4: Rates, 5: Amenities, 6: Preview Summary
 
-  // Sub-Wizard Create Room States (Exact user inputs populated for testing)
-  const [roomType, setRoomType] = useState('Apartment');
-  const [roomView, setRoomView] = useState('No View');
+  // Sub-Wizard Create Room States (Initialized clean for user onboarding)
+  const [roomType, setRoomType] = useState('');
+  const [roomView, setRoomView] = useState('');
   const [numBedrooms, setNumBedrooms] = useState('1');
-  const [numLivingRooms, setNumLivingRooms] = useState('1');
+  const [numLivingRooms, setNumLivingRooms] = useState('0');
   const [roomInventory, setRoomInventory] = useState('');
   const [roomSize, setRoomSize] = useState('');
   const [roomSizeUnit, setRoomSizeUnit] = useState('Square Feet');
@@ -133,10 +133,21 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
   const [roomDesc, setRoomDesc] = useState('');
   
   // Sleeping Occupancy (Room Step 2)
-  const [bedArrangement1, setBedArrangement1] = useState('1 King Bed');
-  const [livingArrangement1, setLivingArrangement1] = useState('1 Single Bed');
-  const [extraBedsCount, setExtraBedsCount] = useState('');
+  const [bedroom1BedType, setBedroom1BedType] = useState('');
+  const [bedroom1BedCount, setBedroom1BedCount] = useState(0);
+  const [livingRoom1BedType, setLivingRoom1BedType] = useState('');
+  const [livingRoom1BedCount, setLivingRoom1BedCount] = useState(0);
+  const [canAccommodateExtraBed, setCanAccommodateExtraBed] = useState(''); // 'Yes' or 'No' or ''
+  
+  // Occupancy counters
+  const [baseAdults, setBaseAdults] = useState('');
+  const [maxAdults, setMaxAdults] = useState('');
+  const [baseChildren, setBaseChildren] = useState('');
+  const [maxChildren, setMaxChildren] = useState('');
   const [maxOccupancy, setMaxOccupancy] = useState('');
+
+  const [bedroom1DropdownOpen, setBedroom1DropdownOpen] = useState(false);
+  const [livingRoom1DropdownOpen, setLivingRoom1DropdownOpen] = useState(false);
 
   // Bathroom (Room Step 3)
   const [bedroom1HasBathroom, setBedroom1HasBathroom] = useState(false);
@@ -264,7 +275,18 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
       name: roomName || `${roomType} (${roomView})`,
       inventory: Number(roomInventory),
       description: roomDesc,
-      occupancy: { bedArrangement1, livingArrangement1, extraBedsCount, maxOccupancy },
+      occupancy: { 
+        bedroom1BedType,
+        bedroom1BedCount,
+        livingRoom1BedType,
+        livingRoom1BedCount,
+        canAccommodateExtraBed,
+        baseAdults: Number(baseAdults || 0),
+        maxAdults: Number(maxAdults || 0),
+        baseChildren: Number(baseChildren || 0),
+        maxChildren: Number(maxChildren || 0),
+        maxOccupancy: Number(maxOccupancy || 0)
+      },
       bathroom: { bedroom1HasBathroom, livingRoom1HasBathroom },
       price: Number(roomBaseRate),
       mealPlan: selectedMealPlan,
@@ -288,6 +310,18 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
     setPaidChildCharge('');
     setRoomBaseRate('');
     setRoomAmenitiesAnswers({});
+    
+    // Reset bedroom & occupancy fields
+    setBedroom1BedType('');
+    setBedroom1BedCount(0);
+    setLivingRoom1BedType('');
+    setLivingRoom1BedCount(0);
+    setCanAccommodateExtraBed('');
+    setBaseAdults('');
+    setMaxAdults('');
+    setBaseChildren('');
+    setMaxChildren('');
+    setMaxOccupancy('');
   };
 
   const handleSubmit = async (e) => {
@@ -907,7 +941,7 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
                       <div>
                         <h4 style={{ fontWeight: '800', fontSize: '15px' }}>{rm.name}</h4>
                         <p style={{ fontSize: '12px', color: '#64748b', marginTop: '2px' }}>
-                          Type: {rm.type} • View: {rm.view} • Size: {rm.size} • Bedding: {rm.occupancy.bedArrangement1} + {rm.occupancy.livingArrangement1}
+                          Type: {rm.type} • View: {rm.view} • Size: {rm.size} • Bedding: {rm.occupancy.bedroom1BedCount > 0 ? `${rm.occupancy.bedroom1BedCount} ${rm.occupancy.bedroom1BedType}` : ''}{rm.occupancy.livingRoom1BedCount > 0 ? ` + ${rm.occupancy.livingRoom1BedCount} ${rm.occupancy.livingRoom1BedType}` : ''}
                         </p>
                       </div>
                       <div style={{ textAlignment: 'right' }}>
@@ -2137,25 +2171,21 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
               
               {/* SUB-STEP 1: ROOM DETAILS */}
               {roomWizardStep === 1 && (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                  <h4 style={{ fontWeight: '800', fontSize: '15px', color: '#1a1a1a', borderBottom: '1px solid #f1f5f9', paddingBottom: '8px' }}>Room Details</h4>
-                  
-                  <div className="input-group">
-                    <label style={{ fontWeight: '700' }}>Room Name (as displayed on MakeMyTrip & partner websites)</label>
-                    <p style={{ fontSize: '11px', color: '#64748b', marginTop: '-4px' }}>Add a room name that looks attractive to travellers</p>
-                    <input 
-                      type="text" 
-                      placeholder="e.g. ww" 
-                      value={roomName} 
-                      onChange={(e) => setRoomName(e.target.value)} 
-                    />
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                  <div style={{ borderBottom: '1px solid #f1f5f9', paddingBottom: '12px' }}>
+                    <h4 style={{ fontWeight: '800', fontSize: '16px', color: '#1a1a1a', margin: 0 }}>Room Details</h4>
+                    <p style={{ fontSize: '11px', color: '#64748b', marginTop: '4px' }}>Add the name and key features of this room type</p>
                   </div>
-
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
-                    <div className="input-group">
-                      <label>Room type</label>
-                      <p style={{ fontSize: '11px', color: '#64748b', marginTop: '-4px' }}>Choose the type that best describes this room</p>
-                      <select value={roomType} onChange={(e) => setRoomType(e.target.value)}>
+                  
+                  {/* Room Type */}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '1px solid #f1f5f9', paddingBottom: '16px', gap: '20px' }}>
+                    <div style={{ width: '45%' }}>
+                      <label style={{ fontWeight: '700', fontSize: '13px', color: '#1a1a1a' }}>Room type</label>
+                      <p style={{ fontSize: '11px', color: '#64748b', marginTop: '2px' }}>Choose the type that best describes this room</p>
+                    </div>
+                    <div style={{ width: '55%' }}>
+                      <select value={roomType} onChange={(e) => setRoomType(e.target.value)} style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1' }}>
+                        <option value="">Select room type</option>
                         <option value="Apartment">Apartment</option>
                         <option value="Standard Room">Standard Room</option>
                         <option value="Suite">Suite</option>
@@ -2163,11 +2193,17 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
                         <option value="Deluxe Room">Deluxe Room</option>
                       </select>
                     </div>
+                  </div>
 
-                    <div className="input-group">
-                      <label>Room view</label>
-                      <p style={{ fontSize: '11px', color: '#64748b', marginTop: '-4px' }}>Describe what the guest will see from this room</p>
-                      <select value={roomView} onChange={(e) => setRoomView(e.target.value)}>
+                  {/* Room View */}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '1px solid #f1f5f9', paddingBottom: '16px', gap: '20px' }}>
+                    <div style={{ width: '45%' }}>
+                      <label style={{ fontWeight: '700', fontSize: '13px', color: '#1a1a1a' }}>Room view</label>
+                      <p style={{ fontSize: '11px', color: '#64748b', marginTop: '2px', lineHeight: 1.3 }}>Describe what the guest will see from this room, like pool, garden, or city views</p>
+                    </div>
+                    <div style={{ width: '55%' }}>
+                      <select value={roomView} onChange={(e) => setRoomView(e.target.value)} style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1' }}>
+                        <option value="">Select room view</option>
                         <option value="No View">No View</option>
                         <option value="Pool View">Pool View</option>
                         <option value="Garden View">Garden View</option>
@@ -2177,9 +2213,57 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
                     </div>
                   </div>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
+                  {/* Room Size */}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '1px solid #f1f5f9', paddingBottom: '16px', gap: '20px' }}>
+                    <div style={{ width: '45%' }}>
+                      <label style={{ fontWeight: '700', fontSize: '13px', color: '#1a1a1a' }}>Room Size (Area)</label>
+                      <p style={{ fontSize: '11px', color: '#64748b', marginTop: '2px', lineHeight: 1.3 }}>Specify the Indoor area only, excluding shared & outdoor spaces</p>
+                    </div>
+                    <div style={{ width: '55%', display: 'flex', alignItems: 'center', gap: '20px' }}>
+                      <div style={{ display: 'flex', gap: '14px', flexShrink: 0 }}>
+                        <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', cursor: 'pointer' }}>
+                          <input type="radio" name="room_size_unit" checked={roomSizeUnit === 'Square Feet'} onChange={() => setRoomSizeUnit('Square Feet')} style={{ accentColor: '#ff4f5a' }} />
+                          <div style={{ display: 'flex', flexDirection: 'column' }}>
+                            <span>Square Feet</span>
+                            <span style={{ fontSize: '8px', color: '#0369a1', background: '#e0f2fe', padding: '0 4px', borderRadius: '3px', width: 'fit-content', marginTop: '2px' }}>Recommended</span>
+                          </div>
+                        </label>
+                        <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', cursor: 'pointer' }}>
+                          <input type="radio" name="room_size_unit" checked={roomSizeUnit === 'Square Meter'} onChange={() => setRoomSizeUnit('Square Meter')} style={{ accentColor: '#ff4f5a' }} />
+                          <span>Square Meter</span>
+                        </label>
+                      </div>
+                      <input 
+                        type="text" 
+                        placeholder="Enter size (Area)" 
+                        value={roomSize} 
+                        onChange={(e) => setRoomSize(e.target.value.replace(/\D/g,''))} 
+                        style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1' }}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Room Name */}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '1px solid #f1f5f9', paddingBottom: '16px', gap: '20px' }}>
+                    <div style={{ width: '45%' }}>
+                      <label style={{ fontWeight: '700', fontSize: '13px', color: '#1a1a1a' }}>Room Name (as displayed on MakeMyTrip & partner websites)</label>
+                      <p style={{ fontSize: '11px', color: '#64748b', marginTop: '2px', lineHeight: 1.3 }}>Add a room name that looks attractive to travellers</p>
+                    </div>
+                    <div style={{ width: '55%' }}>
+                      <input 
+                        type="text" 
+                        placeholder="Example: Luxury room with private pool" 
+                        value={roomName} 
+                        onChange={(e) => setRoomName(e.target.value)} 
+                        style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1' }}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Bedrooms & Living rooms */}
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', borderBottom: '1px solid #f1f5f9', paddingBottom: '16px' }}>
                     <div className="input-group">
-                      <label>Number of bedroom(s)</label>
+                      <label style={{ fontWeight: '700', fontSize: '12px' }}>Number of bedroom(s)</label>
                       <select value={numBedrooms} onChange={(e) => setNumBedrooms(e.target.value)}>
                         <option value="1">1</option>
                         <option value="2">2</option>
@@ -2188,7 +2272,7 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
                     </div>
 
                     <div className="input-group">
-                      <label>Number of living room(s)</label>
+                      <label style={{ fontWeight: '700', fontSize: '12px' }}>Number of living room(s)</label>
                       <select value={numLivingRooms} onChange={(e) => setNumLivingRooms(e.target.value)}>
                         <option value="0">0</option>
                         <option value="1">1</option>
@@ -2197,68 +2281,286 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
                     </div>
                   </div>
 
+                  {/* Number of rooms inventory */}
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: '14px' }}>
                     <div className="input-group">
-                      <label>Number of rooms (of this type)</label>
-                      <input type="number" value={roomInventory} onChange={(e) => setRoomInventory(e.target.value)} />
+                      <label style={{ fontWeight: '700', fontSize: '12px' }}>Number of rooms (of this type)</label>
+                      <input type="number" placeholder="1" value={roomInventory} onChange={(e) => setRoomInventory(e.target.value)} />
                     </div>
 
                     <div className="input-group">
-                      <label>Room Size</label>
-                      <div style={{ display: 'flex', gap: '10px' }}>
-                        <input type="number" value={roomSize} onChange={(e) => setRoomSize(e.target.value)} style={{ width: '100px' }} />
-                        <div style={{ display: 'flex', gap: '4px', background: '#f1f5f9', padding: '2px', borderRadius: '6px' }}>
-                          <button type="button" onClick={() => setRoomSizeUnit('Square Feet')} style={{ fontSize: '9px', padding: '4px 8px', borderRadius: '4px', border: 'none', background: roomSizeUnit === 'Square Feet' ? '#ff4f5a' : 'transparent', color: roomSizeUnit === 'Square Feet' ? 'white' : '#64748b', cursor: 'pointer' }}>Square Feet</button>
-                          <button type="button" onClick={() => setRoomSizeUnit('Square Meter')} style={{ fontSize: '9px', padding: '4px 8px', borderRadius: '4px', border: 'none', background: roomSizeUnit === 'Square Meter' ? '#ff4f5a' : 'transparent', color: roomSizeUnit === 'Square Meter' ? 'white' : '#64748b', cursor: 'pointer' }}>Square Meter</button>
-                        </div>
-                      </div>
+                      <label style={{ fontWeight: '700', fontSize: '12px' }}>Description of the room (Optional)</label>
+                      <textarea rows="2" placeholder="Write the description" value={roomDesc} onChange={(e) => setRoomDesc(e.target.value)} style={{ padding: '8px', border: '1px solid #cbd5e1', borderRadius: '6px' }} />
                     </div>
-                  </div>
-
-                  <div className="input-group">
-                    <label>Description of the room</label>
-                    <textarea rows="2" placeholder="Highlight features, sleeping arrangement, and views..." value={roomDesc} onChange={(e) => setRoomDesc(e.target.value)} style={{ padding: '8px', border: '1px solid #cbd5e1', borderRadius: '4px' }} />
                   </div>
                 </div>
               )}
 
               {/* SUB-STEP 2: SLEEPING ARRANGEMENT & OCCUPANCY */}
               {roomWizardStep === 2 && (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                  <h4 style={{ fontWeight: '800', fontSize: '15px', color: '#1a1a1a', borderBottom: '1px solid #f1f5f9', paddingBottom: '8px' }}>Sleeping Arrangement & Occupancy</h4>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                  <div style={{ borderBottom: '1px solid #f1f5f9', paddingBottom: '12px' }}>
+                    <h4 style={{ fontWeight: '800', fontSize: '16px', color: '#1a1a1a', margin: 0 }}>Sleeping Arrangement & Occupancy</h4>
+                    <p style={{ fontSize: '11px', color: '#64748b', marginTop: '4px' }}>Select bed types and how many guests this room can host</p>
+                  </div>
                   
-                  <div className="input-group" style={{ background: '#f8fafc', padding: '16px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-                    <label style={{ fontWeight: '800' }}>Bedroom 1 Setup</label>
-                    <select value={bedArrangement1} onChange={(e) => setBedArrangement1(e.target.value)} style={{ marginTop: '8px' }}>
-                      <option value="1 King Bed">1 King Bed</option>
-                      <option value="1 Queen Bed">1 Queen Bed</option>
-                      <option value="2 Single Beds">2 Single Beds</option>
-                    </select>
-                  </div>
-
-                  <div className="input-group" style={{ background: '#f8fafc', padding: '16px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-                    <label style={{ fontWeight: '800' }}>Living Room 1 Setup</label>
-                    <select value={livingArrangement1} onChange={(e) => setLivingArrangement1(e.target.value)} style={{ marginTop: '8px' }}>
-                      <option value="1 Single Bed">1 Single Bed</option>
-                      <option value="1 Sofa Bed">1 Sofa Bed</option>
-                      <option value="No Bed">No Bed</option>
-                    </select>
-                  </div>
-
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
-                    <div className="input-group">
-                      <label>Extra Bed Count</label>
-                      <select value={extraBedsCount} onChange={(e) => setExtraBedsCount(e.target.value)}>
-                        <option value="0">0</option>
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                      </select>
-                    </div>
+                  <div style={{ border: '1px solid #cbd5e1', borderRadius: '8px', padding: '16px', background: '#ffffff', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                    <h5 style={{ fontWeight: '800', fontSize: '14px', color: '#1a1a1a', marginBottom: '8px' }}>Select the bed type for all the bedrooms below</h5>
                     
-                    <div className="input-group">
-                      <label>Maximum Occupancy</label>
-                      <input type="number" value={maxOccupancy} onChange={(e) => setMaxOccupancy(e.target.value)} />
+                    {/* Bedroom 1 Setup */}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', paddingBottom: '16px', borderBottom: '1px solid #f1f5f9', gap: '20px' }}>
+                      <div style={{ width: '40%' }}>
+                        <span style={{ fontSize: '13px', fontWeight: '800', color: '#1e293b' }}>Bedroom 1</span>
+                        <p style={{ fontSize: '11px', color: '#64748b', marginTop: '2px' }}>Select the types of beds available in this room</p>
+                        <button type="button" onClick={() => { setBedroom1BedType(''); setBedroom1BedCount(0); }} style={{ fontSize: '11px', color: '#ff4f5a', background: 'transparent', border: 'none', cursor: 'pointer', padding: 0, marginTop: '8px' }}>Delete Bedroom</button>
+                      </div>
+                      
+                      <div style={{ width: '60%', display: 'flex', alignItems: 'center', gap: '10px', position: 'relative' }}>
+                        {/* Custom Bed Selector Dropdown */}
+                        <div style={{ flexGrow: 1, position: 'relative' }}>
+                          <label style={{ fontSize: '10px', color: '#64748b', display: 'block', marginBottom: '4px' }}>Bed Type 1</label>
+                          <div 
+                            onClick={() => setBedroom1DropdownOpen(!bedroom1DropdownOpen)}
+                            style={{ 
+                              padding: '10px', border: '1px solid #cbd5e1', borderRadius: '6px', cursor: 'pointer',
+                              background: '#ffffff', fontSize: '13px', fontWeight: '700', display: 'flex', justifyContent: 'space-between', alignItems: 'center'
+                            }}
+                          >
+                            <span>{bedroom1BedType || 'Select bed'}</span>
+                            <span style={{ fontSize: '10px' }}>▼</span>
+                          </div>
+                          
+                          {bedroom1DropdownOpen && (
+                            <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '6px', zIndex: 100, maxHeight: '200px', overflowY: 'auto', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}>
+                              {[
+                                { id: "King Bed", label: "King Bed", desc: ">6 feet by 6 feet" },
+                                { id: "Queen Bed", label: "Queen Bed", desc: "6 feet by 6 feet" },
+                                { id: "Double Bed", label: "Double Bed", desc: "5 feet by 6 feet" },
+                                { id: "Single Bed", label: "Single Bed", desc: "3 feet by 6 feet" },
+                                { id: "Bunk Bed", label: "Bunk Bed", desc: "Variable Size" },
+                                { id: "Sofa Cum Bed", label: "Sofa Cum Bed", desc: "Variable Size" }
+                              ].map((opt) => (
+                                <div 
+                                  key={opt.id} 
+                                  onClick={() => { setBedroom1BedType(opt.id); setBedroom1DropdownOpen(false); }}
+                                  style={{ padding: '8px 12px', borderBottom: '1px solid #f1f5f9', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}
+                                >
+                                  <span style={{ fontSize: '16px' }}>🛏️</span>
+                                  <div>
+                                    <div style={{ fontSize: '12px', fontWeight: '700', color: '#1e293b' }}>{opt.label}</div>
+                                    <div style={{ fontSize: '10px', color: '#64748b' }}>{opt.desc}</div>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                          <button type="button" onClick={() => { setBedroom1BedType(''); }} style={{ position: 'absolute', top: '24px', right: '-20px', background: 'transparent', border: 'none', fontSize: '16px', color: '#94a3b8', cursor: 'pointer' }}>×</button>
+                        </div>
+                        
+                        {/* Number of Beds increment/decrement spinner */}
+                        <div style={{ marginLeft: '16px' }}>
+                          <span style={{ fontSize: '10px', color: '#64748b', display: 'block', marginBottom: '4px' }}>Number of beds</span>
+                          <div style={{ display: 'flex', alignItems: 'center', border: '1px solid #cbd5e1', borderRadius: '6px', overflow: 'hidden' }}>
+                            <button 
+                              type="button" 
+                              onClick={() => { if (bedroom1BedCount > 0) setBedroom1BedCount(bedroom1BedCount - 1); }} 
+                              style={{ padding: '6px 12px', background: '#f8fafc', border: 'none', cursor: 'pointer', fontWeight: 'bold' }}
+                            >
+                              -
+                            </button>
+                            <input 
+                              type="text" 
+                              value={bedroom1BedCount} 
+                              readOnly 
+                              style={{ width: '30px', textAlign: 'center', border: 'none', padding: '6px 0', fontWeight: '700' }} 
+                            />
+                            <button 
+                              type="button" 
+                              onClick={() => setBedroom1BedCount(bedroom1BedCount + 1)} 
+                              style={{ padding: '6px 12px', background: '#f8fafc', border: 'none', cursor: 'pointer', fontWeight: 'bold' }}
+                            >
+                              +
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Living Room 1 Setup (Optional) */}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', paddingBottom: '16px', borderBottom: '1px solid #f1f5f9', gap: '20px' }}>
+                      <div style={{ width: '40%' }}>
+                        <span style={{ fontSize: '13px', fontWeight: '800', color: '#1e293b' }}>Living Room 1 (Optional)</span>
+                        <p style={{ fontSize: '11px', color: '#64748b', marginTop: '2px' }}>Select the types of beds available in this room</p>
+                        <button type="button" onClick={() => { setLivingRoom1BedType(''); setLivingRoom1BedCount(0); }} style={{ fontSize: '11px', color: '#ff4f5a', background: 'transparent', border: 'none', cursor: 'pointer', padding: 0, marginTop: '8px' }}>Delete Living Room</button>
+                      </div>
+                      
+                      <div style={{ width: '60%', display: 'flex', alignItems: 'center', gap: '10px', position: 'relative' }}>
+                        {/* Custom Bed Selector Dropdown */}
+                        <div style={{ flexGrow: 1, position: 'relative' }}>
+                          <label style={{ fontSize: '10px', color: '#64748b', display: 'block', marginBottom: '4px' }}>Bed Type 1</label>
+                          <div 
+                            onClick={() => setLivingRoom1DropdownOpen(!livingRoom1DropdownOpen)}
+                            style={{ 
+                              padding: '10px', border: '1px solid #cbd5e1', borderRadius: '6px', cursor: 'pointer',
+                              background: '#ffffff', fontSize: '13px', fontWeight: '700', display: 'flex', justifyContent: 'space-between', alignItems: 'center'
+                            }}
+                          >
+                            <span>{livingRoom1BedType || 'Select bed'}</span>
+                            <span style={{ fontSize: '10px' }}>▼</span>
+                          </div>
+                          
+                          {livingRoom1DropdownOpen && (
+                            <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '6px', zIndex: 100, maxHeight: '200px', overflowY: 'auto', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}>
+                              {[
+                                { id: "King Bed", label: "King Bed", desc: ">6 feet by 6 feet" },
+                                { id: "Queen Bed", label: "Queen Bed", desc: "6 feet by 6 feet" },
+                                { id: "Double Bed", label: "Double Bed", desc: "5 feet by 6 feet" },
+                                { id: "Single Bed", label: "Single Bed", desc: "3 feet by 6 feet" },
+                                { id: "Bunk Bed", label: "Bunk Bed", desc: "Variable Size" },
+                                { id: "Sofa Cum Bed", label: "Sofa Cum Bed", desc: "Variable Size" }
+                              ].map((opt) => (
+                                <div 
+                                  key={opt.id} 
+                                  onClick={() => { setLivingRoom1BedType(opt.id); setLivingRoom1DropdownOpen(false); }}
+                                  style={{ padding: '8px 12px', borderBottom: '1px solid #f1f5f9', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}
+                                >
+                                  <span style={{ fontSize: '16px' }}>🛏️</span>
+                                  <div>
+                                    <div style={{ fontSize: '12px', fontWeight: '700', color: '#1e293b' }}>{opt.label}</div>
+                                    <div style={{ fontSize: '10px', color: '#64748b' }}>{opt.desc}</div>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                          <button type="button" onClick={() => { setLivingRoom1BedType(''); }} style={{ position: 'absolute', top: '24px', right: '-20px', background: 'transparent', border: 'none', fontSize: '16px', color: '#94a3b8', cursor: 'pointer' }}>×</button>
+                        </div>
+                        
+                        {/* Number of Beds increment/decrement spinner */}
+                        <div style={{ marginLeft: '16px' }}>
+                          <span style={{ fontSize: '10px', color: '#64748b', display: 'block', marginBottom: '4px' }}>Number of beds</span>
+                          <div style={{ display: 'flex', alignItems: 'center', border: '1px solid #cbd5e1', borderRadius: '6px', overflow: 'hidden' }}>
+                            <button 
+                              type="button" 
+                              onClick={() => { if (livingRoom1BedCount > 0) setLivingRoom1BedCount(livingRoom1BedCount - 1); }} 
+                              style={{ padding: '6px 12px', background: '#f8fafc', border: 'none', cursor: 'pointer', fontWeight: 'bold' }}
+                            >
+                              -
+                            </button>
+                            <input 
+                              type="text" 
+                              value={livingRoom1BedCount} 
+                              readOnly 
+                              style={{ width: '30px', textAlign: 'center', border: 'none', padding: '6px 0', fontWeight: '700' }} 
+                            />
+                            <button 
+                              type="button" 
+                              onClick={() => setLivingRoom1BedCount(livingRoom1BedCount + 1)} 
+                              style={{ padding: '6px 12px', background: '#f8fafc', border: 'none', cursor: 'pointer', fontWeight: 'bold' }}
+                            >
+                              +
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Can accommodate extra bed */}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '8px' }}>
+                      <span style={{ fontSize: '13px', fontWeight: '700', color: '#1e293b' }}>Can this room/unit accommodate extra bed(s)?</span>
+                      <div style={{ display: 'flex', gap: '16px' }}>
+                        <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', cursor: 'pointer' }}>
+                          <input 
+                            type="radio" 
+                            name="can_extra_bed" 
+                            checked={canAccommodateExtraBed === 'No'} 
+                            onChange={() => setCanAccommodateExtraBed('No')}
+                            style={{ accentColor: '#ff4f5a' }}
+                          />
+                          No
+                        </label>
+                        <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', cursor: 'pointer' }}>
+                          <input 
+                            type="radio" 
+                            name="can_extra_bed" 
+                            checked={canAccommodateExtraBed === 'Yes'} 
+                            onChange={() => setCanAccommodateExtraBed('Yes')}
+                            style={{ accentColor: '#ff4f5a' }}
+                          />
+                          Yes
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Occupancy details */}
+                  <div style={{ border: '1px solid #cbd5e1', borderRadius: '8px', padding: '16px', background: '#ffffff', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    <h5 style={{ fontWeight: '800', fontSize: '14px', color: '#1a1a1a', margin: 0 }}>Occupancy</h5>
+                    <p style={{ fontSize: '11px', color: '#64748b', marginTop: '-4px', borderBottom: '1px solid #f1f5f9', paddingBottom: '8px' }}>Occupancy details have been pre-filled based on the selected bed arrangement above</p>
+                    
+                    {/* Base Adults */}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #f1f5f9', paddingBottom: '8px' }}>
+                      <div>
+                        <div style={{ fontSize: '13px', fontWeight: '700', color: '#1e293b' }}>Base adults</div>
+                        <div style={{ fontSize: '11px', color: '#64748b', marginTop: '2px' }}>Ideal number of adults supported by the standard sleeping arrangement</div>
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', border: '1px solid #cbd5e1', borderRadius: '6px', overflow: 'hidden' }}>
+                        <button type="button" onClick={() => { if (Number(baseAdults || 0) > 0) setBaseAdults(String(Number(baseAdults) - 1)) }} style={{ padding: '6px 12px', background: '#f8fafc', border: 'none', cursor: 'pointer', fontWeight: 'bold' }}>-</button>
+                        <input type="text" value={baseAdults} readOnly style={{ width: '40px', textAlign: 'center', border: 'none', padding: '6px 0', fontWeight: '700' }} />
+                        <button type="button" onClick={() => setBaseAdults(String(Number(baseAdults || 0) + 1))} style={{ padding: '6px 12px', background: '#f8fafc', border: 'none', cursor: 'pointer', fontWeight: 'bold' }}>+</button>
+                      </div>
+                    </div>
+
+                    {/* Maximum Adults */}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #f1f5f9', paddingBottom: '8px' }}>
+                      <div>
+                        <div style={{ fontSize: '13px', fontWeight: '700', color: '#1e293b' }}>Maximum adults</div>
+                        <div style={{ fontSize: '11px', color: '#64748b', marginTop: '2px' }}>Maximum number of adults that can be accommodated in this room</div>
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', border: '1px solid #cbd5e1', borderRadius: '6px', overflow: 'hidden' }}>
+                        <button type="button" onClick={() => { if (Number(maxAdults || 0) > 0) setMaxAdults(String(Number(maxAdults) - 1)) }} style={{ padding: '6px 12px', background: '#f8fafc', border: 'none', cursor: 'pointer', fontWeight: 'bold' }}>-</button>
+                        <input type="text" value={maxAdults} readOnly style={{ width: '40px', textAlign: 'center', border: 'none', padding: '6px 0', fontWeight: '700' }} />
+                        <button type="button" onClick={() => setMaxAdults(String(Number(maxAdults || 0) + 1))} style={{ padding: '6px 12px', background: '#f8fafc', border: 'none', cursor: 'pointer', fontWeight: 'bold' }}>+</button>
+                      </div>
+                    </div>
+
+                    {/* Base Children */}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #f1f5f9', paddingBottom: '8px' }}>
+                      <div>
+                        <div style={{ fontSize: '13px', fontWeight: '700', color: '#1e293b' }}>Base children</div>
+                        <div style={{ fontSize: '11px', color: '#64748b', marginTop: '2px' }}>Maximum number of children allowed to stay for free within the free child age limit</div>
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', border: '1px solid #cbd5e1', borderRadius: '6px', overflow: 'hidden' }}>
+                        <button type="button" onClick={() => { if (Number(baseChildren || 0) > 0) setBaseChildren(String(Number(baseChildren) - 1)) }} style={{ padding: '6px 12px', background: '#f8fafc', border: 'none', cursor: 'pointer', fontWeight: 'bold' }}>-</button>
+                        <input type="text" value={baseChildren} readOnly style={{ width: '40px', textAlign: 'center', border: 'none', padding: '6px 0', fontWeight: '700' }} />
+                        <button type="button" onClick={() => setBaseChildren(String(Number(baseChildren || 0) + 1))} style={{ padding: '6px 12px', background: '#f8fafc', border: 'none', cursor: 'pointer', fontWeight: 'bold' }}>+</button>
+                      </div>
+                    </div>
+
+                    {/* Maximum Children */}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #f1f5f9', paddingBottom: '8px' }}>
+                      <div>
+                        <div style={{ fontSize: '13px', fontWeight: '700', color: '#1e293b' }}>Maximum children</div>
+                        <div style={{ fontSize: '11px', color: '#64748b', marginTop: '2px' }}>Maximum number of children that can be accommodated in this room</div>
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', border: '1px solid #cbd5e1', borderRadius: '6px', overflow: 'hidden' }}>
+                        <button type="button" onClick={() => { if (Number(maxChildren || 0) > 0) setMaxChildren(String(Number(maxChildren) - 1)) }} style={{ padding: '6px 12px', background: '#f8fafc', border: 'none', cursor: 'pointer', fontWeight: 'bold' }}>-</button>
+                        <input type="text" value={maxChildren} readOnly style={{ width: '40px', textAlign: 'center', border: 'none', padding: '6px 0', fontWeight: '700' }} />
+                        <button type="button" onClick={() => setMaxChildren(String(Number(maxChildren || 0) + 1))} style={{ padding: '6px 12px', background: '#f8fafc', border: 'none', cursor: 'pointer', fontWeight: 'bold' }}>+</button>
+                      </div>
+                    </div>
+
+                    {/* Maximum Occupancy */}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <div>
+                        <div style={{ fontSize: '13px', fontWeight: '700', color: '#1e293b' }}>Maximum occupancy</div>
+                        <div style={{ fontSize: '11px', color: '#64748b', marginTop: '2px' }}>Maximum number of guests that can be accommodated in this room</div>
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', border: '1px solid #cbd5e1', borderRadius: '6px', overflow: 'hidden' }}>
+                        <button type="button" onClick={() => { if (Number(maxOccupancy || 0) > 0) setMaxOccupancy(String(Number(maxOccupancy) - 1)) }} style={{ padding: '6px 12px', background: '#f8fafc', border: 'none', cursor: 'pointer', fontWeight: 'bold' }}>-</button>
+                        <input type="text" value={maxOccupancy} readOnly style={{ width: '40px', textAlign: 'center', border: 'none', padding: '6px 0', fontWeight: '700' }} />
+                        <button type="button" onClick={() => setMaxOccupancy(String(Number(maxOccupancy || 0) + 1))} style={{ padding: '6px 12px', background: '#f8fafc', border: 'none', cursor: 'pointer', fontWeight: 'bold' }}>+</button>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -2476,10 +2778,10 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
                       <button type="button" onClick={() => setRoomWizardStep(2)} style={{ fontSize: '11px', color: '#ff4f5a', fontWeight: '800', background: 'transparent', border: 'none', cursor: 'pointer', textDecoration: 'underline' }}>Edit</button>
                     </div>
                     <div style={{ fontSize: '12px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                      <div>Bedroom 1: <strong>{bedArrangement1}</strong></div>
-                      <div>Living Room 1: <strong>{livingArrangement1}</strong></div>
-                      <div>Extra Beds Available: <strong>{extraBedsCount} units</strong></div>
-                      <div>Maximum Occupancy: <strong>{maxOccupancy} persons</strong></div>
+                      <div>Bedroom 1: <strong>{bedroom1BedCount > 0 ? `${bedroom1BedCount} ${bedroom1BedType}` : 'No bed configured'}</strong></div>
+                      <div>Living Room 1: <strong>{livingRoom1BedCount > 0 ? `${livingRoom1BedCount} ${livingRoom1BedType}` : 'No bed configured'}</strong></div>
+                      <div>Accommodate Extra Beds: <strong>{canAccommodateExtraBed || 'No'}</strong></div>
+                      <div>Occupancy Limits: <strong>{baseAdults} Base Adults • {maxAdults} Max Adults • {baseChildren} Base Children • {maxChildren} Max Children • {maxOccupancy} Max Occupancy</strong></div>
                     </div>
                   </div>
 
