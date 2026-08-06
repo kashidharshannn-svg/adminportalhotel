@@ -132,29 +132,29 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
   const [roomView, setRoomView] = useState('No View');
   const [numBedrooms, setNumBedrooms] = useState('1');
   const [numLivingRooms, setNumLivingRooms] = useState('1');
-  const [roomInventory, setRoomInventory] = useState('1');
-  const [roomSize, setRoomSize] = useState('123');
-  const [roomSizeUnit, setRoomSizeUnit] = useState('Sq Ft');
-  const [roomName, setRoomName] = useState('ww');
-  const [roomDesc, setRoomDesc] = useState('2333bfdjagduilyAHSdcuojAKPxhgvfcDX');
+  const [roomInventory, setRoomInventory] = useState('');
+  const [roomSize, setRoomSize] = useState('');
+  const [roomSizeUnit, setRoomSizeUnit] = useState('Square Feet');
+  const [roomName, setRoomName] = useState('');
+  const [roomDesc, setRoomDesc] = useState('');
   
   // Sleeping Occupancy (Room Step 2)
   const [bedArrangement1, setBedArrangement1] = useState('1 King Bed');
   const [livingArrangement1, setLivingArrangement1] = useState('1 Single Bed');
-  const [extraBedsCount, setExtraBedsCount] = useState('2');
-  const [maxOccupancy, setMaxOccupancy] = useState('6');
+  const [extraBedsCount, setExtraBedsCount] = useState('');
+  const [maxOccupancy, setMaxOccupancy] = useState('');
 
   // Bathroom (Room Step 3)
-  const [bedroom1HasBathroom, setBedroom1HasBathroom] = useState(true);
-  const [livingRoom1HasBathroom, setLivingRoom1HasBathroom] = useState(true);
+  const [bedroom1HasBathroom, setBedroom1HasBathroom] = useState(false);
+  const [livingRoom1HasBathroom, setLivingRoom1HasBathroom] = useState(false);
 
   // Rates & Meal plans (Room Step 4)
-  const [roomBaseRate, setRoomBaseRate] = useState('1123');
+  const [roomBaseRate, setRoomBaseRate] = useState('');
   const [selectedMealPlan, setSelectedMealPlan] = useState('Accommodation only');
 
   // Room Amenities Category tracking (Room Step 5)
   const [activeRoomAmenityCategory, setActiveRoomAmenityCategory] = useState(ROOM_AMENITIES_CATEGORIES[0].id);
-  const [selectedRoomAmenities, setSelectedRoomAmenities] = useState(["TV", "Wifi", "Air Conditioning", "Safe", "Bathroom", "Toiletries", "Towels"]);
+  const [selectedRoomAmenities, setSelectedRoomAmenities] = useState([]);
 
   // Cover Photo URL (Step 5)
   const [coverPhoto, setCoverPhoto] = useState('');
