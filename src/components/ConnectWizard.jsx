@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { AMENITIES_CATEGORIES } from '../data/amenitiesData';
 import { connectAddProperty } from '../data/dbService';
 import { ShieldCheck, ArrowLeft, Check, Landmark, Info, Sparkles, MapPin, X, PlusCircle, HelpCircle } from 'lucide-react';
@@ -102,6 +102,7 @@ const formatDateDisplay = (dateString, placeholder = 'Select Date') => {
 
 export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
   const [wizardStep, setWizardStep] = useState(0); 
+  const fileInputRef = useRef(null);
 
   // Basic Info States (Step 1)
   const [propertyType, setPropertyType] = useState('Hotel'); 
@@ -1065,12 +1066,10 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
                         Upload Photos & Videos
                       </h3>
                       <p style={{ fontSize: '12px', color: '#64748b', marginTop: '2px' }}>Add photos of your property and attach tags to continue</p>
-                    </div>
-                    
-                    <button 
+                    </div>                    <button 
                       type="button"
                       onClick={() => {
-                        const demoPics = [
+                        const rawDemoPics = [
                           "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=500&q=80",
                           "https://images.unsplash.com/photo-1582719478250-c89cae4db85b?auto=format&fit=crop&w=500&q=80",
                           "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=500&q=80",
@@ -1082,6 +1081,8 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
                           "https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=500&q=80",
                           "https://images.unsplash.com/photo-1618773928121-c32242e63f39?auto=format&fit=crop&w=500&q=80"
                         ];
+                        
+                        const demoPics = rawDemoPics.map((u, i) => `${u}&autoUploadId=${Date.now()}_${i}_${Math.random().toString(36).substr(2, 5)}`);
                         setUploadedPhotos(demoPics);
                         setCoverPhoto(demoPics[0]);
                         setActivePreviewPhoto(demoPics[0]);
@@ -1111,21 +1112,36 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
                     
                     {/* Left Area: Drag Box & Item Cards */}
                     <div>
+                      <input 
+                        type="file"
+                        ref={fileInputRef}
+                        accept="image/*"
+                        multiple
+                        onChange={(e) => {
+                          const files = Array.from(e.target.files || []);
+                          if (files.length > 0) {
+                            const newPhotoUrls = files.map(file => URL.createObjectURL(file));
+                            setUploadedPhotos([...uploadedPhotos, ...newPhotoUrls]);
+                            if (!coverPhoto) setCoverPhoto(newPhotoUrls[0]);
+                            if (!activePreviewPhoto) setActivePreviewPhoto(newPhotoUrls[0]);
+                          }
+                        }}
+                        style={{ display: 'none' }}
+                      />
+
                       <div 
                         onDragOver={(e) => e.preventDefault()}
                         onDrop={(e) => {
                           e.preventDefault();
-                          const mockUrl = "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=500&q=80";
-                          setUploadedPhotos([...uploadedPhotos, mockUrl]);
-                          if (!coverPhoto) setCoverPhoto(mockUrl);
-                          if (!activePreviewPhoto) setActivePreviewPhoto(mockUrl);
+                          const files = Array.from(e.dataTransfer.files || []);
+                          if (files.length > 0) {
+                            const newPhotoUrls = files.map(file => URL.createObjectURL(file));
+                            setUploadedPhotos([...uploadedPhotos, ...newPhotoUrls]);
+                            if (!coverPhoto) setCoverPhoto(newPhotoUrls[0]);
+                            if (!activePreviewPhoto) setActivePreviewPhoto(newPhotoUrls[0]);
+                          }
                         }}
-                        onClick={() => {
-                          const mockUrl = "https://images.unsplash.com/photo-1582719478250-c89cae4db85b?auto=format&fit=crop&w=500&q=80";
-                          setUploadedPhotos([...uploadedPhotos, mockUrl]);
-                          if (!coverPhoto) setCoverPhoto(mockUrl);
-                          if (!activePreviewPhoto) setActivePreviewPhoto(mockUrl);
-                        }}
+                        onClick={() => fileInputRef.current?.click()}
                         style={{
                           border: '2px dashed #cbd5e1', borderRadius: '12px', padding: '30px 20px', background: '#f8fafc',
                           textAlign: 'center', cursor: 'pointer', transition: 'all 0.2s', marginBottom: '24px'
