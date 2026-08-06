@@ -4,7 +4,7 @@ import { db, IS_FIREBASE_ACTIVE } from '../firebase';
 import { collection, addDoc, getDocs, query, where, updateDoc } from 'firebase/firestore';
 
 const initConnectDB = async () => {
-  if (IS_FIREBASE_ACTIVE) {
+  if (IS_FIREBASE_ACTIVE && db) {
     try {
       const usersRef = collection(db, "connect_users");
       const snap = await getDocs(usersRef);
@@ -60,7 +60,7 @@ initConnectDB();
 
 // 1. Merchant & Admin Auth
 export async function connectRegisterPartner(email, password, name) {
-  if (IS_FIREBASE_ACTIVE) {
+  if (IS_FIREBASE_ACTIVE && db) {
     const usersRef = collection(db, "connect_users");
     const q = query(usersRef, where("email", "==", email));
     const snap = await getDocs(q);
@@ -93,7 +93,7 @@ export async function connectRegisterPartner(email, password, name) {
 }
 
 export async function connectLoginPartner(email, password) {
-  if (IS_FIREBASE_ACTIVE) {
+  if (IS_FIREBASE_ACTIVE && db) {
     const usersRef = collection(db, "connect_users");
     const q = query(usersRef, where("email", "==", email), where("password", "==", password));
     const snap = await getDocs(q);
@@ -113,7 +113,7 @@ export async function connectLoginPartner(email, password) {
 
 // 2. Property Onboarding Writes & Reads
 export async function connectAddProperty(property, vendorId) {
-  if (IS_FIREBASE_ACTIVE) {
+  if (IS_FIREBASE_ACTIVE && db) {
     const propertiesRef = collection(db, "connect_properties");
     const newProp = {
       ...property,
@@ -138,7 +138,7 @@ export async function connectAddProperty(property, vendorId) {
 }
 
 export async function connectGetPropertiesForPartner(vendorId) {
-  if (IS_FIREBASE_ACTIVE) {
+  if (IS_FIREBASE_ACTIVE && db) {
     const propertiesRef = collection(db, "connect_properties");
     const q = query(propertiesRef, where("vendorId", "==", vendorId));
     const snap = await getDocs(q);
@@ -151,7 +151,7 @@ export async function connectGetPropertiesForPartner(vendorId) {
 
 // 3. Admin & B2C Connection Services
 export async function dbGetPendingListings() {
-  if (IS_FIREBASE_ACTIVE) {
+  if (IS_FIREBASE_ACTIVE && db) {
     const propertiesRef = collection(db, "connect_properties");
     const q = query(propertiesRef, where("status", "==", "Pending Review"));
     const snap = await getDocs(q);
@@ -163,7 +163,7 @@ export async function dbGetPendingListings() {
 }
 
 export async function dbUpdateListingStatus(propertyId, type, status) {
-  if (IS_FIREBASE_ACTIVE) {
+  if (IS_FIREBASE_ACTIVE && db) {
     const propertiesRef = collection(db, "connect_properties");
     const q = query(propertiesRef, where("id", "==", propertyId));
     const snap = await getDocs(q);
@@ -189,7 +189,7 @@ export async function dbUpdateListingStatus(propertyId, type, status) {
 export async function dbGetHotels() {
   let formattedProperties = [];
   
-  if (IS_FIREBASE_ACTIVE) {
+  if (IS_FIREBASE_ACTIVE && db) {
     const propertiesRef = collection(db, "connect_properties");
     const q = query(propertiesRef, where("status", "==", "approved"));
     const snap = await getDocs(q);
