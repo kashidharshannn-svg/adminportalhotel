@@ -112,11 +112,11 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
 
   // Location Details States (Step 2 - Screenshot 1)
   const [locationSearch, setLocationSearch] = useState('');
-  const [houseNumber, setHouseNumber] = useState('434');
-  const [locality, setLocality] = useState('Indirapuram');
-  const [pincode, setPincode] = useState('224010');
+  const [houseNumber, setHouseNumber] = useState('');
+  const [locality, setLocality] = useState('');
+  const [pincode, setPincode] = useState('');
   const [country, setCountry] = useState('India');
-  const [city, setCity] = useState('Ghaziabad');
+  const [city, setCity] = useState('');
 
   // Amenities State (Step 3 - Screenshot 2: Yes/No radio layout)
   const [amenitiesAnswers, setAmenitiesAnswers] = useState({}); 
