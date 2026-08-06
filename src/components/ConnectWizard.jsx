@@ -73,23 +73,17 @@ const HOMESTAY_TYPES = [
 
 // Room Amenities data as specified in user request
 const ROOM_AMENITIES_CATEGORIES = [
-  { id: "mandatory", label: "Mandatory", count: 16 },
-  { id: "popular", label: "Popular with Guests", count: 9 },
-  { id: "bathroom", label: "Bathroom", count: 18 },
-  { id: "features", label: "Room Features", count: 24 },
-  { id: "media", label: "Media and Entertainment", count: 3 },
-  { id: "food", label: "Food and Drinks", count: 7 },
-  { id: "appliances", label: "Appliances", count: 15 },
-  { id: "beds", label: "Beds and Blanket", count: 1 },
-  { id: "safety", label: "Safety and Security", count: 1 },
-  { id: "childcare", label: "Childcare", count: 1 },
-  { id: "other", label: "Other Facilities", count: 6 }
-];
-
-const ROOM_AMENITIES_ITEMS = [
-  "Bathtub", "Hairdryer", "Hot & Cold Water", "Toiletries", "Towels", 
-  "TV", "Balcony", "Private Pool", "Air Conditioning", "Iron/Ironing Board", 
-  "Mineral Water", "Kettle", "Wifi", "Safe", "Bathroom", "Peep Hole"
+  { id: "mandatory", label: "Mandatory", items: ["Toiletries", "Hot & Cold Water", "Towels", "Wifi", "Mineral Water", "Bathroom", "Hairdryer"] },
+  { id: "popular", label: "Popular with Guests", items: ["Air Conditioning", "TV", "Wifi", "Private Pool", "Balcony"] },
+  { id: "bathroom", label: "Bathroom", items: ["Bathtub", "Hairdryer", "Toiletries", "Towels", "Hot & Cold Water", "Geyser/Water Heater", "Shower"] },
+  { id: "features", label: "Room Features", items: ["Balcony", "Private Pool", "Iron/Ironing Board", "Safe", "Peep Hole", "Writing Desk", "Sofa", "Soundproofing"] },
+  { id: "media", label: "Media and Entertainment", items: ["TV", "Satellite/Cable TV", "Sound System"] },
+  { id: "food", label: "Food and Drinks", items: ["Mineral Water", "Kettle", "Minibar", "Tea/Coffee Maker", "Cookies/Chocolates"] },
+  { id: "appliances", label: "Appliances", items: ["Air Conditioning", "Iron/Ironing Board", "Kettle", "Refrigerator", "Microwave"] },
+  { id: "beds", label: "Beds and Blanket", items: ["Extra Pillows & Blankets"] },
+  { id: "safety", label: "Safety and Security", items: ["Safe", "Peep Hole", "Smoke Detector", "Fire Extinguisher"] },
+  { id: "childcare", label: "Childcare", items: ["Baby Crib", "Child Safety Covers"] },
+  { id: "other", label: "Other Facilities", items: ["Room Service", "Daily Housekeeping", "Laundry Service"] }
 ];
 
 export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
@@ -150,11 +144,16 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
 
   // Rates & Meal plans (Room Step 4)
   const [roomBaseRate, setRoomBaseRate] = useState('');
-  const [selectedMealPlan, setSelectedMealPlan] = useState('Accommodation only');
+  const [selectedMealPlan, setSelectedMealPlan] = useState('');
+  const [extraAdultCharge, setExtraAdultCharge] = useState('');
+  const [paidChildCharge, setPaidChildCharge] = useState('');
+  const [roomStartDate, setRoomStartDate] = useState('2026-08-06');
+  const [roomEndDate, setRoomEndDate] = useState('2027-08-06');
 
   // Room Amenities Category tracking (Room Step 5)
   const [activeRoomAmenityCategory, setActiveRoomAmenityCategory] = useState(ROOM_AMENITIES_CATEGORIES[0].id);
-  const [selectedRoomAmenities, setSelectedRoomAmenities] = useState([]);
+  const [roomAmenitiesAnswers, setRoomAmenitiesAnswers] = useState({});
+  const [roomAmenitySearch, setRoomAmenitySearch] = useState('');
 
   // Cover Photo URL (Step 5)
   const [coverPhoto, setCoverPhoto] = useState('');
@@ -256,6 +255,7 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
 
   // Add room item from sub-wizard
   const handleSaveRoom = () => {
+    const yesRoomAmenities = Object.keys(roomAmenitiesAnswers).filter(k => roomAmenitiesAnswers[k] === 'Yes');
     const newRoom = {
       id: "rm-" + Date.now(),
       type: roomType,
@@ -268,20 +268,26 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
       bathroom: { bedroom1HasBathroom, livingRoom1HasBathroom },
       price: Number(roomBaseRate),
       mealPlan: selectedMealPlan,
-      amenities: selectedRoomAmenities
+      amenities: yesRoomAmenities,
+      extraAdultCharge: Number(extraAdultCharge),
+      paidChildCharge: Number(paidChildCharge),
+      startDate: roomStartDate,
+      endDate: roomEndDate
     };
 
     setRooms([...rooms, newRoom]);
     setIsRoomModalOpen(false);
     setRoomWizardStep(1);
-  };
 
-  const handleToggleRoomAmenity = (am) => {
-    if (selectedRoomAmenities.includes(am)) {
-      setSelectedRoomAmenities(selectedRoomAmenities.filter(x => x !== am));
-    } else {
-      setSelectedRoomAmenities([...selectedRoomAmenities, am]);
-    }
+    // Reset room form states
+    setRoomName('');
+    setRoomInventory('');
+    setRoomSize('');
+    setRoomDesc('');
+    setExtraAdultCharge('');
+    setPaidChildCharge('');
+    setRoomBaseRate('');
+    setRoomAmenitiesAnswers({});
   };
 
   const handleSubmit = async (e) => {
@@ -2279,23 +2285,75 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
 
               {/* SUB-STEP 4: MEAL PLAN & RATES */}
               {roomWizardStep === 4 && (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                  <h4 style={{ fontWeight: '800', fontSize: '15px', color: '#1a1a1a', borderBottom: '1px solid #f1f5f9', paddingBottom: '8px' }}>Meal Plan, Rates & Inventory Details</h4>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                  <div style={{ borderBottom: '1px solid #f1f5f9', paddingBottom: '12px' }}>
+                    <h4 style={{ fontWeight: '800', fontSize: '16px', color: '#1a1a1a', margin: 0 }}>Meal Plan, Rates & Inventory Details</h4>
+                    <p style={{ fontSize: '11px', color: '#64748b', marginTop: '4px' }}>Set up the meal plan, pricing, and inventory to make this room ready to sell.</p>
+                  </div>
                   
-                  <div className="input-group">
-                    <label>Meal Plan</label>
-                    <select value={selectedMealPlan} onChange={(e) => setSelectedMealPlan(e.target.value)}>
-                      <option value="Accommodation only">Accommodation only</option>
-                      <option value="Breakfast Included">Breakfast Included</option>
-                      <option value="Breakfast & Dinner Included (MAP)">Breakfast & Dinner Included (MAP)</option>
-                    </select>
+                  {/* Meal Options */}
+                  <div style={{ border: '1px solid #e2e8f0', borderRadius: '8px', padding: '16px', background: '#ffffff' }}>
+                    <h5 style={{ fontWeight: '800', fontSize: '14px', color: '#1a1a1a', marginBottom: '12px' }}>Meal Options</h5>
+                    <div className="input-group">
+                      <label style={{ fontWeight: '700', fontSize: '12px' }}>Select a meal plan</label>
+                      <p style={{ fontSize: '11px', color: '#64748b', marginTop: '-2px', marginBottom: '8px' }}>Select the meals included with this room type (e.g., breakfast only, breakfast & dinner, or all ...)</p>
+                      <select value={selectedMealPlan} onChange={(e) => setSelectedMealPlan(e.target.value)}>
+                        <option value="">Select</option>
+                        <option value="Accommodation only">Accommodation only</option>
+                        <option value="Breakfast Included">Breakfast Included</option>
+                        <option value="Breakfast & Dinner Included (MAP)">Breakfast & Dinner Included (MAP)</option>
+                        <option value="All Meals Included (AP)">All Meals Included (AP)</option>
+                      </select>
+                    </div>
                   </div>
 
-                  <div className="input-group">
-                    <label>Base Rate (INR)</label>
-                    <div style={{ display: 'flex', alignItems: 'center', border: '1px solid #cbd5e1', borderRadius: '6px', overflow: 'hidden' }}>
-                      <span style={{ padding: '10px 14px', background: '#e2e8f0', fontWeight: 'bold' }}>₹</span>
-                      <input type="number" value={roomBaseRate} onChange={(e) => setRoomBaseRate(e.target.value)} style={{ border: 'none', width: '100%', padding: '10px' }} />
+                  {/* Room Prices */}
+                  <div style={{ border: '1px solid #e2e8f0', borderRadius: '8px', padding: '16px', background: '#ffffff' }}>
+                    <h5 style={{ fontWeight: '800', fontSize: '14px', color: '#1a1a1a', marginBottom: '12px' }}>Room Prices</h5>
+                    
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                      <div className="input-group">
+                        <label style={{ fontWeight: '700', fontSize: '12px' }}>Base Rate for 3 adults</label>
+                        <p style={{ fontSize: '11px', color: '#64748b', marginTop: '-2px', marginBottom: '6px' }}>Enter the standard room rate for 3 adults</p>
+                        <div style={{ display: 'flex', alignItems: 'center', border: '1px solid #cbd5e1', borderRadius: '6px', overflow: 'hidden' }}>
+                          <span style={{ padding: '10px 14px', background: '#f8fafc', borderRight: '1px solid #cbd5e1', fontSize: '13px' }}>₹</span>
+                          <input type="text" placeholder="Enter base rate" value={roomBaseRate} onChange={(e) => setRoomBaseRate(e.target.value.replace(/\D/g,''))} style={{ border: 'none', width: '100%', padding: '10px' }} />
+                        </div>
+                      </div>
+
+                      <div className="input-group">
+                        <label style={{ fontWeight: '700', fontSize: '12px' }}>Extra Adult Charge</label>
+                        <p style={{ fontSize: '11px', color: '#64748b', marginTop: '-2px', marginBottom: '6px' }}>Additional charge for each adult guest aged 18 years or older</p>
+                        <div style={{ display: 'flex', alignItems: 'center', border: '1px solid #cbd5e1', borderRadius: '6px', overflow: 'hidden' }}>
+                          <span style={{ padding: '10px 14px', background: '#f8fafc', borderRight: '1px solid #cbd5e1', fontSize: '13px' }}>₹</span>
+                          <input type="text" placeholder="Enter extra adult charge" value={extraAdultCharge} onChange={(e) => setExtraAdultCharge(e.target.value.replace(/\D/g,''))} style={{ border: 'none', width: '100%', padding: '10px' }} />
+                        </div>
+                      </div>
+
+                      <div className="input-group">
+                        <label style={{ fontWeight: '700', fontSize: '12px' }}>Paid Child Charge</label>
+                        <p style={{ fontSize: '11px', color: '#64748b', marginTop: '-2px', marginBottom: '6px' }}>Charge per child aged 7 to 17 years</p>
+                        <div style={{ display: 'flex', alignItems: 'center', border: '1px solid #cbd5e1', borderRadius: '6px', overflow: 'hidden' }}>
+                          <span style={{ padding: '10px 14px', background: '#f8fafc', borderRight: '1px solid #cbd5e1', fontSize: '13px' }}>₹</span>
+                          <input type="text" placeholder="Enter charge for child" value={paidChildCharge} onChange={(e) => setPaidChildCharge(e.target.value.replace(/\D/g,''))} style={{ border: 'none', width: '100%', padding: '10px' }} />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Inventory Calendar */}
+                  <div style={{ border: '1px solid #e2e8f0', borderRadius: '8px', padding: '16px', background: '#ffffff' }}>
+                    <h5 style={{ fontWeight: '800', fontSize: '14px', color: '#1a1a1a', marginBottom: '12px' }}>Inventory Calendar</h5>
+                    <p style={{ fontSize: '11px', color: '#64748b', marginTop: '-4px', marginBottom: '12px' }}>Select a date range</p>
+                    <div style={{ display: 'flex', gap: '14px' }}>
+                      <div className="input-group" style={{ flexGrow: 1 }}>
+                        <label style={{ fontSize: '11px' }}>Start Date</label>
+                        <input type="date" value={roomStartDate} onChange={(e) => setRoomStartDate(e.target.value)} style={{ padding: '8px 12px', border: '1px solid #cbd5e1', borderRadius: '6px', width: '100%' }} />
+                      </div>
+                      <div className="input-group" style={{ flexGrow: 1 }}>
+                        <label style={{ fontSize: '11px' }}>End Date</label>
+                        <input type="date" value={roomEndDate} onChange={(e) => setRoomEndDate(e.target.value)} style={{ padding: '8px 12px', border: '1px solid #cbd5e1', borderRadius: '6px', width: '100%' }} />
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -2304,55 +2362,85 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
               {/* SUB-STEP 5: AMENITY DETAILS (Split categories scroll spec) */}
               {roomWizardStep === 5 && (
                 <div>
-                  <h4 style={{ fontWeight: '800', fontSize: '15px', color: '#1a1a1a', borderBottom: '1px dashed #cbd5e1', paddingBottom: '8px', marginBottom: '16px' }}>
-                    Select the amenities to help guests know what to expect during their stay
-                  </h4>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #e2e8f0', paddingBottom: '14px', marginBottom: '24px' }}>
+                    <div>
+                      <h4 style={{ fontWeight: '800', fontSize: '16px', color: '#1a1a1a', margin: 0 }}>Amenity Details</h4>
+                      <p style={{ fontSize: '11px', color: '#64748b', marginTop: '4px' }}>select the amenities to help guests know what to expect during their stay</p>
+                    </div>
+                    <input 
+                      type="text" 
+                      placeholder="Search amenities" 
+                      value={roomAmenitySearch} 
+                      onChange={(e) => setRoomAmenitySearch(e.target.value)}
+                      style={{ border: '1px solid #cbd5e1', padding: '6px 12px', borderRadius: '6px', fontSize: '12px', width: '200px' }}
+                    />
+                  </div>
                   
-                  <div style={{ display: 'grid', gridTemplateColumns: '220px 1fr', gap: '20px', height: '360px', border: '1px solid #cbd5e1', borderRadius: '8px', overflow: 'hidden' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '220px 1fr', gap: '20px', height: '380px', border: '1px solid #cbd5e1', borderRadius: '8px', overflow: 'hidden' }}>
                     {/* Left categories list */}
                     <div style={{ background: '#f8fafc', borderRight: '1px solid #cbd5e1', overflowY: 'auto' }}>
                       {ROOM_AMENITIES_CATEGORIES.map((cat) => {
                         const isActive = activeRoomAmenityCategory === cat.id;
+                        const selectedCount = cat.items.filter(item => roomAmenitiesAnswers[item] === 'Yes').length;
                         return (
                           <div
                             key={cat.id}
                             onClick={() => setActiveRoomAmenityCategory(cat.id)}
                             style={{
-                              padding: '10px 14px', fontSize: '12px', fontWeight: isActive ? '800' : '600', cursor: 'pointer',
+                              padding: '12px 14px', fontSize: '12px', fontWeight: isActive ? '800' : '600', cursor: 'pointer',
                               background: isActive ? 'white' : 'transparent', color: isActive ? '#ff4f5a' : '#475569',
                               borderBottom: '1px solid #e2e8f0'
                             }}
                           >
-                            {cat.label} (0 of {cat.count})
+                            {cat.label} ({selectedCount} of {cat.items.length})
                           </div>
                         );
                       })}
                     </div>
 
                     {/* Right items checklists */}
-                    <div style={{ padding: '16px', overflowY: 'auto', background: '#ffffff' }}>
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-                        {ROOM_AMENITIES_ITEMS.map((am) => {
-                          const isChecked = selectedRoomAmenities.includes(am);
-                          return (
-                            <label 
-                              key={am} 
-                              style={{
-                                display: 'flex', alignItems: 'center', gap: '8px', padding: '10px', borderRadius: '4px',
-                                border: '1px solid' + (isChecked ? ' #ff4f5a' : '#e2e8f0'),
-                                cursor: 'pointer', fontSize: '12px'
-                              }}
-                            >
-                              <input 
-                                type="checkbox" 
-                                checked={isChecked} 
-                                onChange={() => handleToggleRoomAmenity(am)}
-                                style={{ accentColor: '#ff4f5a' }}
-                              />
-                              {am}
-                            </label>
-                          );
-                        })}
+                    <div style={{ padding: '16px', overflowY: 'auto', background: '#ffffff', textAlign: 'left' }}>
+                      <div style={{ display: 'flex', flexDirection: 'column' }}>
+                        {ROOM_AMENITIES_CATEGORIES.find(c => c.id === activeRoomAmenityCategory)?.items
+                          .filter(item => item.toLowerCase().includes(roomAmenitySearch.toLowerCase()))
+                          .map((am) => {
+                            const answer = roomAmenitiesAnswers[am];
+                            return (
+                              <div 
+                                key={am} 
+                                style={{
+                                  display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 0',
+                                  borderBottom: '1px solid #f1f5f9'
+                                }}
+                              >
+                                <span style={{ fontSize: '13px', fontWeight: '600', color: '#334155' }}>{am}</span>
+                                
+                                <div style={{ display: 'flex', gap: '20px' }}>
+                                  <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', cursor: 'pointer' }}>
+                                    <input 
+                                      type="radio" 
+                                      name={`room_amenity_${am}`} 
+                                      checked={answer === 'No'} 
+                                      onChange={() => setRoomAmenitiesAnswers({ ...roomAmenitiesAnswers, [am]: 'No' })}
+                                      style={{ accentColor: '#ff4f5a' }}
+                                    />
+                                    No
+                                  </label>
+                                  
+                                  <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', cursor: 'pointer' }}>
+                                    <input 
+                                      type="radio" 
+                                      name={`room_amenity_${am}`} 
+                                      checked={answer === 'Yes'} 
+                                      onChange={() => setRoomAmenitiesAnswers({ ...roomAmenitiesAnswers, [am]: 'Yes' })}
+                                      style={{ accentColor: '#ff4f5a' }}
+                                    />
+                                    Yes
+                                  </label>
+                                </div>
+                              </div>
+                            );
+                          })}
                       </div>
                     </div>
                   </div>
