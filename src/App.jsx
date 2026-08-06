@@ -45,7 +45,7 @@ export default function App() {
     localStorage.removeItem('connect_session_user');
   };
 
-  const isAdminRoute = currentPath === '/admin';
+  const isAdminRoute = window.location.hostname.includes('admin') || currentPath === '/admin';
 
   return (
     <div className="app-wrapper" style={{ background: '#f5f7fa', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
