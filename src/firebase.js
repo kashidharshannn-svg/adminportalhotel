@@ -4,15 +4,16 @@ import { getFirestore } from 'firebase/firestore';
 
 // Set this to true when you want to connect to your live Google Firebase project.
 // You must also fill in the firebaseConfig credentials below.
-export const IS_FIREBASE_ACTIVE = false;
+export const IS_FIREBASE_ACTIVE = true;
 
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyCP_aLPox0j1Kuafe5WDmKePFEh3df3zjo",
+  authDomain: "tripcustomizer-hotel.firebaseapp.com",
+  projectId: "tripcustomizer-hotel",
+  storageBucket: "tripcustomizer-hotel.firebasestorage.app",
+  messagingSenderId: "608651583118",
+  appId: "1:608651583118:web:42ee61dd3c68c4c70f33df",
+  measurementId: "G-Z93WKKFV39"
 };
 
 let app, auth, db;
