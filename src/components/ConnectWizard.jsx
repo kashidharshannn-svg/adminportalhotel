@@ -135,6 +135,8 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
   const [isRoomModalOpen, setIsRoomModalOpen] = useState(false);
   const [roomWizardStep, setRoomWizardStep] = useState(1); // 1: Details, 2: Occupants, 3: Bathrooms, 4: Rates, 5: Amenities, 6: Preview Summary
 
+  const [editingRoomId, setEditingRoomId] = useState(null);
+
   // Sub-Wizard Create Room States (Initialized clean for user onboarding)
   const [roomType, setRoomType] = useState('');
   const [roomView, setRoomView] = useState('');
@@ -278,11 +280,11 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
     }
   };
 
-  // Add room item from sub-wizard
+  // Add/Update room item from sub-wizard
   const handleSaveRoom = () => {
     const yesRoomAmenities = Object.keys(roomAmenitiesAnswers).filter(k => roomAmenitiesAnswers[k] === 'Yes');
-    const newRoom = {
-      id: "rm-" + Date.now(),
+    const roomData = {
+      id: editingRoomId || "rm-" + Date.now(),
       type: roomType,
       view: roomView,
       size: `${roomSize} ${roomSizeUnit}`,
@@ -311,9 +313,15 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
       endDate: roomEndDate
     };
 
-    setRooms([...rooms, newRoom]);
+    if (editingRoomId) {
+      setRooms(rooms.map(r => r.id === editingRoomId ? roomData : r));
+    } else {
+      setRooms([...rooms, roomData]);
+    }
+    
     setIsRoomModalOpen(false);
     setRoomWizardStep(1);
+    setEditingRoomId(null);
 
     // Reset room form states
     setRoomName('');
@@ -340,6 +348,55 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
     // Reset bathroom fields
     setBathroomType1('');
     setBathroomAttachedTo1('');
+  };
+
+  const handleEditRoom = (rm) => {
+    setEditingRoomId(rm.id);
+    setRoomType(rm.type || '');
+    setRoomView(rm.view || '');
+    
+    const sizeParts = (rm.size || '').split(' ');
+    setRoomSize(sizeParts[0] || '');
+    setRoomSizeUnit(sizeParts[1] || 'Square Feet');
+    
+    setRoomName(rm.name || '');
+    setRoomDesc(rm.description || '');
+    setBedroom1BedType(rm.occupancy.bedroom1BedType || '');
+    setBedroom1BedCount(rm.occupancy.bedroom1BedCount || 0);
+    setLivingRoom1BedType(rm.occupancy.livingRoom1BedType || '');
+    setLivingRoom1BedCount(rm.occupancy.livingRoom1BedCount || 0);
+    setCanAccommodateExtraBed(rm.occupancy.canAccommodateExtraBed || '');
+    setBaseAdults(String(rm.occupancy.baseAdults || ''));
+    setMaxAdults(String(rm.occupancy.maxAdults || ''));
+    setBaseChildren(String(rm.occupancy.baseChildren || ''));
+    setMaxChildren(String(rm.occupancy.maxChildren || ''));
+    setMaxOccupancy(String(rm.occupancy.maxOccupancy || ''));
+    
+    setBathroomType1(rm.bathroom?.bathroomType1 || '');
+    setBathroomAttachedTo1(rm.bathroom?.bathroomAttachedTo1 || '');
+    
+    setRoomBaseRate(String(rm.price || ''));
+    setSelectedMealPlan(rm.mealPlan || '');
+    setExtraAdultCharge(String(rm.extraAdultCharge || ''));
+    setPaidChildCharge(String(rm.paidChildCharge || ''));
+    setRoomStartDate(rm.startDate || '2026-08-06');
+    setRoomEndDate(rm.endDate || '2027-08-06');
+    
+    const amAnswers = {};
+    (rm.amenities || []).forEach(am => {
+      amAnswers[am] = 'Yes';
+    });
+    setRoomAmenitiesAnswers(amAnswers);
+
+    setIsRoomModalOpen(true);
+    setRoomWizardStep(1);
+  };
+
+  const handleDeleteRoom = (id, e) => {
+    e.stopPropagation();
+    if (confirm("Are you sure you want to delete this room type?")) {
+      setRooms(rooms.filter(r => r.id !== id));
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -954,17 +1011,35 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
                   {rooms.map((rm) => (
                     <div 
                       key={rm.id} 
-                      style={{ border: '1px solid #cbd5e1', padding: '16px', borderRadius: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#f8fafc' }}
+                      style={{ border: '1px solid #cbd5e1', padding: '16px', borderRadius: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#ffffff', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}
                     >
                       <div>
-                        <h4 style={{ fontWeight: '800', fontSize: '15px' }}>{rm.name}</h4>
+                        <h4 style={{ fontWeight: '800', fontSize: '15px', color: '#1e293b' }}>{rm.name}</h4>
                         <p style={{ fontSize: '12px', color: '#64748b', marginTop: '2px' }}>
                           Type: {rm.type} • View: {rm.view} • Size: {rm.size} • Bedding: {rm.occupancy.bedroom1BedCount > 0 ? `${rm.occupancy.bedroom1BedCount} ${rm.occupancy.bedroom1BedType}` : ''}{rm.occupancy.livingRoom1BedCount > 0 ? ` + ${rm.occupancy.livingRoom1BedCount} ${rm.occupancy.livingRoom1BedType}` : ''}
                         </p>
                       </div>
-                      <div style={{ textAlignment: 'right' }}>
-                        <span style={{ fontSize: '12px', color: '#64748b', display: 'block' }}>Base price:</span>
-                        <strong style={{ fontSize: '16px', color: '#10b981' }}>₹{rm.price.toLocaleString('en-IN')}</strong> / night
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+                        <div style={{ textAlignment: 'right' }}>
+                          <span style={{ fontSize: '11px', color: '#64748b', display: 'block' }}>Base price:</span>
+                          <strong style={{ fontSize: '15px', color: '#10b981' }}>₹{rm.price.toLocaleString('en-IN')}</strong> / night
+                        </div>
+                        <div style={{ display: 'flex', gap: '8px' }}>
+                          <button 
+                            type="button" 
+                            onClick={() => handleEditRoom(rm)}
+                            style={{ padding: '6px 12px', fontSize: '12px', color: '#008cff', background: '#e0f2fe', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: '750' }}
+                          >
+                            Edit
+                          </button>
+                          <button 
+                            type="button" 
+                            onClick={(e) => handleDeleteRoom(rm.id, e)}
+                            style={{ padding: '6px 12px', fontSize: '12px', color: '#ef4444', background: '#fee2e2', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: '750' }}
+                          >
+                            Delete
+                          </button>
+                        </div>
                       </div>
                     </div>
                   ))}
@@ -2147,7 +2222,7 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
             {/* Modal Header */}
             <div className="modal-header" style={{ background: '#f8fafc', borderBottom: '1px solid #cbd5e1', padding: '16px 24px' }}>
               <div>
-                <h3 style={{ fontSize: '18px', fontWeight: '850', color: '#1e293b' }}>Create Room</h3>
+                <h3 style={{ fontSize: '18px', fontWeight: '850', color: '#1e293b' }}>{editingRoomId ? 'Edit Room' : 'Create Room'}</h3>
                 <span style={{ fontSize: '11px', color: '#64748b' }}>Step-by-step room onboarding configuration wizard</span>
               </div>
               <button onClick={() => { setIsRoomModalOpen(false); setRoomWizardStep(1); }} style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: '#64748b' }}>
@@ -2915,8 +2990,8 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
                       <button type="button" onClick={() => setRoomWizardStep(3)} style={{ fontSize: '11px', color: '#ff4f5a', fontWeight: '800', background: 'transparent', border: 'none', cursor: 'pointer', textDecoration: 'underline' }}>Edit</button>
                     </div>
                     <div style={{ fontSize: '12px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                      <div>Bedroom 1: <strong>{bedroom1HasBathroom ? 'Attached Bathroom' : 'No Attached Bathroom'}</strong></div>
-                      <div>Living Room 1: <strong>{livingRoom1HasBathroom ? 'Bathroom available' : 'No Bathroom'}</strong></div>
+                      <div>Bathroom Type: <strong>{bathroomType1 || 'Not specified'}</strong></div>
+                      <div>Attached To: <strong>{bathroomAttachedTo1 || 'Not specified'}</strong></div>
                     </div>
                   </div>
 
@@ -2938,60 +3013,63 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
             </div>
 
             {/* Modal Footer buttons */}
-            <div className="modal-footer" style={{ borderTop: '1px solid #cbd5e1', background: '#f8fafc', display: 'flex', justifyContent: 'space-between' }}>
-              {roomWizardStep > 1 && roomWizardStep < 6 ? (
-                <button 
-                  onClick={() => setRoomWizardStep(roomWizardStep - 1)}
-                  className="btn-secondary" 
-                  style={{ padding: '8px 16px', fontSize: '12px' }}
-                >
-                  Back
-                </button>
-              ) : roomWizardStep === 6 ? (
-                <button 
-                  onClick={() => setRoomWizardStep(5)}
-                  className="btn-secondary" 
-                  style={{ padding: '8px 16px', fontSize: '12px' }}
-                >
-                  Back
-                </button>
-              ) : (
-                <button 
-                  onClick={() => { setIsRoomModalOpen(false); setRoomWizardStep(1); }}
-                  className="btn-secondary" 
-                  style={{ padding: '8px 16px', fontSize: '12px' }}
-                >
-                  Cancel
-                </button>
-              )}
+            <div className="modal-footer" style={{ borderTop: '1px solid #cbd5e1', background: '#f8fafc', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 24px' }}>
+              {/* Cancel Button */}
+              <button 
+                type="button"
+                onClick={() => { setIsRoomModalOpen(false); setRoomWizardStep(1); setEditingRoomId(null); }}
+                className="btn-secondary" 
+                style={{ padding: '8px 16px', fontSize: '13px', background: 'transparent', border: 'none', color: '#008cff', fontWeight: '700', textDecoration: 'none', cursor: 'pointer' }}
+              >
+                Cancel
+              </button>
 
-              <div style={{ display: 'flex', gap: '10px' }}>
-                {roomWizardStep === 5 && (
+              <div style={{ display: 'flex', gap: '14px', alignItems: 'center' }}>
+                {/* Back Button (Only if step > 1 and not on summary) */}
+                {roomWizardStep > 1 && roomWizardStep < 6 && (
+                  <button 
+                    type="button"
+                    onClick={() => setRoomWizardStep(roomWizardStep - 1)}
+                    className="btn-secondary" 
+                    style={{ padding: '8px 16px', fontSize: '13px', cursor: 'pointer' }}
+                  >
+                    Back
+                  </button>
+                )}
+
+                {/* Preview Room (Shown on Step 4, 5, or 6) */}
+                {roomWizardStep >= 4 && (
                   <button 
                     type="button" 
                     onClick={() => setRoomWizardStep(6)}
                     className="btn-secondary"
-                    style={{ padding: '8px 16px', fontSize: '12px', border: '1px solid #ff4f5a', color: '#ff4f5a' }}
+                    style={{ padding: '8px 16px', fontSize: '13px', background: 'transparent', border: 'none', color: '#008cff', fontWeight: '700', cursor: 'pointer' }}
                   >
                     Preview Room
                   </button>
                 )}
 
-                {roomWizardStep < 5 ? (
+                {/* Continue button for steps before step 5 */}
+                {roomWizardStep < 5 && (
                   <button 
+                    type="button"
                     onClick={() => setRoomWizardStep(roomWizardStep + 1)}
                     className="btn-primary" 
-                    style={{ padding: '8px 20px', fontSize: '12px', background: '#ff4f5a', border: 'none' }}
+                    style={{ padding: '8px 24px', fontSize: '13px', background: '#ff4f5a', border: 'none', cursor: 'pointer' }}
                   >
                     Continue
                   </button>
-                ) : (
+                )}
+
+                {/* Save/Update Button */}
+                {(roomWizardStep === 5 || roomWizardStep === 6 || editingRoomId) && (
                   <button 
+                    type="button"
                     onClick={handleSaveRoom}
                     className="btn-primary" 
-                    style={{ padding: '8px 24px', fontSize: '12px', background: '#10b981', border: 'none', color: 'white' }}
+                    style={{ padding: '8px 24px', fontSize: '13px', background: editingRoomId ? '#ff4f5a' : '#10b981', border: 'none', color: 'white', fontWeight: '700', cursor: 'pointer' }}
                   >
-                    Save Room ✅
+                    {editingRoomId ? 'Update' : 'Save Room ✅'}
                   </button>
                 )}
               </div>
