@@ -150,8 +150,8 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
   const [livingRoom1DropdownOpen, setLivingRoom1DropdownOpen] = useState(false);
 
   // Bathroom (Room Step 3)
-  const [bedroom1HasBathroom, setBedroom1HasBathroom] = useState(false);
-  const [livingRoom1HasBathroom, setLivingRoom1HasBathroom] = useState(false);
+  const [bathroomType1, setBathroomType1] = useState('');
+  const [bathroomAttachedTo1, setBathroomAttachedTo1] = useState('');
 
   // Rates & Meal plans (Room Step 4)
   const [roomBaseRate, setRoomBaseRate] = useState('');
@@ -287,7 +287,7 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
         maxChildren: Number(maxChildren || 0),
         maxOccupancy: Number(maxOccupancy || 0)
       },
-      bathroom: { bedroom1HasBathroom, livingRoom1HasBathroom },
+      bathroom: { bathroomType1, bathroomAttachedTo1 },
       price: Number(roomBaseRate),
       mealPlan: selectedMealPlan,
       amenities: yesRoomAmenities,
@@ -322,6 +322,10 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
     setBaseChildren('');
     setMaxChildren('');
     setMaxOccupancy('');
+    
+    // Reset bathroom fields
+    setBathroomType1('');
+    setBathroomAttachedTo1('');
   };
 
   const handleSubmit = async (e) => {
@@ -2568,19 +2572,56 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
 
               {/* SUB-STEP 3: BATHROOM DETAILS */}
               {roomWizardStep === 3 && (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                  <h4 style={{ fontWeight: '800', fontSize: '15px', color: '#1a1a1a', borderBottom: '1px solid #f1f5f9', paddingBottom: '8px' }}>Bathroom Details</h4>
-                  
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                    <label style={{ display: 'flex', alignItems: 'center', justifyBetween: 'space-between', background: '#f8fafc', padding: '14px 20px', borderRadius: '8px', border: '1px solid #cbd5e1', cursor: 'pointer' }}>
-                      <span style={{ fontSize: '13px', fontWeight: '700' }}>Bedroom 1 Attached Bathroom</span>
-                      <input type="checkbox" checked={bedroom1HasBathroom} onChange={(e) => setBedroom1HasBathroom(e.target.checked)} style={{ width: '16px', height: '16px', accentColor: '#ff4f5a' }} />
-                    </label>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                  <div style={{ borderBottom: '1px solid #f1f5f9', paddingBottom: '12px' }}>
+                    <h4 style={{ fontWeight: '800', fontSize: '16px', color: '#1a1a1a', margin: 0 }}>Bathroom Details</h4>
+                    <p style={{ fontSize: '11px', color: '#64748b', marginTop: '4px' }}>Add details of bathroom(s) for this room type</p>
+                  </div>
 
-                    <label style={{ display: 'flex', alignItems: 'center', justifyBetween: 'space-between', background: '#f8fafc', padding: '14px 20px', borderRadius: '8px', border: '1px solid #cbd5e1', cursor: 'pointer' }}>
-                      <span style={{ fontSize: '13px', fontWeight: '700' }}>Living Room 1 Bathroom</span>
-                      <input type="checkbox" checked={livingRoom1HasBathroom} onChange={(e) => setLivingRoom1HasBathroom(e.target.checked)} style={{ width: '16px', height: '16px', accentColor: '#ff4f5a' }} />
-                    </label>
+                  <div style={{ border: '1px solid #cbd5e1', borderRadius: '8px', padding: '20px', background: '#ffffff' }}>
+                    <h5 style={{ fontWeight: '800', fontSize: '14px', color: '#1a1a1a', marginBottom: '16px' }}>Bathroom options in this room</h5>
+                    
+                    <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr 1fr', gap: '20px', alignItems: 'flex-start' }}>
+                      {/* Left Label column */}
+                      <div>
+                        <span style={{ fontSize: '13px', fontWeight: '800', color: '#1e293b', display: 'block' }}>Bathroom</span>
+                        <span style={{ fontSize: '11px', color: '#64748b', marginTop: '4px', display: 'block', lineHeight: 1.3 }}>Specify the types of bathroom(s) available in this room</span>
+                      </div>
+
+                      {/* Bathroom Type Selector */}
+                      <div className="input-group">
+                        <label style={{ fontSize: '11.5px', fontWeight: '700', color: '#475569', display: 'block', marginBottom: '6px' }}>Bathroom Type 1</label>
+                        <select 
+                          value={bathroomType1} 
+                          onChange={(e) => setBathroomType1(e.target.value)}
+                          style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '13px' }}
+                        >
+                          <option value="">Select bathroom</option>
+                          <option value="Attached Bathroom">Attached Bathroom</option>
+                          <option value="Shared Bathroom">Shared Bathroom</option>
+                          <option value="Common Bathroom">Common Bathroom</option>
+                        </select>
+                      </div>
+
+                      {/* Attached to which room Selector */}
+                      <div className="input-group">
+                        <label style={{ fontSize: '11.5px', fontWeight: '700', color: '#475569', display: 'block', marginBottom: '6px' }}>Attached to which room?</label>
+                        <select 
+                          value={bathroomAttachedTo1} 
+                          onChange={(e) => setBathroomAttachedTo1(e.target.value)}
+                          style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '13px' }}
+                        >
+                          <option value="">Select bed</option>
+                          <option value="Bedroom 1">Bedroom 1</option>
+                          <option value="Living Room 1">Living Room 1</option>
+                          <option value="Not Attached">Not Attached</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <button type="button" style={{ color: '#008cff', background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '12px', fontWeight: '700', marginTop: '16px', padding: 0 }}>
+                      + Add Another Bathroom
+                    </button>
                   </div>
                 </div>
               )}
