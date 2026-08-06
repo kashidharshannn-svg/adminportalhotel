@@ -8,13 +8,48 @@ const STEP_TABS = [
 ];
 
 const HOTEL_TYPES = [
-  { id: "Hotel", title: "Hotel", desc: "A hotel is a commercial establishment providing lodging with various amenities like dining, room service, and sometimes conference facilities.", img: "🏨" },
-  { id: "Resort", title: "Resort", desc: "A resort is a self-contained property offering luxurious lodging and extensive amenities, such as pools, spas, dining, and recreational activities.", img: "🌴" },
-  { id: "Lodge", title: "Lodge", desc: "A lodge is a type of accommodation typically located in natural or remote settings, offering rustic or comfortable lodging. It serves guests seeking outdoor recreation.", img: "🏡" },
-  { id: "Guest House", title: "Guest House", desc: "A guest house is a small, often privately-owned accommodation offering cozy, home-like lodging. It provides personalized service, few rooms, and common dining spaces.", img: "🏠" },
-  { id: "Palace", title: "Palace", desc: "A heritage royal palace providing ultra-luxury royal suites, traditional hospitality, and premium heritage walks.", img: "🏰" },
-  { id: "Houseboat", title: "Houseboat", desc: "A floating accommodation mostly in scenic backwaters or lakes, providing bedrooms, lounge decks, and local chefs.", img: "⛵" },
-  { id: "Motel", title: "Motel", desc: "A roadside lodging designed primarily for motorists, having rooms accessible directly from the parking area.", img: "🚗" }
+  { 
+    id: "Hotel", 
+    title: "Hotel", 
+    desc: "A hotel is a commercial establishment providing lodging with various amenities like dining, room service, and sometimes conference fa...", 
+    img: "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80" 
+  },
+  { 
+    id: "Resort", 
+    title: "Resort", 
+    desc: "A resort is a self-contained property offering luxurious lodging and extensive amenities, such as pools, spas, dining, and recreation...", 
+    img: "https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=600&q=80" 
+  },
+  { 
+    id: "Lodge", 
+    title: "Lodge", 
+    desc: "A lodge is a type of accommodation typically located in natural or remote settings, offering rustic or comfortable lodging. It serves...", 
+    img: "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=600&q=80" 
+  },
+  { 
+    id: "Guest House", 
+    title: "Guest House", 
+    desc: "A guest house is a small, often privately-owned accommodation offering cozy, home-like lodging. It provides personalized service, few...", 
+    img: "https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=600&q=80" 
+  },
+  { 
+    id: "Palace", 
+    title: "Palace", 
+    desc: "A palace, when used as accommodation, is a luxurious property, often a converted royal residence, offering opulent rooms, grand archi...", 
+    img: "https://images.unsplash.com/photo-1598977123418-45f04b61582e?auto=format&fit=crop&w=600&q=80" 
+  },
+  { 
+    id: "Houseboat", 
+    title: "Houseboat", 
+    desc: "Accommodation on a floating structure that has bedrooms, a living room, a kitchen, and often a terrace or deck. Typically found in lo...", 
+    img: "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=600&q=80" 
+  },
+  { 
+    id: "Motel", 
+    title: "Motel", 
+    desc: "A motel is a budget-friendly accommodation typically located along highways, offering easy access and parking near guest rooms. Desig...", 
+    img: "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&w=600&q=80" 
+  }
 ];
 
 // Room Amenities data as specified in user request
@@ -388,25 +423,56 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
                         key={type.id}
                         onClick={() => setSubType(type.id)}
                         style={{
-                          border: '1px solid' + (subType === type.id ? ' #ff4f5a' : ' #cbd5e1'),
-                          background: subType === type.id ? 'rgba(255, 79, 90, 0.01)' : 'white',
-                          borderRadius: '8px', padding: '16px', cursor: 'pointer', transition: 'all 0.2s', display: 'flex', flexDirection: 'column', gap: '10px'
+                          border: '1px solid' + (subType === type.id ? ' #008cff' : ' #e2e8f0'),
+                          background: '#ffffff',
+                          borderRadius: '8px',
+                          padding: '16px',
+                          cursor: 'pointer',
+                          transition: 'all 0.2s',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          gap: '10px',
+                          textAlign: 'left',
+                          boxShadow: subType === type.id ? '0 4px 10px rgba(0,140,255,0.06)' : '0 2px 4px rgba(0,0,0,0.01)'
                         }}
                       >
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                          <span style={{ fontSize: '24px' }}>{type.img}</span>
-                          <input 
-                            type="radio" 
-                            name="hotel_subtype" 
-                            checked={subType === type.id} 
-                            onChange={() => setSubType(type.id)}
-                            style={{ accentColor: '#ff4f5a' }}
-                          />
+                          <h5 style={{ fontWeight: '750', fontSize: '13px', color: '#1a1a1a', margin: 0 }}>{type.title}</h5>
+                          <div style={{
+                            width: '18px',
+                            height: '18px',
+                            borderRadius: '50%',
+                            border: '2px solid' + (subType === type.id ? ' #008cff' : '#cbd5e1'),
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            background: subType === type.id ? '#008cff' : 'transparent'
+                          }}>
+                            {subType === type.id && (
+                              <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#ffffff' }} />
+                            )}
+                          </div>
                         </div>
-                        <div>
-                          <h5 style={{ fontWeight: '700', fontSize: '13px', color: '#1a1a1a' }}>{type.title}</h5>
-                          <p style={{ fontSize: '9px', color: '#64748b', marginTop: '4px', lineHeight: 1.3, height: '52px', overflow: 'hidden' }}>{type.desc}</p>
-                        </div>
+                        
+                        <img 
+                          src={type.img} 
+                          alt={type.title} 
+                          style={{ width: '100%', height: '80px', objectFit: 'cover', borderRadius: '4px' }}
+                        />
+                        
+                        <p style={{
+                          fontSize: '11px',
+                          color: '#64748b',
+                          lineHeight: 1.4,
+                          margin: 0,
+                          height: '52px',
+                          overflow: 'hidden',
+                          display: '-webkit-box',
+                          WebkitLineClamp: 3,
+                          WebkitBoxOrient: 'vertical'
+                        }}>
+                          {type.desc}
+                        </p>
                       </div>
                     ))}
                   </div>
