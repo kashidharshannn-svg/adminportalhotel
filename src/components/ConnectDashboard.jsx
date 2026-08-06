@@ -1,10 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { connectGetPropertiesForPartner } from '../data/dbService';
-import { LayoutGrid, Mail, PlusCircle, LogOut, ShieldCheck, Home, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { connectGetPropertiesForPartner, dbUpdatePropertyRooms } from '../data/dbService';
+import { LayoutGrid, Mail, PlusCircle, LogOut, ShieldCheck, Home, ArrowRight, CheckCircle2, X } from 'lucide-react';
 
 export default function ConnectDashboard({ activeUser, onLogout, onStartOnboarding }) {
   const [properties, setProperties] = useState([]);
   const [activeSidebarTab, setActiveSidebarTab] = useState('properties'); // 'properties', 'inbox'
+
+  // Edit Prices Modal States
+  const [editingProperty, setEditingProperty] = useState(null);
+  const [editingRooms, setEditingRooms] = useState([]);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   const loadProperties = async () => {
     try {
@@ -18,6 +23,42 @@ export default function ConnectDashboard({ activeUser, onLogout, onStartOnboardi
   useEffect(() => {
     loadProperties();
   }, [activeUser]);
+
+  const handleOpenEditModal = (property) => {
+    setEditingProperty(property);
+    setEditingRooms(JSON.parse(JSON.stringify(property.rooms || [])));
+    setIsEditModalOpen(true);
+  };
+
+  const handlePriceChange = (index, value) => {
+    const updated = [...editingRooms];
+    updated[index].price = value.replace(/\D/g, ''); // only digits
+    setEditingRooms(updated);
+  };
+
+  const handleInventoryChange = (index, value) => {
+    const updated = [...editingRooms];
+    updated[index].count = value.replace(/\D/g, ''); // only digits
+    setEditingRooms(updated);
+  };
+
+  const handleSaveChanges = async () => {
+    try {
+      const hasInvalid = editingRooms.some(r => !r.price || Number(r.price) <= 0);
+      if (hasInvalid) {
+        alert("Please enter a valid price greater than 0 for all rooms.");
+        return;
+      }
+      await dbUpdatePropertyRooms(editingProperty.id, editingRooms);
+      alert("Property room configurations updated successfully!");
+      setIsEditModalOpen(false);
+      setEditingProperty(null);
+      loadProperties();
+    } catch (err) {
+      console.error(err);
+      alert("Failed to update prices.");
+    }
+  };
 
   return (
     <div style={{ background: '#f5f7fa', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
@@ -159,6 +200,18 @@ export default function ConnectDashboard({ activeUser, onLogout, onStartOnboardi
                             Base price: <strong style={{ fontSize: '15px' }}>₹{Number(prop.rooms[0].price || prop.rooms[0].baseRate || 0).toLocaleString('en-IN')}</strong>
                           </div>
                         )}
+                        {prop.status === 'approved' && (
+                          <button 
+                            onClick={() => handleOpenEditModal(prop)}
+                            style={{ 
+                              marginTop: '4px', padding: '6px 12px', fontSize: '12px', fontWeight: '700', 
+                              color: 'var(--primary-color)', background: 'rgba(0,140,255,0.06)', border: '1px dashed var(--primary-color)',
+                              borderRadius: '6px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '4px' 
+                            }}
+                          >
+                            ⚙️ Edit Price & Rooms
+                          </button>
+                        )}
                       </div>
                     </div>
                   ))}
@@ -200,6 +253,91 @@ export default function ConnectDashboard({ activeUser, onLogout, onStartOnboardi
 
         </main>
       </div>
+
+      {/* ================= EDIT PRICE & ROOMS MODAL ================= */}
+      {isEditModalOpen && editingProperty && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
+          background: 'rgba(5, 20, 41, 0.6)', backdropFilter: 'blur(4px)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100000,
+          padding: '20px'
+        }}>
+          <div style={{
+            background: '#ffffff', width: '100%', maxWidth: '500px', borderRadius: '16px',
+            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+            overflow: 'hidden', textAlign: 'left'
+          }}>
+            {/* Header */}
+            <div style={{ padding: '20px 24px', borderBottom: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#f8fafc' }}>
+              <div>
+                <h3 style={{ fontSize: '16px', fontWeight: '800', color: '#0f172a', margin: 0 }}>Update Price & Inventory</h3>
+                <p style={{ fontSize: '11px', color: '#64748b', marginTop: '2px', margin: 0 }}>Property: {editingProperty.name}</p>
+              </div>
+              <button 
+                onClick={() => { setIsEditModalOpen(false); setEditingProperty(null); }}
+                style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#64748b' }}
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            {/* Content */}
+            <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px', maxHeight: '400px', overflowY: 'auto' }}>
+              {editingRooms.length === 0 ? (
+                <p style={{ fontSize: '12px', color: '#64748b', textAlign: 'center' }}>No rooms configured for this property.</p>
+              ) : (
+                editingRooms.map((room, idx) => (
+                  <div key={idx} style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '16px' }}>
+                    <div style={{ fontWeight: '700', fontSize: '13px', color: '#1e293b', marginBottom: '12px' }}>
+                      🚪 {room.type || room.roomType || `Room Category ${idx + 1}`}
+                    </div>
+                    
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                      <div className="input-group">
+                        <label style={{ fontSize: '11px', fontWeight: '700', color: '#475569', display: 'block', marginBottom: '6px' }}>Base Rate (₹)</label>
+                        <input 
+                          type="text" 
+                          placeholder="e.g. 5000"
+                          value={room.price}
+                          onChange={(e) => handlePriceChange(idx, e.target.value)}
+                          style={{ padding: '8px 12px', border: '1px solid #cbd5e1', borderRadius: '6px', fontSize: '13px', width: '100%', fontWeight: '600', boxSizing: 'border-box' }}
+                        />
+                      </div>
+
+                      <div className="input-group">
+                        <label style={{ fontSize: '11px', fontWeight: '700', color: '#475569', display: 'block', marginBottom: '6px' }}>Inventory (Rooms Count)</label>
+                        <input 
+                          type="text" 
+                          placeholder="e.g. 5"
+                          value={room.count}
+                          onChange={(e) => handleInventoryChange(idx, e.target.value)}
+                          style={{ padding: '8px 12px', border: '1px solid #cbd5e1', borderRadius: '6px', fontSize: '13px', width: '100%', fontWeight: '600', boxSizing: 'border-box' }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+
+            {/* Footer */}
+            <div style={{ padding: '16px 24px', borderTop: '1px solid #e2e8f0', background: '#f8fafc', display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
+              <button 
+                onClick={() => { setIsEditModalOpen(false); setEditingProperty(null); }}
+                style={{ padding: '8px 16px', fontSize: '12px', fontWeight: '700', color: '#475569', background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '6px', cursor: 'pointer' }}
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={handleSaveChanges}
+                style={{ padding: '8px 20px', fontSize: '12px', fontWeight: '700', color: '#ffffff', background: 'linear-gradient(90deg, #ff4f5a 0%, #ff6872 100%)', border: 'none', borderRadius: '6px', cursor: 'pointer', boxShadow: '0 4px 10px rgba(255, 79, 90, 0.2)' }}
+              >
+                Save Changes
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   );
