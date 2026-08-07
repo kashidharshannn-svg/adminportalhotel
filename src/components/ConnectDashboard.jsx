@@ -6,7 +6,7 @@ import {
   dbSendChatMessage, 
   dbGetChatMessages 
 } from '../data/dbService';
-import { LayoutGrid, Mail, PlusCircle, LogOut, ShieldCheck, Home, ArrowRight, CheckCircle2, X, MessageSquare } from 'lucide-react';
+import { LayoutGrid, Mail, PlusCircle, LogOut, ShieldCheck, Home, ArrowRight, CheckCircle2, X, MessageSquare, Paperclip } from 'lucide-react';
 
 export default function ConnectDashboard({ activeUser, onLogout, onStartOnboarding }) {
   const [properties, setProperties] = useState([]);
@@ -23,6 +23,7 @@ export default function ConnectDashboard({ activeUser, onLogout, onStartOnboardi
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [chatMessages, setChatMessages] = useState([]);
   const [chatText, setChatText] = useState('');
+  const [previewDoc, setPreviewDoc] = useState(null); // { name, data }
 
   const loadProperties = async () => {
     try {
@@ -147,6 +148,39 @@ export default function ConnectDashboard({ activeUser, onLogout, onStartOnboardi
     }
   };
 
+  const handleSendChatFile = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      const reader = new FileReader();
+      reader.onload = async (event) => {
+        try {
+          const partnerName = activeUser.name || activeUser.email || 'MMT Partner';
+          await dbSendChatMessage(
+            activeUser.uid, 
+            'partner', 
+            partnerName, 
+            `Sent a file: ${file.name}`, 
+            event.target.result, 
+            file.type, 
+            file.name
+          );
+          loadChatMessages();
+        } catch (err) {
+          console.error(err);
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handlePreviewDocument = (doc) => {
+    if (doc && doc.data) {
+      setPreviewDoc(doc);
+    } else {
+      alert("No document data available to preview.");
+    }
+  };
+
   return (
     <div style={{ background: '#f5f7fa', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       
@@ -261,45 +295,69 @@ export default function ConnectDashboard({ activeUser, onLogout, onStartOnboardi
                   {properties.map((prop) => (
                     <div 
                       key={prop.id} 
-                      style={{ background: '#ffffff', border: '1px solid #e6ebf3', borderRadius: '12px', padding: '24px', display: 'grid', gridTemplateColumns: '120px 1fr auto', gap: '24px', alignItems: 'center', boxShadow: '0 2px 8px rgba(0,0,0,0.02)' }}
+                      style={{ 
+                        background: '#ffffff', 
+                        border: '1px solid' + (prop.status === 'rejected' ? ' #fca5a5' : ' #e6ebf3'), 
+                        borderRadius: '12px', padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px', 
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.02)', position: 'relative' 
+                      }}
                     >
-                      <img src={prop.image} alt={prop.name} style={{ width: '100%', height: '80px', objectFit: 'cover', borderRadius: '8px' }} />
-                      <div>
-                        <span style={{ fontSize: '9px', fontWeight: '800', color: 'var(--primary-color)', background: 'rgba(0,140,255,0.08)', padding: '2px 8px', borderRadius: '4px', textTransform: 'uppercase' }}>
-                          {prop.propertyType} • {prop.subType}
-                        </span>
-                        <h4 style={{ fontWeight: '800', fontSize: '16px', color: '#1a1a1a', marginTop: '6px' }}>{prop.name}</h4>
-                        <p style={{ fontSize: '12px', color: '#64748b', marginTop: '4px' }}>
-                          Location: <strong>{prop.city}</strong> • Built Year: {prop.yearBuilt} • Channel Manager: {prop.channelManager}
-                        </p>
+                      <div style={{ display: 'grid', gridTemplateColumns: '120px 1fr auto', gap: '24px', alignItems: 'center' }}>
+                        <img 
+                          src={prop.image || prop.coverPhoto || "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80"} 
+                          alt={prop.name} 
+                          style={{ width: '100%', height: '80px', objectFit: 'cover', borderRadius: '8px' }} 
+                        />
+                        <div>
+                          <span style={{ fontSize: '9px', fontWeight: '800', color: 'var(--primary-color)', background: 'rgba(0,140,255,0.08)', padding: '2px 8px', borderRadius: '4px', textTransform: 'uppercase' }}>
+                            {prop.propertyType} • {prop.subType}
+                          </span>
+                          <h4 style={{ fontWeight: '800', fontSize: '16px', color: '#1a1a1a', marginTop: '6px' }}>{prop.name}</h4>
+                          <p style={{ fontSize: '12px', color: '#64748b', marginTop: '4px' }}>
+                            Location: <strong>{prop.city}</strong> • Built Year: {prop.yearBuilt} • Channel Manager: {prop.channelManager}
+                          </p>
+                        </div>
+                        <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '10px' }}>
+                          <span style={{ 
+                            background: prop.status === 'approved' ? '#d1fae5' : prop.status === 'Pending Review' ? '#fffbeb' : '#fee2e2', 
+                            color: prop.status === 'approved' ? '#065f46' : prop.status === 'Pending Review' ? '#b45309' : '#991b1b', 
+                            fontSize: '11px', fontWeight: '800', padding: '4px 12px', borderRadius: '20px', display: 'inline-flex', alignItems: 'center', gap: '4px' 
+                          }}>
+                            <CheckCircle2 size={12} />
+                            {prop.status === 'approved' ? 'Approved' : prop.status === 'rejected' ? 'Rejected' : prop.status}
+                          </span>
+                          {prop.rooms && prop.rooms[0] && (
+                            <div style={{ fontSize: '13px', color: '#1a1a1a' }}>
+                              Base price: <strong style={{ fontSize: '15px' }}>₹{Number(prop.rooms[0].price || prop.rooms[0].baseRate || 0).toLocaleString('en-IN')}</strong>
+                            </div>
+                          )}
+                          {(prop.status === 'approved' || prop.status === 'rejected') && (
+                            <button 
+                              onClick={() => handleOpenEditModal(prop)}
+                              style={{ 
+                                marginTop: '4px', padding: '6px 12px', fontSize: '12px', fontWeight: '700', 
+                                color: 'var(--primary-color)', background: 'rgba(0,140,255,0.06)', border: '1px dashed var(--primary-color)',
+                                borderRadius: '6px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '4px' 
+                              }}
+                            >
+                              ⚙️ Edit Price & Photos
+                            </button>
+                          )}
+                        </div>
                       </div>
-                      <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '10px' }}>
-                        <span style={{ 
-                          background: prop.status === 'approved' ? '#d1fae5' : prop.status === 'Pending Review' ? '#fffbeb' : '#fee2e2', 
-                          color: prop.status === 'approved' ? '#065f46' : prop.status === 'Pending Review' ? '#b45309' : '#991b1b', 
-                          fontSize: '11px', fontWeight: '800', padding: '4px 12px', borderRadius: '20px', display: 'inline-flex', alignItems: 'center', gap: '4px' 
-                        }}>
-                          <CheckCircle2 size={12} />
-                          {prop.status}
-                        </span>
-                        {prop.rooms && prop.rooms[0] && (
-                          <div style={{ fontSize: '13px', color: '#1a1a1a' }}>
-                            Base price: <strong style={{ fontSize: '15px' }}>₹{Number(prop.rooms[0].price || prop.rooms[0].baseRate || 0).toLocaleString('en-IN')}</strong>
+
+                      {/* Display rejection reason warning box */}
+                      {prop.status === 'rejected' && (
+                        <div style={{ background: '#fef2f2', border: '1px solid #fca5a5', padding: '12px 16px', borderRadius: '8px', display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
+                          <span style={{ fontSize: '16px' }}>⚠️</span>
+                          <div>
+                            <span style={{ color: '#b91c1c', fontWeight: '800', fontSize: '11.5px', display: 'block' }}>Property Verification Rejected by Compliance Support</span>
+                            <p style={{ color: '#991b1b', fontSize: '11px', margin: '4px 0 0 0', lineHeight: 1.4 }}>
+                              Reason: <strong>"{prop.rejectionReason || 'Uploaded documents require correction. Please edit and re-upload correct credentials.'}"</strong>
+                            </p>
                           </div>
-                        )}
-                        {prop.status === 'approved' && (
-                          <button 
-                            onClick={() => handleOpenEditModal(prop)}
-                            style={{ 
-                              marginTop: '4px', padding: '6px 12px', fontSize: '12px', fontWeight: '700', 
-                              color: 'var(--primary-color)', background: 'rgba(0,140,255,0.06)', border: '1px dashed var(--primary-color)',
-                              borderRadius: '6px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '4px' 
-                            }}
-                          >
-                            ⚙️ Edit Price & Rooms
-                          </button>
-                        )}
-                      </div>
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -602,13 +660,64 @@ export default function ConnectDashboard({ activeUser, onLogout, onStartOnboardi
                     {msg.senderName}
                   </span>
                   {msg.text}
+
+                  {/* Shared Attachments rendering */}
+                  {msg.fileData && (
+                    <div style={{ marginTop: '6px' }}>
+                      {msg.fileType?.startsWith('image/') ? (
+                        <img 
+                          src={msg.fileData} 
+                          alt={msg.fileName}
+                          onClick={() => handlePreviewDocument({ name: msg.fileName, data: msg.fileData })}
+                          style={{ maxWidth: '100%', maxHeight: '110px', objectFit: 'contain', borderRadius: '6px', cursor: 'pointer', border: '1px solid #cbd5e1' }}
+                        />
+                      ) : msg.fileType?.startsWith('video/') ? (
+                        <video 
+                          src={msg.fileData} 
+                          controls 
+                          style={{ maxWidth: '100%', maxHeight: '140px', borderRadius: '6px' }}
+                        />
+                      ) : (
+                        <div 
+                          onClick={() => handlePreviewDocument({ name: msg.fileName, data: msg.fileData })}
+                          style={{
+                            background: 'rgba(0,140,255,0.05)', border: '1px dashed rgba(0,140,255,0.2)',
+                            padding: '6px 10px', borderRadius: '6px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px'
+                          }}
+                        >
+                          <span style={{ fontSize: '16px' }}>📄</span>
+                          <div style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                            <span style={{ fontSize: '9.5px', fontWeight: 'bold', color: '#ff4f5a', display: 'block' }}>{msg.fileName}</span>
+                            <span style={{ fontSize: '8px', color: '#64748b' }}>Click to view document</span>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               );
             })}
           </div>
 
           {/* Input Footer */}
-          <div style={{ padding: '12px', borderTop: '1px solid #e2e8f0', background: '#ffffff', display: 'flex', gap: '8px' }}>
+          <div style={{ padding: '12px', borderTop: '1px solid #e2e8f0', background: '#ffffff', display: 'flex', gap: '8px', alignItems: 'center' }}>
+            {/* Attachment Button */}
+            <button 
+              type="button"
+              onClick={() => document.getElementById('partner-chat-file-input').click()}
+              style={{ background: 'transparent', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '4px', color: '#64748b' }}
+              title="Attach Photo / Video / PDF"
+            >
+              <Paperclip size={18} />
+            </button>
+            <input 
+              id="partner-chat-file-input"
+              type="file"
+              accept="image/*,video/*,application/pdf"
+              style={{ display: 'none' }}
+              onChange={handleSendChatFile}
+            />
+
             <input 
               type="text"
               placeholder="Ask support a question..."
@@ -629,6 +738,52 @@ export default function ConnectDashboard({ activeUser, onLogout, onStartOnboardi
             >
               Send
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* ================= DOCUMENT PREVIEW MODAL ================= */}
+      {previewDoc && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
+          background: 'rgba(15, 23, 42, 0.6)', backdropFilter: 'blur(4px)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 300000,
+          padding: '20px'
+        }}>
+          <div style={{
+            background: '#ffffff', width: '100%', maxWidth: '700px', borderRadius: '16px',
+            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)', overflow: 'hidden',
+            display: 'flex', flexDirection: 'column', height: '80vh'
+          }}>
+            {/* Header */}
+            <div style={{ padding: '16px 20px', borderBottom: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#f8fafc' }}>
+              <div>
+                <h4 style={{ fontSize: '14px', fontWeight: '800', color: '#0f172a', margin: 0 }}>Document Preview</h4>
+                <p style={{ fontSize: '11px', color: '#64748b', margin: 0 }}>File: {previewDoc.name}</p>
+              </div>
+              <button 
+                onClick={() => setPreviewDoc(null)}
+                style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#475569', fontSize: '13px', fontWeight: '800' }}
+              >
+                ✕ Close
+              </button>
+            </div>
+            {/* Viewer */}
+            <div style={{ flexGrow: 1, background: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px', overflow: 'auto' }}>
+              {previewDoc.data && previewDoc.data.startsWith('data:application/pdf') ? (
+                <iframe 
+                  src={previewDoc.data} 
+                  style={{ width: '100%', height: '100%', border: 'none', borderRadius: '8px' }} 
+                  title="PDF Document"
+                />
+              ) : (
+                <img 
+                  src={previewDoc.data} 
+                  alt="Preview" 
+                  style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain', borderRadius: '8px', border: '1px solid #cbd5e1' }} 
+                />
+              )}
+            </div>
           </div>
         </div>
       )}

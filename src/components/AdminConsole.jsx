@@ -1,16 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  dbGetPendingListings, 
+  dbGetAdminListings, 
   dbUpdateListingStatus, 
   dbSendChatMessage, 
   dbGetChatMessages, 
   dbGetAllChatsForAdmin 
 } from '../data/dbService';
-import { ShieldCheck, LogOut, Check, X, Building, MapPin, Eye, FileText, ArrowRight, MessageSquare } from 'lucide-react';
+import { ShieldCheck, LogOut, Check, X, Building, MapPin, Eye, FileText, ArrowRight, MessageSquare, Paperclip } from 'lucide-react';
 
 export default function AdminConsole({ activeUser, onLogout }) {
   const [pendingListings, setPendingListings] = useState([]);
   const [selectedListing, setSelectedListing] = useState(null);
+
+  // Status Tab selection
+  const [activeStatusTab, setActiveStatusTab] = useState('Pending Review'); // 'Pending Review', 'approved', 'rejected'
 
   // Document Preview Modal State
   const [previewDoc, setPreviewDoc] = useState(null); // { name, data }
@@ -22,13 +25,16 @@ export default function AdminConsole({ activeUser, onLogout }) {
   const [selectedPartnerName, setSelectedPartnerName] = useState('');
   const [adminChatText, setAdminChatText] = useState('');
 
-  const loadPending = async () => {
+  const loadListings = async () => {
     try {
-      const list = await dbGetPendingListings();
+      const list = await dbGetAdminListings(activeStatusTab);
       setPendingListings(list);
-      if (list.length > 0 && !selectedListing) {
-        setSelectedListing(list[0]);
-      } else if (list.length === 0) {
+      // Auto-select listing in current view
+      if (list.length > 0) {
+        if (!selectedListing || selectedListing.status !== activeStatusTab) {
+          setSelectedListing(list[0]);
+        }
+      } else {
         setSelectedListing(null);
       }
     } catch (err) {
@@ -46,29 +52,34 @@ export default function AdminConsole({ activeUser, onLogout }) {
   };
 
   useEffect(() => {
-    loadPending();
+    loadListings();
+  }, [activeStatusTab]);
+
+  useEffect(() => {
     loadAdminChats();
     const interval = setInterval(loadAdminChats, 4000);
     return () => clearInterval(interval);
   }, []);
 
-  const handleAction = async (propertyId, status) => {
+  const handleAction = async (propertyId, status, rejectionReason = '') => {
     try {
-      await dbUpdateListingStatus(propertyId, 'Hotel', status);
+      await dbUpdateListingStatus(propertyId, 'Hotel', status, rejectionReason);
       alert(`Property has been ${status === 'approved' ? 'Approved & Listed live! ✅' : 'Rejected. ❌'}`);
-      
-      // Reload lists
-      const list = await dbGetPendingListings();
-      setPendingListings(list);
-      // Reset selected or take first
-      if (list.length > 0) {
-        setSelectedListing(list[0]);
-      } else {
-        setSelectedListing(null);
-      }
+      loadListings();
     } catch (err) {
       alert(err.message);
     }
+  };
+
+  const handleReject = async () => {
+    if (!selectedListing) return;
+    const reason = prompt("Enter Rejection Reason (e.g. Invalid document files, incorrect price rates, etc.):");
+    if (reason === null) return; // cancelled
+    if (!reason.trim()) {
+      alert("Rejection reason is required!");
+      return;
+    }
+    await handleAction(selectedListing.id, 'rejected', reason.trim());
   };
 
   const handleSendAdminReply = async () => {
@@ -79,6 +90,30 @@ export default function AdminConsole({ activeUser, onLogout }) {
       loadAdminChats();
     } catch (err) {
       console.error(err);
+    }
+  };
+
+  const handleSendAdminFile = (e) => {
+    if (e.target.files && e.target.files[0] && selectedPartnerId) {
+      const file = e.target.files[0];
+      const reader = new FileReader();
+      reader.onload = async (event) => {
+        try {
+          await dbSendChatMessage(
+            selectedPartnerId, 
+            'admin', 
+            'MMT Admin Support', 
+            `Sent a file: ${file.name}`, 
+            event.target.result, 
+            file.type, 
+            file.name
+          );
+          loadAdminChats();
+        } catch (err) {
+          console.error(err);
+        }
+      };
+      reader.readAsDataURL(file);
     }
   };
 
@@ -148,9 +183,28 @@ export default function AdminConsole({ activeUser, onLogout }) {
         
         {/* Left Column: Properties Queue list */}
         <aside style={{ background: '#071625', borderRight: '1px solid #1e293b', padding: '24px 16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-          <h4 style={{ fontSize: '14px', fontWeight: '800', color: '#94a3b8', textTransform: 'uppercase', borderBottom: '1px solid #1e293b', paddingBottom: '8px', marginBottom: '8px', textAlign: 'left' }}>
-            Review Queue ({pendingListings.length})
+          <h4 style={{ fontSize: '13px', fontWeight: '850', color: '#f8fafc', textTransform: 'uppercase', borderBottom: '1px solid #1e293b', paddingBottom: '8px', marginBottom: '4px', textAlign: 'left' }}>
+            Registration Queue ({pendingListings.length})
           </h4>
+
+          {/* Status Tabs Header */}
+          <div style={{ display: 'flex', gap: '4px', background: '#0a1d30', padding: '3px', borderRadius: '8px', border: '1px solid #1e293b', marginBottom: '8px' }}>
+            {['Pending Review', 'approved', 'rejected'].map((tab) => (
+              <button
+                key={tab}
+                onClick={() => setActiveStatusTab(tab)}
+                style={{
+                  flexGrow: 1, padding: '6px 4px', fontSize: '9px', fontWeight: '800',
+                  borderRadius: '6px', border: 'none', cursor: 'pointer',
+                  background: activeStatusTab === tab ? '#ff4f5a' : 'transparent',
+                  color: activeStatusTab === tab ? 'white' : '#94a3b8',
+                  textTransform: 'uppercase', transition: 'all 0.2s'
+                }}
+              >
+                {tab === 'Pending Review' ? 'Pending' : tab}
+              </button>
+            ))}
+          </div>
 
           {pendingListings.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '40px 10px', color: '#64748b', fontSize: '12px' }}>
@@ -196,8 +250,11 @@ export default function AdminConsole({ activeUser, onLogout }) {
               {/* Top Banner Row */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '1px solid #1e293b', paddingBottom: '20px', marginBottom: '30px' }}>
                 <div>
-                  <span style={{ background: '#f59e0b', color: '#ffffff', fontSize: '10px', fontWeight: '800', padding: '3px 8px', borderRadius: '4px', textTransform: 'uppercase' }}>
-                    PENDING COMPLIANCE CHECK
+                  <span style={{ 
+                    background: selectedListing.status === 'approved' ? '#10b981' : selectedListing.status === 'rejected' ? '#ef4444' : '#f59e0b', 
+                    color: '#ffffff', fontSize: '10px', fontWeight: '800', padding: '3px 8px', borderRadius: '4px', textTransform: 'uppercase' 
+                  }}>
+                    {selectedListing.status === 'approved' ? 'Approved & Listed Live' : selectedListing.status === 'rejected' ? 'Rejected' : 'Pending Compliance Check'}
                   </span>
                   <h2 style={{ fontSize: '24px', fontWeight: '900', marginTop: '8px', color: '#f8fafc' }}>{selectedListing.name}</h2>
                   <p style={{ fontSize: '12px', color: '#94a3b8', marginTop: '4px' }}>
@@ -206,22 +263,40 @@ export default function AdminConsole({ activeUser, onLogout }) {
                 </div>
 
                 {/* Approve/Reject Controls */}
-                <div style={{ display: 'flex', gap: '12px' }}>
-                  <button 
-                    onClick={() => handleAction(selectedListing.id, 'rejected')}
-                    style={{ background: '#fee2e2', color: '#991b1b', border: 'none', padding: '10px 20px', borderRadius: '6px', fontSize: '13px', fontWeight: '800', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}
-                  >
-                    <X size={14} /> Reject
-                  </button>
-                  
-                  <button 
-                    onClick={() => handleAction(selectedListing.id, 'approved')}
-                    style={{ background: '#d1fae5', color: '#065f46', border: 'none', padding: '10px 24px', borderRadius: '6px', fontSize: '13px', fontWeight: '800', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}
-                  >
-                    <Check size={14} /> Approve & List Live
-                  </button>
-                </div>
+                {selectedListing.status === 'Pending Review' ? (
+                  <div style={{ display: 'flex', gap: '12px' }}>
+                    <button 
+                      onClick={handleReject}
+                      style={{ background: '#fee2e2', color: '#991b1b', border: 'none', padding: '10px 20px', borderRadius: '6px', fontSize: '13px', fontWeight: '800', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}
+                    >
+                      <X size={14} /> Reject
+                    </button>
+                    
+                    <button 
+                      onClick={() => handleAction(selectedListing.id, 'approved')}
+                      style={{ background: '#d1fae5', color: '#065f46', border: 'none', padding: '10px 24px', borderRadius: '6px', fontSize: '13px', fontWeight: '800', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}
+                    >
+                      <Check size={14} /> Approve & List Live
+                    </button>
+                  </div>
+                ) : (
+                  <div style={{ fontSize: '13px', fontWeight: '800', color: selectedListing.status === 'approved' ? '#10b981' : '#ef4444', display: 'flex', alignItems: 'center', gap: '4px', padding: '8px 12px', border: '1px solid', borderRadius: '6px', background: selectedListing.status === 'approved' ? 'rgba(16,185,129,0.08)' : 'rgba(239,68,68,0.08)' }}>
+                    {selectedListing.status === 'approved' ? '✅ APPROVED' : '❌ REJECTED'}
+                  </div>
+                )}
               </div>
+
+              {/* REJECTION REASON CARD */}
+              {selectedListing.status === 'rejected' && (
+                <div style={{ background: 'rgba(239, 68, 68, 0.1)', border: '1px solid #ef4444', borderRadius: '12px', padding: '16px', marginBottom: '24px' }}>
+                  <h5 style={{ color: '#ef4444', fontWeight: '800', fontSize: '13px', margin: '0 0 6px 0', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    ⚠️ Rejection Reason (Reported to Partner)
+                  </h5>
+                  <p style={{ color: '#fca5a5', fontSize: '12px', margin: 0, fontWeight: '600' }}>
+                    "{selectedListing.rejectionReason || 'No reason provided.'}"
+                  </p>
+                </div>
+              )}
 
               {/* Inspector Content Sections */}
               <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '30px', alignItems: 'start' }}>
@@ -241,6 +316,27 @@ export default function AdminConsole({ activeUser, onLogout }) {
                         Cover Photo
                       </div>
                     </div>
+                    {/* Additional Photos Grid */}
+                    {selectedListing.uploadedPhotos && selectedListing.uploadedPhotos.length > 0 && (
+                      <div style={{ padding: '12px', borderTop: '1px solid #1e293b' }}>
+                        <span style={{ fontSize: '10px', fontWeight: '800', color: '#94a3b8', textTransform: 'uppercase', display: 'block', marginBottom: '8px' }}>
+                          Uploaded Property Photos ({selectedListing.uploadedPhotos.length})
+                        </span>
+                        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                          {selectedListing.uploadedPhotos.map((photo, pIdx) => (
+                            <div 
+                              key={pIdx} 
+                              onClick={() => {
+                                handlePreviewDocument({ name: `Photo ${pIdx + 1}`, data: photo });
+                              }}
+                              style={{ width: '52px', height: '52px', borderRadius: '6px', border: '1px solid #1e293b', overflow: 'hidden', cursor: 'pointer', boxSizing: 'border-box' }}
+                            >
+                              <img src={photo} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   {/* Rooms Configuration */}
@@ -424,7 +520,7 @@ export default function AdminConsole({ activeUser, onLogout }) {
           </div>
 
           {/* Box Body */}
-          <div style={{ flexGrow: 1, overflowY: 'auto', padding: '16px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          <div style={{ flexGrow: 1, overflowY: 'auto', padding: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
             {!selectedPartnerId ? (
               // Chat Threads List View
               chatGroupList.length === 0 ? (
@@ -476,13 +572,48 @@ export default function AdminConsole({ activeUser, onLogout }) {
                         borderBottomRightRadius: isAdmin ? '2px' : '12px',
                         borderBottomLeftRadius: isAdmin ? '12px' : '2px',
                         fontSize: '11px',
-                        boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
+                        boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
+                        lineHeight: 1.4
                       }}
                     >
                       <span style={{ fontSize: '8px', opacity: 0.8, display: 'block', marginBottom: '2px', fontWeight: 'bold' }}>
                         {msg.senderName}
                       </span>
                       {msg.text}
+
+                      {/* Shared Attachments rendering */}
+                      {msg.fileData && (
+                        <div style={{ marginTop: '6px' }}>
+                          {msg.fileType?.startsWith('image/') ? (
+                            <img 
+                              src={msg.fileData} 
+                              alt={msg.fileName}
+                              onClick={() => handlePreviewDocument({ name: msg.fileName, data: msg.fileData })}
+                              style={{ maxWidth: '100%', maxHeight: '110px', objectFit: 'contain', borderRadius: '6px', cursor: 'pointer', border: '1px solid rgba(255,255,255,0.1)' }}
+                            />
+                          ) : msg.fileType?.startsWith('video/') ? (
+                            <video 
+                              src={msg.fileData} 
+                              controls 
+                              style={{ maxWidth: '100%', maxHeight: '140px', borderRadius: '6px' }}
+                            />
+                          ) : (
+                            <div 
+                              onClick={() => handlePreviewDocument({ name: msg.fileName, data: msg.fileData })}
+                              style={{
+                                background: 'rgba(255,255,255,0.08)', border: '1px dashed rgba(255,255,255,0.2)',
+                                padding: '6px 10px', borderRadius: '6px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px'
+                              }}
+                            >
+                              <span style={{ fontSize: '16px' }}>📄</span>
+                              <div style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                <span style={{ fontSize: '9px', fontWeight: 'bold', color: '#ff4f5a', display: 'block' }}>{msg.fileName}</span>
+                                <span style={{ fontSize: '7.5px', color: '#cbd5e1' }}>Click to view document</span>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      )}
                     </div>
                   );
                 });
@@ -492,7 +623,24 @@ export default function AdminConsole({ activeUser, onLogout }) {
 
           {/* Box Input Footer (Only in active chat mode) */}
           {selectedPartnerId && (
-            <div style={{ padding: '12px', borderTop: '1px solid #1e293b', background: '#071625', display: 'flex', gap: '8px' }}>
+            <div style={{ padding: '12px', borderTop: '1px solid #1e293b', background: '#071625', display: 'flex', gap: '8px', alignItems: 'center' }}>
+              {/* Attachment trigger */}
+              <button 
+                type="button"
+                onClick={() => document.getElementById('admin-chat-file-input').click()}
+                style={{ background: 'transparent', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '4px', color: '#cbd5e1' }}
+                title="Attach Document / Photo / Video"
+              >
+                <Paperclip size={18} />
+              </button>
+              <input 
+                id="admin-chat-file-input"
+                type="file"
+                accept="image/*,video/*,application/pdf"
+                style={{ display: 'none' }}
+                onChange={handleSendAdminFile}
+              />
+              
               <input 
                 type="text"
                 placeholder="Type reply..."
@@ -501,7 +649,7 @@ export default function AdminConsole({ activeUser, onLogout }) {
                 onKeyDown={(e) => { if (e.key === 'Enter') handleSendAdminReply(); }}
                 style={{
                   flexGrow: 1, padding: '8px 12px', border: '1px solid #1e293b', borderRadius: '8px',
-                  background: '#0a1d30', color: '#f8fafc', fontSize: '11px', boxSizing: 'border-box'
+                  background: '#0a1d30', color: '#f8fafc', fontSize: '11px', boxSizing: 'border-box', outline: 'none'
                 }}
               />
               <button 

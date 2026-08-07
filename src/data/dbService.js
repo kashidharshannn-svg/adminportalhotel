@@ -162,14 +162,14 @@ export async function dbGetPendingListings() {
   return properties.filter(p => p.status === 'Pending Review');
 }
 
-export async function dbUpdateListingStatus(propertyId, type, status) {
+export async function dbUpdateListingStatus(propertyId, type, status, rejectionReason = '') {
   if (IS_FIREBASE_ACTIVE && db) {
     const propertiesRef = collection(db, "connect_properties");
     const q = query(propertiesRef, where("id", "==", propertyId));
     const snap = await getDocs(q);
     if (!snap.empty) {
       const docRef = snap.docs[0].ref;
-      await updateDoc(docRef, { status });
+      await updateDoc(docRef, { status, rejectionReason });
       return true;
     }
     return false;
@@ -178,12 +178,24 @@ export async function dbUpdateListingStatus(propertyId, type, status) {
   const properties = JSON.parse(localStorage.getItem('connect_properties')) || [];
   const updated = properties.map(p => {
     if (p.id === propertyId) {
-      return { ...p, status: status }; // status: 'approved' or 'rejected'
+      return { ...p, status: status, rejectionReason: rejectionReason }; // status: 'approved' or 'rejected'
     }
     return p;
   });
   localStorage.setItem('connect_properties', JSON.stringify(updated));
   return true;
+}
+
+export async function dbGetAdminListings(statusFilter) {
+  if (IS_FIREBASE_ACTIVE && db) {
+    const propertiesRef = collection(db, "connect_properties");
+    const q = query(propertiesRef, where("status", "==", statusFilter));
+    const snap = await getDocs(q);
+    return snap.docs.map(doc => doc.data());
+  }
+
+  const properties = JSON.parse(localStorage.getItem('connect_properties')) || [];
+  return properties.filter(p => p.status === statusFilter);
 }
 
 export async function dbGetHotels() {
@@ -309,12 +321,15 @@ export async function dbDeleteProperty(propertyId) {
   return true;
 }
 
-export async function dbSendChatMessage(partnerId, senderRole, senderName, text) {
+export async function dbSendChatMessage(partnerId, senderRole, senderName, text, fileData = null, fileType = null, fileName = null) {
   const msg = {
     partnerId,
     senderRole, // 'partner' or 'admin'
     senderName,
     text,
+    fileData,
+    fileType,
+    fileName,
     timestamp: Date.now()
   };
 
