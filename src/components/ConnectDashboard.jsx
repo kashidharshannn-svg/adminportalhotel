@@ -81,6 +81,9 @@ export default function ConnectDashboard({ activeUser, onLogout, onStartOnboardi
   };
 
   const compressImage = (base64Str, maxWidth = 1000, maxHeight = 1000, quality = 0.6) => {
+    if (!base64Str || !base64Str.startsWith('data:image/')) {
+      return Promise.resolve(base64Str); // Skip compression for external hosted URLs
+    }
     return new Promise((resolve) => {
       const img = new Image();
       img.src = base64Str;
@@ -155,11 +158,20 @@ export default function ConnectDashboard({ activeUser, onLogout, onStartOnboardi
         return;
       }
       setIsSaving(true);
-      if (!editingCoverPhoto && editingPhotos.length > 0) {
-        await dbUpdatePropertyDetails(editingProperty.id, editingRooms, editingPhotos, editingPhotos[0]);
-      } else {
-        await dbUpdatePropertyDetails(editingProperty.id, editingRooms, editingPhotos, editingCoverPhoto);
+
+      // Compress all photos inside the save array (both new and legacy!)
+      const compressedPhotos = await Promise.all(
+        editingPhotos.map(photo => compressImage(photo))
+      );
+      
+      let finalCover = editingCoverPhoto;
+      if (finalCover) {
+        finalCover = await compressImage(finalCover);
+      } else if (compressedPhotos.length > 0) {
+        finalCover = compressedPhotos[0];
       }
+
+      await dbUpdatePropertyDetails(editingProperty.id, editingRooms, compressedPhotos, finalCover);
       alert("Property details and configurations updated successfully!");
       setIsEditModalOpen(false);
       setEditingProperty(null);
