@@ -130,16 +130,16 @@ export async function connectAddProperty(property, vendorId) {
     if (cleanProperty.finance.leasedDoc) {
       leasedDocData = cleanProperty.finance.leasedDoc.data;
       cleanProperty.finance.leasedDoc = {
-        name: cleanProperty.finance.leasedDoc.name,
-        type: cleanProperty.finance.leasedDoc.type,
+        name: cleanProperty.finance.leasedDoc.name || 'Leased_Document.pdf',
+        type: cleanProperty.finance.leasedDoc.type || 'application/pdf',
         hasData: !!leasedDocData
       };
     }
     if (cleanProperty.finance.relationshipDoc) {
       relationshipDocData = cleanProperty.finance.relationshipDoc.data;
       cleanProperty.finance.relationshipDoc = {
-        name: cleanProperty.finance.relationshipDoc.name,
-        type: cleanProperty.finance.relationshipDoc.type,
+        name: cleanProperty.finance.relationshipDoc.name || 'Relationship_Proof.pdf',
+        type: cleanProperty.finance.relationshipDoc.type || 'application/pdf',
         hasData: !!relationshipDocData
       };
     }
