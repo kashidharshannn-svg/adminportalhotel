@@ -116,12 +116,14 @@ export async function connectAddProperty(property, vendorId) {
   const propertyId = "prop-" + Date.now();
   let leasedDocData = null;
   let relationshipDocData = null;
+  const photosArray = property.uploadedPhotos || [];
 
   const cleanProperty = { 
     ...property, 
     id: propertyId, 
     vendorId, 
-    status: "Pending Review" 
+    status: "Pending Review",
+    uploadedPhotos: []
   };
 
   if (cleanProperty.finance) {
@@ -155,7 +157,10 @@ export async function connectAddProperty(property, vendorId) {
         relationshipDocData
       });
     }
-    return cleanProperty;
+    if (photosArray.length > 0) {
+      await dbSavePropertyPhotos(propertyId, photosArray);
+    }
+    return { ...cleanProperty, uploadedPhotos: photosArray };
   }
 
   const properties = JSON.parse(localStorage.getItem('connect_properties')) || [];
@@ -171,8 +176,11 @@ export async function connectAddProperty(property, vendorId) {
     });
     localStorage.setItem('connect_property_docs', JSON.stringify(docs));
   }
+  if (photosArray.length > 0) {
+    await dbSavePropertyPhotos(propertyId, photosArray);
+  }
 
-  return cleanProperty;
+  return { ...cleanProperty, uploadedPhotos: photosArray };
 }
 
 export async function connectGetPropertiesForPartner(vendorId) {
@@ -180,11 +188,24 @@ export async function connectGetPropertiesForPartner(vendorId) {
     const propertiesRef = collection(db, "connect_properties");
     const q = query(propertiesRef, where("vendorId", "==", vendorId));
     const snap = await getDocs(q);
-    return snap.docs.map(doc => doc.data());
+    const properties = snap.docs.map(doc => doc.data());
+    
+    return await Promise.all(properties.map(async (p) => {
+      const photos = await dbGetPropertyPhotos(p.id);
+      return {
+        ...p,
+        uploadedPhotos: photos || p.uploadedPhotos || []
+      };
+    }));
   }
 
   const properties = JSON.parse(localStorage.getItem('connect_properties')) || [];
-  return properties.filter(p => p.vendorId === vendorId);
+  const filtered = properties.filter(p => p.vendorId === vendorId);
+  return filtered.map(p => {
+    const allPhotos = JSON.parse(localStorage.getItem('connect_property_photos')) || [];
+    const photos = allPhotos.find(doc => doc.propertyId === p.id)?.photos || p.uploadedPhotos || [];
+    return { ...p, uploadedPhotos: photos };
+  });
 }
 
 // 3. Admin & B2C Connection Services
@@ -193,11 +214,23 @@ export async function dbGetPendingListings() {
     const propertiesRef = collection(db, "connect_properties");
     const q = query(propertiesRef, where("status", "==", "Pending Review"));
     const snap = await getDocs(q);
-    return snap.docs.map(doc => doc.data());
+    const properties = snap.docs.map(doc => doc.data());
+    return await Promise.all(properties.map(async (p) => {
+      const photos = await dbGetPropertyPhotos(p.id);
+      return {
+        ...p,
+        uploadedPhotos: photos || p.uploadedPhotos || []
+      };
+    }));
   }
 
   const properties = JSON.parse(localStorage.getItem('connect_properties')) || [];
-  return properties.filter(p => p.status === 'Pending Review');
+  const filtered = properties.filter(p => p.status === 'Pending Review');
+  return filtered.map(p => {
+    const allPhotos = JSON.parse(localStorage.getItem('connect_property_photos')) || [];
+    const photos = allPhotos.find(doc => doc.propertyId === p.id)?.photos || p.uploadedPhotos || [];
+    return { ...p, uploadedPhotos: photos };
+  });
 }
 
 export async function dbUpdateListingStatus(propertyId, type, status, rejectionReason = '') {
@@ -229,11 +262,23 @@ export async function dbGetAdminListings(statusFilter) {
     const propertiesRef = collection(db, "connect_properties");
     const q = query(propertiesRef, where("status", "==", statusFilter));
     const snap = await getDocs(q);
-    return snap.docs.map(doc => doc.data());
+    const properties = snap.docs.map(doc => doc.data());
+    return await Promise.all(properties.map(async (p) => {
+      const photos = await dbGetPropertyPhotos(p.id);
+      return {
+        ...p,
+        uploadedPhotos: photos || p.uploadedPhotos || []
+      };
+    }));
   }
 
   const properties = JSON.parse(localStorage.getItem('connect_properties')) || [];
-  return properties.filter(p => p.status === statusFilter);
+  const filtered = properties.filter(p => p.status === statusFilter);
+  return filtered.map(p => {
+    const allPhotos = JSON.parse(localStorage.getItem('connect_property_photos')) || [];
+    const photos = allPhotos.find(doc => doc.propertyId === p.id)?.photos || p.uploadedPhotos || [];
+    return { ...p, uploadedPhotos: photos };
+  });
 }
 
 export async function dbGetHotels() {
@@ -316,7 +361,7 @@ export async function dbUpdatePropertyDetails(propertyId, updatedRooms, updatedP
 
       let updatePayload = { 
         rooms: updatedRooms,
-        uploadedPhotos: updatedPhotos,
+        uploadedPhotos: [], // Strip photos from main document
         coverPhoto: updatedCoverPhoto,
         image: updatedCoverPhoto
       };
@@ -374,6 +419,7 @@ export async function dbUpdatePropertyDetails(propertyId, updatedRooms, updatedP
       }
 
       await updateDoc(docRef, updatePayload);
+      await dbSavePropertyPhotos(propertyId, updatedPhotos);
       return true;
     }
     return false;

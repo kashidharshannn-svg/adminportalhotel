@@ -80,16 +80,15 @@ export default function ConnectDashboard({ activeUser, onLogout, onStartOnboardi
     }
   };
 
-  const compressImage = (base64Str, maxWidth = 1000, maxHeight = 1000, quality = 0.6) => {
+  const compressImage = (base64Str, maxWidth = 800, maxHeight = 800, quality = 0.5) => {
     if (!base64Str || !base64Str.startsWith('data:image/')) {
       return Promise.resolve(base64Str); // Skip compression for external hosted URLs
     }
     return new Promise((resolve) => {
       const img = new Image();
-      img.src = base64Str;
       img.onload = () => {
-        let width = img.width;
-        let height = img.height;
+        let width = img.width || 800;
+        let height = img.height || 800;
         if (width > height) {
           if (width > maxWidth) {
             height = Math.round((height * maxWidth) / width);
@@ -109,6 +108,7 @@ export default function ConnectDashboard({ activeUser, onLogout, onStartOnboardi
         resolve(canvas.toDataURL('image/jpeg', quality));
       };
       img.onerror = () => resolve(base64Str);
+      img.src = base64Str;
     });
   };
 
