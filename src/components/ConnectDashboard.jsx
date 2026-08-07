@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { connectGetPropertiesForPartner, dbUpdatePropertyDetails, dbDeleteProperty } from '../data/dbService';
-import { LayoutGrid, Mail, PlusCircle, LogOut, ShieldCheck, Home, ArrowRight, CheckCircle2, X } from 'lucide-react';
+import { 
+  connectGetPropertiesForPartner, 
+  dbUpdatePropertyDetails, 
+  dbDeleteProperty, 
+  dbSendChatMessage, 
+  dbGetChatMessages 
+} from '../data/dbService';
+import { LayoutGrid, Mail, PlusCircle, LogOut, ShieldCheck, Home, ArrowRight, CheckCircle2, X, MessageSquare } from 'lucide-react';
 
 export default function ConnectDashboard({ activeUser, onLogout, onStartOnboarding }) {
   const [properties, setProperties] = useState([]);
@@ -13,6 +19,11 @@ export default function ConnectDashboard({ activeUser, onLogout, onStartOnboardi
   const [editingCoverPhoto, setEditingCoverPhoto] = useState('');
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
+  // Chatbot Support Widget States
+  const [isChatOpen, setIsChatOpen] = useState(false);
+  const [chatMessages, setChatMessages] = useState([]);
+  const [chatText, setChatText] = useState('');
+
   const loadProperties = async () => {
     try {
       const list = await connectGetPropertiesForPartner(activeUser.uid);
@@ -22,8 +33,20 @@ export default function ConnectDashboard({ activeUser, onLogout, onStartOnboardi
     }
   };
 
+  const loadChatMessages = async () => {
+    try {
+      const msgs = await dbGetChatMessages(activeUser.uid);
+      setChatMessages(msgs);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   useEffect(() => {
     loadProperties();
+    loadChatMessages();
+    const interval = setInterval(loadChatMessages, 4000);
+    return () => clearInterval(interval);
   }, [activeUser]);
 
   const handleOpenEditModal = (property) => {
@@ -109,6 +132,18 @@ export default function ConnectDashboard({ activeUser, onLogout, onStartOnboardi
         console.error(err);
         alert("Failed to delete property.");
       }
+    }
+  };
+
+  const handleSendChatMessage = async () => {
+    if (!chatText.trim()) return;
+    try {
+      const partnerName = activeUser.name || activeUser.email || 'MMT Partner';
+      await dbSendChatMessage(activeUser.uid, 'partner', partnerName, chatText.trim());
+      setChatText('');
+      loadChatMessages();
+    } catch (err) {
+      console.error(err);
     }
   };
 
@@ -489,6 +524,111 @@ export default function ConnectDashboard({ activeUser, onLogout, onStartOnboardi
                 </button>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* ================= FLOATING HELP & SUPPORT CHAT BUTTON ================= */}
+      <button
+        onClick={() => setIsChatOpen(!isChatOpen)}
+        style={{
+          position: 'fixed', bottom: '24px', right: '24px', width: '56px', height: '56px',
+          borderRadius: '50%', background: '#ff4f5a', border: 'none', cursor: 'pointer',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ffffff',
+          boxShadow: '0 8px 24px rgba(255, 79, 90, 0.4)', zIndex: 190000, transition: 'transform 0.2s'
+        }}
+        title="MMT Support Chatbot"
+      >
+        <MessageSquare size={24} />
+      </button>
+
+      {/* ================= SUPPORT CHAT POPUP WINDOW ================= */}
+      {isChatOpen && (
+        <div style={{
+          position: 'fixed', bottom: '90px', right: '24px', width: '330px', height: '440px',
+          background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '16px',
+          boxShadow: '0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1)', zIndex: 195000,
+          display: 'flex', flexDirection: 'column', overflow: 'hidden', textAlign: 'left'
+        }}>
+          {/* Header */}
+          <div style={{ padding: '16px 20px', borderBottom: '1px solid #e2e8f0', background: 'linear-gradient(90deg, #ff4f5a 0%, #ff6872 100%)', color: '#ffffff', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div>
+              <h5 style={{ fontSize: '13px', fontWeight: '800', margin: 0 }}>MakeMyTrip Connect Support</h5>
+              <span style={{ fontSize: '9px', color: '#ffe4e6', marginTop: '2px', display: 'block' }}>We respond in real-time</span>
+            </div>
+            <button 
+              onClick={() => setIsChatOpen(false)}
+              style={{ background: 'transparent', border: 'none', color: '#ffffff', cursor: 'pointer', fontSize: '14px', fontWeight: '800' }}
+            >
+              ✕
+            </button>
+          </div>
+
+          {/* Chat Messages Log */}
+          <div style={{ flexGrow: 1, overflowY: 'auto', padding: '16px', display: 'flex', flexDirection: 'column', gap: '12px', background: '#f8fafc' }}>
+            {/* System welcome message if no history exists */}
+            {chatMessages.length === 0 && (
+              <div style={{
+                alignSelf: 'flex-start', maxWidth: '85%', background: '#ffffff',
+                border: '1px solid #e2e8f0', color: '#1e293b', padding: '8px 12px',
+                borderRadius: '12px', borderBottomLeftRadius: '2px', fontSize: '11px', lineHeight: 1.4
+              }}>
+                <span style={{ fontSize: '9px', color: '#94a3b8', display: 'block', marginBottom: '2px', fontWeight: 'bold' }}>MMT Support Assistant</span>
+                Hi there! Welcome to the MakeMyTrip onboarding help desk. How can we help you resolve pricing updates, compliance documents, or approvals?
+              </div>
+            )}
+
+            {chatMessages.map((msg, index) => {
+              const isMe = msg.senderRole === 'partner';
+              return (
+                <div 
+                  key={index} 
+                  style={{
+                    alignSelf: isMe ? 'flex-end' : 'flex-start',
+                    maxWidth: '85%',
+                    background: isMe ? '#ff4f5a' : '#ffffff',
+                    border: isMe ? 'none' : '1px solid #e2e8f0',
+                    color: isMe ? '#ffffff' : '#1e293b',
+                    padding: '8px 12px',
+                    borderRadius: '12px',
+                    borderBottomRightRadius: isMe ? '2px' : '12px',
+                    borderBottomLeftRadius: isMe ? '12px' : '2px',
+                    fontSize: '11px',
+                    lineHeight: 1.4,
+                    boxShadow: '0 1px 3px rgba(0,0,0,0.02)'
+                  }}
+                >
+                  <span style={{ fontSize: '8px', opacity: 0.8, display: 'block', marginBottom: '2px', fontWeight: 'bold' }}>
+                    {msg.senderName}
+                  </span>
+                  {msg.text}
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Input Footer */}
+          <div style={{ padding: '12px', borderTop: '1px solid #e2e8f0', background: '#ffffff', display: 'flex', gap: '8px' }}>
+            <input 
+              type="text"
+              placeholder="Ask support a question..."
+              value={chatText}
+              onChange={(e) => setChatText(e.target.value)}
+              onKeyDown={(e) => { if (e.key === 'Enter') handleSendChatMessage(); }}
+              style={{
+                flexGrow: 1, padding: '8px 12px', border: '1px solid #cbd5e1', borderRadius: '8px',
+                fontSize: '11.5px', outline: 'none', boxSizing: 'border-box'
+              }}
+            />
+            <button 
+              onClick={handleSendChatMessage}
+              style={{
+                background: '#ff4f5a', border: 'none', color: '#ffffff', fontWeight: '700',
+                padding: '8px 14px', borderRadius: '8px', fontSize: '11px', cursor: 'pointer'
+              }}
+            >
+              Send
+            </button>
           </div>
         </div>
       )}

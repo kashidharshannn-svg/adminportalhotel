@@ -527,8 +527,17 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
       amenities: yesAmenities,
       rooms,
       image: coverPhoto || "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80",
+      uploadedPhotos: uploadedPhotos,
+      coverPhoto: coverPhoto,
       policies: { checkInTime, checkOutTime, cancelPolicy },
-      finance: { panNumber, gstNumber, accountNumber, bankName }
+      finance: { 
+        panNumber, 
+        gstNumber, 
+        accountNumber, 
+        bankName,
+        leasedDoc: uploadedLeasedDoc, // { name, data }
+        relationshipDoc: uploadedRelationshipDoc // { name, data }
+      }
     };
 
     try {
@@ -2490,13 +2499,21 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
                               style={{ display: 'none' }}
                               onChange={(e) => {
                                 if (e.target.files && e.target.files[0]) {
-                                  setUploadedLeasedDoc(e.target.files[0].name);
+                                  const file = e.target.files[0];
+                                  const reader = new FileReader();
+                                  reader.onload = (event) => {
+                                    setUploadedLeasedDoc({
+                                      name: file.name,
+                                      data: event.target.result
+                                    });
+                                  };
+                                  reader.readAsDataURL(file);
                                 }
                               }}
                             />
                             {uploadedLeasedDoc ? (
                               <div style={{ fontSize: '11px', color: '#15803d', fontWeight: 'bold' }}>
-                                ✓ Attached: {uploadedLeasedDoc} (Click to replace)
+                                ✓ Attached: {uploadedLeasedDoc.name || uploadedLeasedDoc} (Click to replace)
                               </div>
                             ) : (
                               <div>
@@ -2543,13 +2560,21 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
                               style={{ display: 'none' }}
                               onChange={(e) => {
                                 if (e.target.files && e.target.files[0]) {
-                                  setUploadedRelationshipDoc(e.target.files[0].name);
+                                  const file = e.target.files[0];
+                                  const reader = new FileReader();
+                                  reader.onload = (event) => {
+                                    setUploadedRelationshipDoc({
+                                      name: file.name,
+                                      data: event.target.result
+                                    });
+                                  };
+                                  reader.readAsDataURL(file);
                                 }
                               }}
                             />
                             {uploadedRelationshipDoc ? (
                               <div style={{ fontSize: '11px', color: '#15803d', fontWeight: 'bold' }}>
-                                ✓ Attached: {uploadedRelationshipDoc} (Click to replace)
+                                ✓ Attached: {uploadedRelationshipDoc.name || uploadedRelationshipDoc} (Click to replace)
                               </div>
                             ) : (
                               <div>

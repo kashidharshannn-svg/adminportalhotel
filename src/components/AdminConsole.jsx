@@ -1,10 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import { dbGetPendingListings, dbUpdateListingStatus } from '../data/dbService';
-import { ShieldCheck, LogOut, Check, X, Building, MapPin, Eye, FileText, ArrowRight } from 'lucide-react';
+import { 
+  dbGetPendingListings, 
+  dbUpdateListingStatus, 
+  dbSendChatMessage, 
+  dbGetChatMessages, 
+  dbGetAllChatsForAdmin 
+} from '../data/dbService';
+import { ShieldCheck, LogOut, Check, X, Building, MapPin, Eye, FileText, ArrowRight, MessageSquare } from 'lucide-react';
 
 export default function AdminConsole({ activeUser, onLogout }) {
   const [pendingListings, setPendingListings] = useState([]);
   const [selectedListing, setSelectedListing] = useState(null);
+
+  // Document Preview Modal State
+  const [previewDoc, setPreviewDoc] = useState(null); // { name, data }
+
+  // Admin Chat Support States
+  const [isAdminChatOpen, setIsAdminChatOpen] = useState(false);
+  const [allChatMessages, setAllChatMessages] = useState([]);
+  const [selectedPartnerId, setSelectedPartnerId] = useState(null);
+  const [selectedPartnerName, setSelectedPartnerName] = useState('');
+  const [adminChatText, setAdminChatText] = useState('');
 
   const loadPending = async () => {
     try {
@@ -20,8 +36,20 @@ export default function AdminConsole({ activeUser, onLogout }) {
     }
   };
 
+  const loadAdminChats = async () => {
+    try {
+      const msgs = await dbGetAllChatsForAdmin();
+      setAllChatMessages(msgs);
+    } catch (err) {
+      console.error("Error loading admin chats", err);
+    }
+  };
+
   useEffect(() => {
     loadPending();
+    loadAdminChats();
+    const interval = setInterval(loadAdminChats, 4000);
+    return () => clearInterval(interval);
   }, []);
 
   const handleAction = async (propertyId, status) => {
@@ -42,6 +70,49 @@ export default function AdminConsole({ activeUser, onLogout }) {
       alert(err.message);
     }
   };
+
+  const handleSendAdminReply = async () => {
+    if (!adminChatText.trim() || !selectedPartnerId) return;
+    try {
+      await dbSendChatMessage(selectedPartnerId, 'admin', 'MMT Admin Support', adminChatText.trim());
+      setAdminChatText('');
+      loadAdminChats();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handlePreviewDocument = (doc) => {
+    if (doc && doc.data) {
+      setPreviewDoc(doc);
+    } else {
+      alert("No document data available to preview.");
+    }
+  };
+
+  // Group messages by partnerId
+  const chatGroups = allChatMessages.reduce((groups, msg) => {
+    if (!groups[msg.partnerId]) {
+      groups[msg.partnerId] = {
+        partnerId: msg.partnerId,
+        partnerName: msg.senderRole === 'partner' ? msg.senderName : 'Partner Support Request',
+        lastMessage: msg.text,
+        timestamp: msg.timestamp,
+        messages: []
+      };
+    }
+    groups[msg.partnerId].messages.push(msg);
+    if (msg.senderRole === 'partner') {
+      groups[msg.partnerId].partnerName = msg.senderName;
+    }
+    if (msg.timestamp > groups[msg.partnerId].timestamp) {
+      groups[msg.partnerId].lastMessage = msg.text;
+      groups[msg.partnerId].timestamp = msg.timestamp;
+    }
+    return groups;
+  }, {});
+
+  const chatGroupList = Object.values(chatGroups).sort((a, b) => b.timestamp - a.timestamp);
 
   return (
     <div style={{ background: '#091522', minHeight: '100vh', display: 'flex', flexDirection: 'column', color: '#f8fafc' }}>
@@ -161,7 +232,11 @@ export default function AdminConsole({ activeUser, onLogout }) {
                   {/* Photo & Video Cover */}
                   <div style={{ background: '#0a1d30', border: '1px solid #1e293b', borderRadius: '12px', overflow: 'hidden' }}>
                     <div style={{ height: '200px', width: '100%', position: 'relative' }}>
-                      <img src={selectedListing.image} alt="Cover image" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      <img 
+                        src={selectedListing.image || selectedListing.coverPhoto || "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80"} 
+                        alt="Cover image" 
+                        style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                      />
                       <div style={{ position: 'absolute', bottom: '10px', left: '10px', background: 'rgba(0,0,0,0.7)', padding: '4px 10px', borderRadius: '4px', fontSize: '11px' }}>
                         Cover Photo
                       </div>
@@ -257,16 +332,34 @@ export default function AdminConsole({ activeUser, onLogout }) {
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                       <div style={{ background: '#071625', padding: '10px', borderRadius: '6px', border: '1px solid #1e293b' }}>
                         <span style={{ fontSize: '11px', color: '#94a3b8', display: 'block' }}>Leased Premises Document:</span>
-                        <strong style={{ fontSize: '11px', color: '#10b981', display: 'flex', alignItems: 'center', gap: '4px', marginTop: '2px' }}>
-                          📄 Leave_License_Agreement_Signed.pdf <Eye size={12} style={{ cursor: 'pointer', color: '#ff4f5a' }} />
-                        </strong>
+                        {selectedListing.finance?.leasedDoc ? (
+                          <strong style={{ fontSize: '11px', color: '#10b981', display: 'flex', alignItems: 'center', gap: '6px', marginTop: '2px' }}>
+                            📄 {selectedListing.finance.leasedDoc.name || 'Leased_Document.pdf'}
+                            <Eye 
+                              size={14} 
+                              style={{ cursor: 'pointer', color: '#ff4f5a' }} 
+                              onClick={() => handlePreviewDocument(selectedListing.finance.leasedDoc)}
+                            />
+                          </strong>
+                        ) : (
+                          <span style={{ fontSize: '11px', color: '#64748b', display: 'block', marginTop: '2px' }}>No document uploaded</span>
+                        )}
                       </div>
 
                       <div style={{ background: '#071625', padding: '10px', borderRadius: '6px', border: '1px solid #1e293b' }}>
                         <span style={{ fontSize: '11px', color: '#94a3b8', display: 'block' }}>Address / Relationship Proof:</span>
-                        <strong style={{ fontSize: '11px', color: '#10b981', display: 'flex', alignItems: 'center', gap: '4px', marginTop: '2px' }}>
-                          📄 Relationship_Proof_Electricity_Bill.pdf <Eye size={12} style={{ cursor: 'pointer', color: '#ff4f5a' }} />
-                        </strong>
+                        {selectedListing.finance?.relationshipDoc ? (
+                          <strong style={{ fontSize: '11px', color: '#10b981', display: 'flex', alignItems: 'center', gap: '6px', marginTop: '2px' }}>
+                            📄 {selectedListing.finance.relationshipDoc.name || 'Relationship_Proof.pdf'}
+                            <Eye 
+                              size={14} 
+                              style={{ cursor: 'pointer', color: '#ff4f5a' }} 
+                              onClick={() => handlePreviewDocument(selectedListing.finance.relationshipDoc)}
+                            />
+                          </strong>
+                        ) : (
+                          <span style={{ fontSize: '11px', color: '#64748b', display: 'block', marginTop: '2px' }}>No document uploaded</span>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -286,6 +379,191 @@ export default function AdminConsole({ activeUser, onLogout }) {
         </main>
 
       </div>
+
+      {/* ================= FLOATING SUPPORT CHAT BUTTON ================= */}
+      <button
+        onClick={() => setIsAdminChatOpen(!isAdminChatOpen)}
+        style={{
+          position: 'fixed', bottom: '24px', right: '24px', width: '56px', height: '56px',
+          borderRadius: '50%', background: '#ff4f5a', border: 'none', cursor: 'pointer',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ffffff',
+          boxShadow: '0 8px 24px rgba(255, 79, 90, 0.4)', zIndex: 190000, transition: 'transform 0.2s'
+        }}
+        title="Partner Support Chats"
+      >
+        <MessageSquare size={24} />
+      </button>
+
+      {/* ================= ADMIN CHAT WORKSPACE BOX ================= */}
+      {isAdminChatOpen && (
+        <div style={{
+          position: 'fixed', bottom: '90px', right: '24px', width: '360px', height: '480px',
+          background: '#0a1d30', border: '1px solid #1e293b', borderRadius: '16px',
+          boxShadow: '0 12px 30px rgba(0, 0, 0, 0.5)', zIndex: 195000,
+          display: 'flex', flexDirection: 'column', overflow: 'hidden'
+        }}>
+          {/* Box Header */}
+          <div style={{ padding: '16px 20px', borderBottom: '1px solid #1e293b', background: '#071625', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <MessageSquare size={16} style={{ color: '#ff4f5a' }} />
+              <div>
+                <h5 style={{ fontSize: '13px', fontWeight: '800', color: '#f8fafc', margin: 0 }}>Partner Support Center</h5>
+                <span style={{ fontSize: '9px', color: '#94a3b8' }}>
+                  {selectedPartnerId ? `Chatting with ${selectedPartnerName}` : 'Select a Partner'}
+                </span>
+              </div>
+            </div>
+            {selectedPartnerId && (
+              <button 
+                onClick={() => { setSelectedPartnerId(null); setSelectedPartnerName(''); }}
+                style={{ background: '#0a1d30', border: '1px solid #1e293b', color: '#cbd5e1', fontSize: '9px', fontWeight: '700', padding: '3px 8px', borderRadius: '4px', cursor: 'pointer' }}
+              >
+                ← Back
+              </button>
+            )}
+          </div>
+
+          {/* Box Body */}
+          <div style={{ flexGrow: 1, overflowY: 'auto', padding: '16px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            {!selectedPartnerId ? (
+              // Chat Threads List View
+              chatGroupList.length === 0 ? (
+                <div style={{ textAlign: 'center', color: '#64748b', fontSize: '11px', marginTop: '100px' }}>
+                  No active support requests from partners yet.
+                </div>
+              ) : (
+                chatGroupList.map((group) => (
+                  <div 
+                    key={group.partnerId}
+                    onClick={() => {
+                      setSelectedPartnerId(group.partnerId);
+                      setSelectedPartnerName(group.partnerName);
+                    }}
+                    style={{
+                      background: '#071625', border: '1px solid #1e293b', padding: '12px',
+                      borderRadius: '8px', cursor: 'pointer', transition: 'all 0.15s'
+                    }}
+                  >
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ fontWeight: '800', fontSize: '11px', color: '#ff4f5a' }}>👤 {group.partnerName}</span>
+                      <span style={{ fontSize: '8px', color: '#64748b' }}>
+                        {new Date(group.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      </span>
+                    </div>
+                    <p style={{ fontSize: '10px', color: '#cbd5e1', margin: '4px 0 0 0', textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden' }}>
+                      {group.lastMessage}
+                    </p>
+                  </div>
+                ))
+              )
+            ) : (
+              // Chat Conversation View
+              (() => {
+                const threadMsgs = chatGroups[selectedPartnerId]?.messages || [];
+                return threadMsgs.map((msg, index) => {
+                  const isAdmin = msg.senderRole === 'admin';
+                  return (
+                    <div 
+                      key={index} 
+                      style={{
+                        alignSelf: isAdmin ? 'flex-end' : 'flex-start',
+                        maxWidth: '80%',
+                        background: isAdmin ? '#ff4f5a' : '#071625',
+                        border: isAdmin ? 'none' : '1px solid #1e293b',
+                        color: '#ffffff',
+                        padding: '8px 12px',
+                        borderRadius: '12px',
+                        borderBottomRightRadius: isAdmin ? '2px' : '12px',
+                        borderBottomLeftRadius: isAdmin ? '12px' : '2px',
+                        fontSize: '11px',
+                        boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
+                      }}
+                    >
+                      <span style={{ fontSize: '8px', opacity: 0.8, display: 'block', marginBottom: '2px', fontWeight: 'bold' }}>
+                        {msg.senderName}
+                      </span>
+                      {msg.text}
+                    </div>
+                  );
+                });
+              })()
+            )}
+          </div>
+
+          {/* Box Input Footer (Only in active chat mode) */}
+          {selectedPartnerId && (
+            <div style={{ padding: '12px', borderTop: '1px solid #1e293b', background: '#071625', display: 'flex', gap: '8px' }}>
+              <input 
+                type="text"
+                placeholder="Type reply..."
+                value={adminChatText}
+                onChange={(e) => setAdminChatText(e.target.value)}
+                onKeyDown={(e) => { if (e.key === 'Enter') handleSendAdminReply(); }}
+                style={{
+                  flexGrow: 1, padding: '8px 12px', border: '1px solid #1e293b', borderRadius: '8px',
+                  background: '#0a1d30', color: '#f8fafc', fontSize: '11px', boxSizing: 'border-box'
+                }}
+              />
+              <button 
+                onClick={handleSendAdminReply}
+                style={{
+                  background: '#ff4f5a', border: 'none', color: '#ffffff', fontWeight: '700',
+                  padding: '8px 14px', borderRadius: '8px', fontSize: '11px', cursor: 'pointer'
+                }}
+              >
+                Send
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ================= DOCUMENT PREVIEW MODAL ================= */}
+      {previewDoc && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
+          background: 'rgba(5, 20, 41, 0.8)', backdropFilter: 'blur(4px)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 200000,
+          padding: '20px'
+        }}>
+          <div style={{
+            background: '#ffffff', width: '100%', maxWidth: '700px', borderRadius: '16px',
+            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)', overflow: 'hidden',
+            display: 'flex', flexDirection: 'column', height: '80vh'
+          }}>
+            {/* Header */}
+            <div style={{ padding: '16px 20px', borderBottom: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#f8fafc' }}>
+              <div>
+                <h4 style={{ fontSize: '14px', fontWeight: '800', color: '#0f172a', margin: 0 }}>Document Viewer</h4>
+                <p style={{ fontSize: '11px', color: '#64748b', margin: 0 }}>File: {previewDoc.name}</p>
+              </div>
+              <button 
+                onClick={() => setPreviewDoc(null)}
+                style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#475569', fontSize: '13px', fontWeight: '800' }}
+              >
+                ✕ Close
+              </button>
+            </div>
+            {/* Viewer */}
+            <div style={{ flexGrow: 1, background: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px', overflow: 'auto' }}>
+              {previewDoc.data && previewDoc.data.startsWith('data:application/pdf') ? (
+                <iframe 
+                  src={previewDoc.data} 
+                  style={{ width: '100%', height: '100%', border: 'none', borderRadius: '8px' }} 
+                  title="PDF Document"
+                />
+              ) : (
+                <img 
+                  src={previewDoc.data || "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=800&q=80"} 
+                  alt="Document Preview" 
+                  style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain', borderRadius: '8px', border: '1px solid #cbd5e1' }} 
+                />
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }

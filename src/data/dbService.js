@@ -308,3 +308,51 @@ export async function dbDeleteProperty(propertyId) {
   localStorage.setItem('connect_properties', JSON.stringify(filtered));
   return true;
 }
+
+export async function dbSendChatMessage(partnerId, senderRole, senderName, text) {
+  const msg = {
+    partnerId,
+    senderRole, // 'partner' or 'admin'
+    senderName,
+    text,
+    timestamp: Date.now()
+  };
+
+  if (IS_FIREBASE_ACTIVE && db) {
+    const chatRef = collection(db, "connect_chats");
+    await addDoc(chatRef, msg);
+    return msg;
+  }
+
+  const chats = JSON.parse(localStorage.getItem('connect_chats')) || [];
+  chats.push(msg);
+  localStorage.setItem('connect_chats', JSON.stringify(chats));
+  return msg;
+}
+
+export async function dbGetChatMessages(partnerId) {
+  if (IS_FIREBASE_ACTIVE && db) {
+    const chatRef = collection(db, "connect_chats");
+    const q = query(chatRef, where("partnerId", "==", partnerId));
+    const snap = await getDocs(q);
+    const msgs = snap.docs.map(doc => doc.data());
+    return msgs.sort((a, b) => a.timestamp - b.timestamp);
+  }
+
+  const chats = JSON.parse(localStorage.getItem('connect_chats')) || [];
+  return chats
+    .filter(c => c.partnerId === partnerId)
+    .sort((a, b) => a.timestamp - b.timestamp);
+}
+
+export async function dbGetAllChatsForAdmin() {
+  if (IS_FIREBASE_ACTIVE && db) {
+    const chatRef = collection(db, "connect_chats");
+    const snap = await getDocs(chatRef);
+    const msgs = snap.docs.map(doc => doc.data());
+    return msgs.sort((a, b) => a.timestamp - b.timestamp);
+  }
+
+  const chats = JSON.parse(localStorage.getItem('connect_chats')) || [];
+  return chats.sort((a, b) => a.timestamp - b.timestamp);
+}
