@@ -190,6 +190,7 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
   const [activePreviewPhoto, setActivePreviewPhoto] = useState(null);
   const [isPhotoUploadSummaryActive, setIsPhotoUploadSummaryActive] = useState(false);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+  const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
   const [tagDropdownOpen, setTagDropdownOpen] = useState(false);
   const [tagSearchQuery, setTagSearchQuery] = useState('');
   const [tempSelectedTags, setTempSelectedTags] = useState([]);
@@ -565,6 +566,12 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
 
   return (
     <div style={{ background: '#f5f7fa', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      <style>{`
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+      `}</style>
       
       {/* Top connect navbar */}
       <header style={{ background: '#ffffff', padding: '14px 40px', borderBottom: '1px solid #e6ebf3', display: 'flex', justifyContent: 'space-between', alignItems: 'center', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}>
@@ -1255,6 +1262,7 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
                         onChange={(e) => {
                           const files = Array.from(e.target.files || []);
                           if (files.length > 0) {
+                            setIsUploadingPhoto(true);
                             convertFilesToBase64(files).then(newPhotoUrls => {
                               setUploadedPhotos(prev => {
                                 const updated = [...prev, ...newPhotoUrls];
@@ -1262,19 +1270,30 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
                                 if (!activePreviewPhoto) setActivePreviewPhoto(updated[0]);
                                 return updated;
                               });
-                            }).catch(err => console.error(err));
+                            }).catch(err => console.error(err))
+                              .finally(() => setIsUploadingPhoto(false));
                           }
                         }}
                         style={{ display: 'none' }}
                       />
 
-                      {uploadedPhotos.length === 0 ? (
+                      {isUploadingPhoto ? (
+                        <div style={{
+                          border: '2px dashed #ff4f5a', borderRadius: '12px', padding: '60px 20px', background: '#fff1f2',
+                          textAlign: 'center', minHeight: '300px', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center'
+                        }}>
+                          <div style={{ width: '40px', height: '40px', border: '3px solid #fecdd3', borderTopColor: '#ff4f5a', borderRadius: '50%', animation: 'spin 1s linear infinite', marginBottom: '16px' }} />
+                          <h4 style={{ fontWeight: '800', fontSize: '15px', color: '#ff4f5a', margin: '4px 0' }}>Processing Photos...</h4>
+                          <span style={{ fontSize: '12px', color: '#9f1239' }}>Converting files to secure database format</span>
+                        </div>
+                      ) : uploadedPhotos.length === 0 ? (
                         <div 
                           onDragOver={(e) => e.preventDefault()}
                           onDrop={(e) => {
                             e.preventDefault();
                             const files = Array.from(e.dataTransfer.files || []);
                             if (files.length > 0) {
+                              setIsUploadingPhoto(true);
                               convertFilesToBase64(files).then(newPhotoUrls => {
                                 setUploadedPhotos(prev => {
                                   const updated = [...prev, ...newPhotoUrls];
@@ -1282,7 +1301,8 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
                                   if (!activePreviewPhoto) setActivePreviewPhoto(updated[0]);
                                   return updated;
                                 });
-                              }).catch(err => console.error(err));
+                              }).catch(err => console.error(err))
+                                .finally(() => setIsUploadingPhoto(false));
                             }
                           }}
                           onClick={() => fileInputRef.current?.click()}
@@ -1753,6 +1773,7 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
                           onChange={(e) => {
                             const files = Array.from(e.target.files || []);
                             if (files.length > 0) {
+                              setIsUploadingPhoto(true);
                               convertFilesToBase64(files).then(newPhotoUrls => {
                                 setUploadedPhotos(prev => {
                                   const updated = [...prev, ...newPhotoUrls];
@@ -1761,42 +1782,56 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
                                   return updated;
                                 });
                                 setIsUploadModalOpen(false); // close modal after upload
-                              }).catch(err => console.error(err));
+                              }).catch(err => console.error(err))
+                                .finally(() => setIsUploadingPhoto(false));
                             }
                           }}
                           style={{ display: 'none' }}
                         />
 
-                        <div 
-                          onDragOver={(e) => e.preventDefault()}
-                          onDrop={(e) => {
-                            e.preventDefault();
-                            const files = Array.from(e.dataTransfer.files || []);
-                            if (files.length > 0) {
-                              convertFilesToBase64(files).then(newPhotoUrls => {
-                                setUploadedPhotos(prev => {
-                                  const updated = [...prev, ...newPhotoUrls];
-                                  if (!coverPhoto) setCoverPhoto(updated[0]);
-                                  if (!activePreviewPhoto) setActivePreviewPhoto(updated[0]);
-                                  return updated;
-                                });
-                                setIsUploadModalOpen(false);
-                              }).catch(err => console.error(err));
-                            }
-                          }}
-                          onClick={() => fileInputRef.current?.click()}
-                          style={{
-                            border: '2px dashed #cbd5e1', borderRadius: '12px', padding: '60px 20px', background: '#f8fafc',
-                            textAlign: 'center', cursor: 'pointer', transition: 'all 0.2s', minHeight: '300px', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center'
-                          }}
-                        >
-                          <div style={{ fontSize: '28px', color: '#64748b', marginBottom: '12px' }}>📤</div>
-                          <h4 style={{ fontWeight: '800', fontSize: '15px', color: '#1e293b', margin: '4px 0' }}>Drag & Drop the photos and videos</h4>
-                          <span style={{ fontSize: '12px', color: '#64748b' }}>
-                            or <span style={{ color: '#008cff', textDecoration: 'underline', fontWeight: '700' }}>click here</span> to upload
-                          </span>
-                          <span style={{ fontSize: '10px', color: '#94a3b8', marginTop: '12px' }}>(Upload JPEG/PNG files up to 30 MB each)</span>
-                        </div>
+                        {isUploadingPhoto ? (
+                          <div style={{
+                            border: '2px dashed #ff4f5a', borderRadius: '12px', padding: '60px 20px', background: '#fff1f2',
+                            textAlign: 'center', minHeight: '300px', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center'
+                          }}>
+                            <div style={{ width: '40px', height: '40px', border: '3px solid #fecdd3', borderTopColor: '#ff4f5a', borderRadius: '50%', animation: 'spin 1s linear infinite', marginBottom: '16px' }} />
+                            <h4 style={{ fontWeight: '800', fontSize: '15px', color: '#ff4f5a', margin: '4px 0' }}>Processing Photos...</h4>
+                            <span style={{ fontSize: '12px', color: '#9f1239' }}>Converting files to secure database format</span>
+                          </div>
+                        ) : (
+                          <div 
+                            onDragOver={(e) => e.preventDefault()}
+                            onDrop={(e) => {
+                              e.preventDefault();
+                              const files = Array.from(e.dataTransfer.files || []);
+                              if (files.length > 0) {
+                                setIsUploadingPhoto(true);
+                                convertFilesToBase64(files).then(newPhotoUrls => {
+                                  setUploadedPhotos(prev => {
+                                    const updated = [...prev, ...newPhotoUrls];
+                                    if (!coverPhoto) setCoverPhoto(updated[0]);
+                                    if (!activePreviewPhoto) setActivePreviewPhoto(updated[0]);
+                                    return updated;
+                                  });
+                                  setIsUploadModalOpen(false);
+                                }).catch(err => console.error(err))
+                                  .finally(() => setIsUploadingPhoto(false));
+                              }
+                            }}
+                            onClick={() => fileInputRef.current?.click()}
+                            style={{
+                              border: '2px dashed #cbd5e1', borderRadius: '12px', padding: '60px 20px', background: '#f8fafc',
+                              textAlign: 'center', cursor: 'pointer', transition: 'all 0.2s', minHeight: '300px', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center'
+                            }}
+                          >
+                            <div style={{ fontSize: '28px', color: '#64748b', marginBottom: '12px' }}>📤</div>
+                            <h4 style={{ fontWeight: '800', fontSize: '15px', color: '#1e293b', margin: '4px 0' }}>Drag & Drop the photos and videos</h4>
+                            <span style={{ fontSize: '12px', color: '#64748b' }}>
+                              or <span style={{ color: '#008cff', textDecoration: 'underline', fontWeight: '700' }}>click here</span> to upload
+                            </span>
+                            <span style={{ fontSize: '10px', color: '#94a3b8', marginTop: '12px' }}>(Upload JPEG/PNG files up to 30 MB each)</span>
+                          </div>
+                        )}
                       </div>
 
                       {/* Right Column: Tips */}

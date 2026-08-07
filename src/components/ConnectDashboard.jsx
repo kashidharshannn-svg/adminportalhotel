@@ -18,6 +18,7 @@ export default function ConnectDashboard({ activeUser, onLogout, onStartOnboardi
   const [editingPhotos, setEditingPhotos] = useState([]);
   const [editingCoverPhoto, setEditingCoverPhoto] = useState('');
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
 
   // Chatbot Support Widget States
   const [isChatOpen, setIsChatOpen] = useState(false);
@@ -78,21 +79,31 @@ export default function ConnectDashboard({ activeUser, onLogout, onStartOnboardi
     }
   };
 
-  const handleAddPhoto = (e) => {
+  const handleAddPhoto = async (e) => {
     const files = Array.from(e.target.files);
-    files.forEach(file => {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        setEditingPhotos(prev => {
-          const updated = [...prev, event.target.result];
-          if (!editingCoverPhoto) {
-            setEditingCoverPhoto(event.target.result);
-          }
-          return updated;
+    if (files.length === 0) return;
+    setIsUploadingPhoto(true);
+    try {
+      const promises = files.map(file => {
+        return new Promise((resolve) => {
+          const reader = new FileReader();
+          reader.onload = (event) => resolve(event.target.result);
+          reader.readAsDataURL(file);
         });
-      };
-      reader.readAsDataURL(file);
-    });
+      });
+      const base64s = await Promise.all(promises);
+      setEditingPhotos(prev => {
+        const updated = [...prev, ...base64s];
+        if (!editingCoverPhoto && updated.length > 0) {
+          setEditingCoverPhoto(updated[0]);
+        }
+        return updated;
+      });
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsUploadingPhoto(false);
+    }
   };
 
   const handleSaveChanges = async () => {
@@ -183,6 +194,12 @@ export default function ConnectDashboard({ activeUser, onLogout, onStartOnboardi
 
   return (
     <div style={{ background: '#f5f7fa', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      <style>{`
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+      `}</style>
       
       {/* Top Navbar */}
       <header style={{ background: '#ffffff', padding: '14px 40px', borderBottom: '1px solid #e6ebf3', display: 'flex', justifyContent: 'space-between', alignItems: 'center', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}>
@@ -542,16 +559,27 @@ export default function ConnectDashboard({ activeUser, onLogout, onStartOnboardi
                   <label style={{
                     width: '76px', height: '76px', border: '2px dashed #cbd5e1', borderRadius: '8px',
                     display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-                    cursor: 'pointer', background: '#f8fafc', gap: '4px', boxSizing: 'border-box'
+                    cursor: isUploadingPhoto ? 'not-allowed' : 'pointer', background: '#f8fafc', gap: '4px', boxSizing: 'border-box',
+                    opacity: isUploadingPhoto ? 0.6 : 1
                   }}>
-                    <span style={{ fontSize: '18px', color: '#94a3b8', fontWeight: '600' }}>+</span>
-                    <span style={{ fontSize: '9px', fontWeight: '700', color: '#64748b' }}>Add Photo</span>
+                    {isUploadingPhoto ? (
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
+                        <div style={{ width: '16px', height: '16px', border: '2px solid #cbd5e1', borderTopColor: '#ff4f5a', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+                        <span style={{ fontSize: '8px', color: '#64748b', fontWeight: 'bold' }}>Loading...</span>
+                      </div>
+                    ) : (
+                      <>
+                        <span style={{ fontSize: '18px', color: '#94a3b8', fontWeight: '600' }}>+</span>
+                        <span style={{ fontSize: '9px', fontWeight: '700', color: '#64748b' }}>Add Photo</span>
+                      </>
+                    )}
                     <input 
                       type="file" 
                       multiple 
                       accept="image/*" 
                       onChange={handleAddPhoto} 
                       style={{ display: 'none' }} 
+                      disabled={isUploadingPhoto}
                     />
                   </label>
                 </div>
