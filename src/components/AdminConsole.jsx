@@ -4,7 +4,8 @@ import {
   dbUpdateListingStatus, 
   dbSendChatMessage, 
   dbGetChatMessages, 
-  dbGetAllChatsForAdmin 
+  dbGetAllChatsForAdmin,
+  dbGetPropertyDocuments
 } from '../data/dbService';
 import { ShieldCheck, LogOut, Check, X, Building, MapPin, Eye, FileText, ArrowRight, MessageSquare, Paperclip } from 'lucide-react';
 
@@ -117,9 +118,24 @@ export default function AdminConsole({ activeUser, onLogout }) {
     }
   };
 
-  const handlePreviewDocument = (doc) => {
+  const handlePreviewDocument = async (doc, docType = null) => {
     if (doc && doc.data) {
       setPreviewDoc(doc);
+    } else if (doc && doc.hasData && selectedListing && selectedListing.id) {
+      try {
+        const docs = await dbGetPropertyDocuments(selectedListing.id);
+        if (docs) {
+          const docData = docType === 'leased' ? docs.leasedDocData : docs.relationshipDocData;
+          if (docData) {
+            setPreviewDoc({ name: doc.name, data: docData });
+            return;
+          }
+        }
+        alert("Failed to load document content.");
+      } catch (err) {
+        console.error(err);
+        alert("Error loading compliance document.");
+      }
     } else {
       alert("No document data available to preview.");
     }
@@ -434,7 +450,7 @@ export default function AdminConsole({ activeUser, onLogout }) {
                             <Eye 
                               size={14} 
                               style={{ cursor: 'pointer', color: '#ff4f5a' }} 
-                              onClick={() => handlePreviewDocument(selectedListing.finance.leasedDoc)}
+                              onClick={() => handlePreviewDocument(selectedListing.finance.leasedDoc, 'leased')}
                             />
                           </strong>
                         ) : (
@@ -450,7 +466,7 @@ export default function AdminConsole({ activeUser, onLogout }) {
                             <Eye 
                               size={14} 
                               style={{ cursor: 'pointer', color: '#ff4f5a' }} 
-                              onClick={() => handlePreviewDocument(selectedListing.finance.relationshipDoc)}
+                              onClick={() => handlePreviewDocument(selectedListing.finance.relationshipDoc, 'relationship')}
                             />
                           </strong>
                         ) : (

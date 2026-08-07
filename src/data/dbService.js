@@ -113,28 +113,66 @@ export async function connectLoginPartner(email, password) {
 
 // 2. Property Onboarding Writes & Reads
 export async function connectAddProperty(property, vendorId) {
+  const propertyId = "prop-" + Date.now();
+  let leasedDocData = null;
+  let relationshipDocData = null;
+
+  const cleanProperty = { 
+    ...property, 
+    id: propertyId, 
+    vendorId, 
+    status: "Pending Review" 
+  };
+
+  if (cleanProperty.finance) {
+    if (cleanProperty.finance.leasedDoc) {
+      leasedDocData = cleanProperty.finance.leasedDoc.data;
+      cleanProperty.finance.leasedDoc = {
+        name: cleanProperty.finance.leasedDoc.name,
+        type: cleanProperty.finance.leasedDoc.type,
+        hasData: !!leasedDocData
+      };
+    }
+    if (cleanProperty.finance.relationshipDoc) {
+      relationshipDocData = cleanProperty.finance.relationshipDoc.data;
+      cleanProperty.finance.relationshipDoc = {
+        name: cleanProperty.finance.relationshipDoc.name,
+        type: cleanProperty.finance.relationshipDoc.type,
+        hasData: !!relationshipDocData
+      };
+    }
+  }
+
   if (IS_FIREBASE_ACTIVE && db) {
     const propertiesRef = collection(db, "connect_properties");
-    const newProp = {
-      ...property,
-      id: "prop-" + Date.now(),
-      vendorId,
-      status: "Pending Review"
-    };
-    await addDoc(propertiesRef, newProp);
-    return newProp;
+    await addDoc(propertiesRef, cleanProperty);
+
+    if (leasedDocData || relationshipDocData) {
+      const docsRef = collection(db, "connect_property_docs");
+      await addDoc(docsRef, {
+        propertyId,
+        leasedDocData,
+        relationshipDocData
+      });
+    }
+    return cleanProperty;
   }
 
   const properties = JSON.parse(localStorage.getItem('connect_properties')) || [];
-  const newProp = {
-    ...property,
-    id: "prop-" + Date.now(),
-    vendorId,
-    status: "Pending Review" // Starts in Pending Review for Admin verification flow
-  };
-  properties.push(newProp);
+  properties.push(cleanProperty);
   localStorage.setItem('connect_properties', JSON.stringify(properties));
-  return newProp;
+
+  if (leasedDocData || relationshipDocData) {
+    const docs = JSON.parse(localStorage.getItem('connect_property_docs')) || [];
+    docs.push({
+      propertyId,
+      leasedDocData,
+      relationshipDocData
+    });
+    localStorage.setItem('connect_property_docs', JSON.stringify(docs));
+  }
+
+  return cleanProperty;
 }
 
 export async function connectGetPropertiesForPartner(vendorId) {
@@ -274,12 +312,46 @@ export async function dbUpdatePropertyDetails(propertyId, updatedRooms, updatedP
     const snap = await getDocs(q);
     if (!snap.empty) {
       const docRef = snap.docs[0].ref;
-      await updateDoc(docRef, { 
+      const currentData = snap.docs[0].data();
+
+      let updatePayload = { 
         rooms: updatedRooms,
         uploadedPhotos: updatedPhotos,
         coverPhoto: updatedCoverPhoto,
-        image: updatedCoverPhoto // Keep the thumbnail cover in sync
-      });
+        image: updatedCoverPhoto
+      };
+
+      if (currentData.finance && (currentData.finance.leasedDoc?.data || currentData.finance.relationshipDoc?.data)) {
+        const leasedDocData = currentData.finance.leasedDoc?.data || null;
+        const relationshipDocData = currentData.finance.relationshipDoc?.data || null;
+        
+        const docsRef = collection(db, "connect_property_docs");
+        const docQ = query(docsRef, where("propertyId", "==", propertyId));
+        const docSnap = await getDocs(docQ);
+        if (docSnap.empty) {
+          await addDoc(docsRef, {
+            propertyId,
+            leasedDocData,
+            relationshipDocData
+          });
+        }
+
+        updatePayload.finance = {
+          ...currentData.finance,
+          leasedDoc: currentData.finance.leasedDoc ? {
+            name: currentData.finance.leasedDoc.name,
+            type: currentData.finance.leasedDoc.type,
+            hasData: !!leasedDocData
+          } : null,
+          relationshipDoc: currentData.finance.relationshipDoc ? {
+            name: currentData.finance.relationshipDoc.name,
+            type: currentData.finance.relationshipDoc.type,
+            hasData: !!relationshipDocData
+          } : null
+        };
+      }
+
+      await updateDoc(docRef, updatePayload);
       return true;
     }
     return false;
@@ -288,18 +360,59 @@ export async function dbUpdatePropertyDetails(propertyId, updatedRooms, updatedP
   const properties = JSON.parse(localStorage.getItem('connect_properties')) || [];
   const updated = properties.map(p => {
     if (p.id === propertyId) {
+      let cleanFinance = p.finance;
+      if (p.finance && (p.finance.leasedDoc?.data || p.finance.relationshipDoc?.data)) {
+        const docs = JSON.parse(localStorage.getItem('connect_property_docs')) || [];
+        const found = docs.find(d => d.propertyId === propertyId);
+        if (!found) {
+          docs.push({
+            propertyId,
+            leasedDocData: p.finance.leasedDoc?.data || null,
+            relationshipDocData: p.finance.relationshipDoc?.data || null
+          });
+          localStorage.setItem('connect_property_docs', JSON.stringify(docs));
+        }
+        cleanFinance = {
+          ...p.finance,
+          leasedDoc: p.finance.leasedDoc ? {
+            name: p.finance.leasedDoc.name,
+            type: p.finance.leasedDoc.type,
+            hasData: !!p.finance.leasedDoc.data
+          } : null,
+          relationshipDoc: p.finance.relationshipDoc ? {
+            name: p.finance.relationshipDoc.name,
+            type: p.finance.relationshipDoc.type,
+            hasData: !!p.finance.relationshipDoc.data
+          } : null
+        };
+      }
       return { 
         ...p, 
         rooms: updatedRooms,
         uploadedPhotos: updatedPhotos,
         coverPhoto: updatedCoverPhoto,
-        image: updatedCoverPhoto
+        image: updatedCoverPhoto,
+        finance: cleanFinance
       };
     }
     return p;
   });
   localStorage.setItem('connect_properties', JSON.stringify(updated));
   return true;
+}
+
+export async function dbGetPropertyDocuments(propertyId) {
+  if (IS_FIREBASE_ACTIVE && db) {
+    const docsRef = collection(db, "connect_property_docs");
+    const q = query(docsRef, where("propertyId", "==", propertyId));
+    const snap = await getDocs(q);
+    if (!snap.empty) {
+      return snap.docs[0].data();
+    }
+    return null;
+  }
+  const docs = JSON.parse(localStorage.getItem('connect_property_docs')) || [];
+  return docs.find(d => d.propertyId === propertyId) || null;
 }
 
 export async function dbDeleteProperty(propertyId) {
