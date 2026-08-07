@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { connectGetPropertiesForPartner, dbUpdatePropertyDetails } from '../data/dbService';
+import { connectGetPropertiesForPartner, dbUpdatePropertyDetails, dbDeleteProperty } from '../data/dbService';
 import { LayoutGrid, Mail, PlusCircle, LogOut, ShieldCheck, Home, ArrowRight, CheckCircle2, X } from 'lucide-react';
 
 export default function ConnectDashboard({ activeUser, onLogout, onStartOnboarding }) {
@@ -94,6 +94,21 @@ export default function ConnectDashboard({ activeUser, onLogout, onStartOnboardi
     } catch (err) {
       console.error(err);
       alert("Failed to update property details.");
+    }
+  };
+
+  const handleDeleteProperty = async (propertyId) => {
+    if (confirm("Are you sure you want to permanently delete this property? This action cannot be undone.")) {
+      try {
+        await dbDeleteProperty(propertyId);
+        alert("Property deleted successfully!");
+        setIsEditModalOpen(false);
+        setEditingProperty(null);
+        loadProperties();
+      } catch (err) {
+        console.error(err);
+        alert("Failed to delete property.");
+      }
     }
   };
 
@@ -332,8 +347,21 @@ export default function ConnectDashboard({ activeUser, onLogout, onStartOnboardi
                   ) : (
                     editingRooms.map((room, idx) => (
                       <div key={idx} style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '14px' }}>
-                        <div style={{ fontWeight: '700', fontSize: '12px', color: '#334155', marginBottom: '8px' }}>
-                          🚪 {room.type || room.roomType || `Room Category ${idx + 1}`}
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                          <span style={{ fontWeight: '700', fontSize: '12px', color: '#334155' }}>
+                            🚪 {room.type || room.roomType || `Room Category ${idx + 1}`}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (confirm(`Are you sure you want to remove the room category "${room.type || `Room Category ${idx + 1}`}"?`)) {
+                                setEditingRooms(editingRooms.filter((_, rIdx) => rIdx !== idx));
+                              }
+                            }}
+                            style={{ background: 'transparent', border: 'none', color: '#ef4444', fontSize: '11px', fontWeight: '700', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '3px' }}
+                          >
+                            🗑️ Remove
+                          </button>
                         </div>
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                           <div>
@@ -439,19 +467,27 @@ export default function ConnectDashboard({ activeUser, onLogout, onStartOnboardi
             </div>
 
             {/* Footer */}
-            <div style={{ padding: '16px 24px', borderTop: '1px solid #e2e8f0', background: '#f8fafc', display: 'flex', justifyContent: 'flex-end', gap: '12px', flexShrink: 0 }}>
+            <div style={{ padding: '16px 24px', borderTop: '1px solid #e2e8f0', background: '#f8fafc', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexShrink: 0 }}>
               <button 
-                onClick={() => { setIsEditModalOpen(false); setEditingProperty(null); }}
-                style={{ padding: '8px 16px', fontSize: '12px', fontWeight: '700', color: '#475569', background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '6px', cursor: 'pointer' }}
+                onClick={() => handleDeleteProperty(editingProperty.id)}
+                style={{ padding: '8px 16px', fontSize: '12px', fontWeight: '700', color: '#ef4444', background: 'rgba(239, 68, 68, 0.05)', border: '1px solid #fca5a5', borderRadius: '6px', cursor: 'pointer', transition: 'all 0.2s' }}
               >
-                Cancel
+                🗑️ Delete Property
               </button>
-              <button 
-                onClick={handleSaveChanges}
-                style={{ padding: '8px 20px', fontSize: '12px', fontWeight: '700', color: '#ffffff', background: 'linear-gradient(90deg, #ff4f5a 0%, #ff6872 100%)', border: 'none', borderRadius: '6px', cursor: 'pointer', boxShadow: '0 4px 10px rgba(255, 79, 90, 0.2)' }}
-              >
-                Save Changes
-              </button>
+              <div style={{ display: 'flex', gap: '12px' }}>
+                <button 
+                  onClick={() => { setIsEditModalOpen(false); setEditingProperty(null); }}
+                  style={{ padding: '8px 16px', fontSize: '12px', fontWeight: '700', color: '#475569', background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '6px', cursor: 'pointer' }}
+                >
+                  Cancel
+                </button>
+                <button 
+                  onClick={handleSaveChanges}
+                  style={{ padding: '8px 20px', fontSize: '12px', fontWeight: '700', color: '#ffffff', background: 'linear-gradient(90deg, #ff4f5a 0%, #ff6872 100%)', border: 'none', borderRadius: '6px', cursor: 'pointer', boxShadow: '0 4px 10px rgba(255, 79, 90, 0.2)' }}
+                >
+                  Save Changes
+                </button>
+              </div>
             </div>
           </div>
         </div>

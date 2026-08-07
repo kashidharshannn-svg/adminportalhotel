@@ -1,7 +1,7 @@
 // B2B Partner Onboarding database service
 import { mockHotels, mockPackages } from './mockDatabase';
 import { db, IS_FIREBASE_ACTIVE } from '../firebase';
-import { collection, addDoc, getDocs, query, where, updateDoc } from 'firebase/firestore';
+import { collection, addDoc, getDocs, query, where, updateDoc, deleteDoc } from 'firebase/firestore';
 
 const initConnectDB = async () => {
   if (IS_FIREBASE_ACTIVE && db) {
@@ -287,5 +287,24 @@ export async function dbUpdatePropertyDetails(propertyId, updatedRooms, updatedP
     return p;
   });
   localStorage.setItem('connect_properties', JSON.stringify(updated));
+  return true;
+}
+
+export async function dbDeleteProperty(propertyId) {
+  if (IS_FIREBASE_ACTIVE && db) {
+    const propertiesRef = collection(db, "connect_properties");
+    const q = query(propertiesRef, where("id", "==", propertyId));
+    const snap = await getDocs(q);
+    if (!snap.empty) {
+      const docRef = snap.docs[0].ref;
+      await deleteDoc(docRef);
+      return true;
+    }
+    return false;
+  }
+
+  const properties = JSON.parse(localStorage.getItem('connect_properties')) || [];
+  const filtered = properties.filter(p => p.id !== propertyId);
+  localStorage.setItem('connect_properties', JSON.stringify(filtered));
   return true;
 }
