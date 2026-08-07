@@ -321,10 +321,32 @@ export async function dbUpdatePropertyDetails(propertyId, updatedRooms, updatedP
         image: updatedCoverPhoto
       };
 
-      if (currentData.finance && (currentData.finance.leasedDoc?.data || currentData.finance.relationshipDoc?.data)) {
-        const leasedDocData = currentData.finance.leasedDoc?.data || null;
-        const relationshipDocData = currentData.finance.relationshipDoc?.data || null;
-        
+      let leasedDocData = null;
+      let relationshipDocData = null;
+      let hasLegacyDocs = false;
+
+      if (currentData.finance) {
+        if (currentData.finance.leasedDoc) {
+          if (typeof currentData.finance.leasedDoc === 'string' && currentData.finance.leasedDoc.startsWith('data:')) {
+            leasedDocData = currentData.finance.leasedDoc;
+            hasLegacyDocs = true;
+          } else if (currentData.finance.leasedDoc.data) {
+            leasedDocData = currentData.finance.leasedDoc.data;
+            hasLegacyDocs = true;
+          }
+        }
+        if (currentData.finance.relationshipDoc) {
+          if (typeof currentData.finance.relationshipDoc === 'string' && currentData.finance.relationshipDoc.startsWith('data:')) {
+            relationshipDocData = currentData.finance.relationshipDoc;
+            hasLegacyDocs = true;
+          } else if (currentData.finance.relationshipDoc.data) {
+            relationshipDocData = currentData.finance.relationshipDoc.data;
+            hasLegacyDocs = true;
+          }
+        }
+      }
+
+      if (hasLegacyDocs) {
         const docsRef = collection(db, "connect_property_docs");
         const docQ = query(docsRef, where("propertyId", "==", propertyId));
         const docSnap = await getDocs(docQ);
@@ -339,13 +361,13 @@ export async function dbUpdatePropertyDetails(propertyId, updatedRooms, updatedP
         updatePayload.finance = {
           ...currentData.finance,
           leasedDoc: currentData.finance.leasedDoc ? {
-            name: currentData.finance.leasedDoc.name,
-            type: currentData.finance.leasedDoc.type,
+            name: typeof currentData.finance.leasedDoc === 'string' ? 'Leased_Document.pdf' : (currentData.finance.leasedDoc.name || 'Leased_Document.pdf'),
+            type: typeof currentData.finance.leasedDoc === 'string' ? 'application/pdf' : (currentData.finance.leasedDoc.type || 'application/pdf'),
             hasData: !!leasedDocData
           } : null,
           relationshipDoc: currentData.finance.relationshipDoc ? {
-            name: currentData.finance.relationshipDoc.name,
-            type: currentData.finance.relationshipDoc.type,
+            name: typeof currentData.finance.relationshipDoc === 'string' ? 'Relationship_Proof.pdf' : (currentData.finance.relationshipDoc.name || 'Relationship_Proof.pdf'),
+            type: typeof currentData.finance.relationshipDoc === 'string' ? 'application/pdf' : (currentData.finance.relationshipDoc.type || 'application/pdf'),
             hasData: !!relationshipDocData
           } : null
         };
@@ -361,28 +383,53 @@ export async function dbUpdatePropertyDetails(propertyId, updatedRooms, updatedP
   const updated = properties.map(p => {
     if (p.id === propertyId) {
       let cleanFinance = p.finance;
-      if (p.finance && (p.finance.leasedDoc?.data || p.finance.relationshipDoc?.data)) {
+      let leasedDocData = null;
+      let relationshipDocData = null;
+      let hasLegacyDocs = false;
+
+      if (p.finance) {
+        if (p.finance.leasedDoc) {
+          if (typeof p.finance.leasedDoc === 'string' && p.finance.leasedDoc.startsWith('data:')) {
+            leasedDocData = p.finance.leasedDoc;
+            hasLegacyDocs = true;
+          } else if (p.finance.leasedDoc.data) {
+            leasedDocData = p.finance.leasedDoc.data;
+            hasLegacyDocs = true;
+          }
+        }
+        if (p.finance.relationshipDoc) {
+          if (typeof p.finance.relationshipDoc === 'string' && p.finance.relationshipDoc.startsWith('data:')) {
+            relationshipDocData = p.finance.relationshipDoc;
+            hasLegacyDocs = true;
+          } else if (p.finance.relationshipDoc.data) {
+            relationshipDocData = p.finance.relationshipDoc.data;
+            hasLegacyDocs = true;
+          }
+        }
+      }
+
+      if (hasLegacyDocs) {
         const docs = JSON.parse(localStorage.getItem('connect_property_docs')) || [];
         const found = docs.find(d => d.propertyId === propertyId);
         if (!found) {
           docs.push({
             propertyId,
-            leasedDocData: p.finance.leasedDoc?.data || null,
-            relationshipDocData: p.finance.relationshipDoc?.data || null
+            leasedDocData,
+            relationshipDocData
           });
           localStorage.setItem('connect_property_docs', JSON.stringify(docs));
         }
         cleanFinance = {
           ...p.finance,
           leasedDoc: p.finance.leasedDoc ? {
-            name: p.finance.leasedDoc.name,
-            type: p.finance.leasedDoc.type,
-            hasData: !!p.finance.leasedDoc.data
+            name: typeof p.finance.leasedDoc === 'string' ? 'Leased_Document.pdf' : (p.finance.leasedDoc.name || 'Leased_Document.pdf'),
+            type: typeof p.finance.leasedDoc === 'string' ? 'application/pdf' : (p.finance.leasedDoc.type || 'application/pdf'),
+            hasData: !!leasedDocData
           } : null,
           relationshipDoc: p.finance.relationshipDoc ? {
-            name: p.finance.relationshipDoc.name,
-            type: p.finance.relationshipDoc.type,
-            hasData: !!p.finance.relationshipDoc.data
+            name: typeof p.finance.relationshipDoc === 'string' ? 'Relationship_Proof.pdf' : (p.finance.relationshipDoc.name || 'Relationship_Proof.pdf'),
+            type: typeof p.finance.relationshipDoc === 'string' ? 'application/pdf' : (p.finance.relationshipDoc.type || 'application/pdf'),
+            hasData: !!relationshipDocData
           } : null
         };
       }

@@ -178,7 +178,7 @@ export default function ConnectDashboard({ activeUser, onLogout, onStartOnboardi
       loadProperties();
     } catch (err) {
       console.error(err);
-      alert("Failed to update property details.");
+      alert("Failed to update property details: " + err.message);
     } finally {
       setIsSaving(false);
     }
