@@ -331,7 +331,7 @@ export default function ConnectDashboard({ activeUser, onLogout, onStartOnboardi
                               Base price: <strong style={{ fontSize: '15px' }}>₹{Number(prop.rooms[0].price || prop.rooms[0].baseRate || 0).toLocaleString('en-IN')}</strong>
                             </div>
                           )}
-                          {(prop.status === 'approved' || prop.status === 'rejected') && (
+                          {true && (
                             <button 
                               onClick={() => handleOpenEditModal(prop)}
                               style={{ 
