@@ -79,6 +79,35 @@ export default function ConnectDashboard({ activeUser, onLogout, onStartOnboardi
     }
   };
 
+  const compressImage = (base64Str, maxWidth = 1000, maxHeight = 1000, quality = 0.6) => {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.src = base64Str;
+      img.onload = () => {
+        let width = img.width;
+        let height = img.height;
+        if (width > height) {
+          if (width > maxWidth) {
+            height = Math.round((height * maxWidth) / width);
+            width = maxWidth;
+          }
+        } else {
+          if (height > maxHeight) {
+            width = Math.round((width * maxHeight) / height);
+            height = maxHeight;
+          }
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        resolve(canvas.toDataURL('image/jpeg', quality));
+      };
+      img.onerror = () => resolve(base64Str);
+    });
+  };
+
   const handleAddPhoto = async (e) => {
     const files = Array.from(e.target.files);
     if (files.length === 0) return;
@@ -87,7 +116,14 @@ export default function ConnectDashboard({ activeUser, onLogout, onStartOnboardi
       const promises = files.map(file => {
         return new Promise((resolve) => {
           const reader = new FileReader();
-          reader.onload = (event) => resolve(event.target.result);
+          reader.onload = async (event) => {
+            try {
+              const compressed = await compressImage(event.target.result);
+              resolve(compressed);
+            } catch (err) {
+              resolve(event.target.result);
+            }
+          };
           reader.readAsDataURL(file);
         });
       });
