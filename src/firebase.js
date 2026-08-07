@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
+import { initializeAuth, browserLocalPersistence } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 
 // Set this to true when you want to connect to your live Google Firebase project.
@@ -21,7 +21,9 @@ let app, auth, db;
 if (IS_FIREBASE_ACTIVE) {
   try {
     app = initializeApp(firebaseConfig);
-    auth = getAuth(app);
+    auth = initializeAuth(app, {
+      persistence: browserLocalPersistence
+    });
     db = getFirestore(app);
   } catch (error) {
     console.error("Firebase Initialization Failed:", error);
