@@ -2349,7 +2349,7 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
                         <input 
                           type="text" 
                           required 
-                          placeholder="e.g. UBIN0576514" 
+                          placeholder="Enter 11-digit IFSC code (e.g. UTIB0000240)" 
                           value={bankIfscCode} 
                           onChange={(e) => setBankIfscCode(e.target.value.toUpperCase())} 
                           style={{ border: '1px solid #cbd5e1', padding: '10px', borderRadius: '6px', fontSize: '13px' }} 
@@ -2361,7 +2361,7 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
                         <input 
                           type="text" 
                           required 
-                          placeholder="e.g. UNION BANK OF INDIA" 
+                          placeholder="Enter bank name" 
                           value={bankName} 
                           onChange={(e) => setBankName(e.target.value)} 
                           style={{ border: '1px solid #cbd5e1', padding: '10px', borderRadius: '6px', fontSize: '13px' }} 
@@ -2382,7 +2382,7 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
                         <input 
                           type="text" 
                           required 
-                          placeholder="CJPPJ6346G" 
+                          placeholder="Enter 10-digit PAN (e.g. ABCDE1234F)" 
                           value={panNumber} 
                           onChange={(e) => setPanNumber(e.target.value.toUpperCase())} 
                           style={{ border: '1px solid #cbd5e1', padding: '10px', borderRadius: '6px', fontSize: '13px' }} 
@@ -2393,7 +2393,7 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
                         <label style={{ fontSize: '11px', fontWeight: '700' }}>PAN Holder Name</label>
                         <input 
                           type="text" 
-                          placeholder="e.g. RISHABH JAISWAL" 
+                          placeholder="Enter name as on PAN" 
                           value={panHolderName} 
                           onChange={(e) => setPanHolderName(e.target.value)} 
                           style={{ border: '1px solid #cbd5e1', padding: '10px', borderRadius: '6px', fontSize: '13px' }} 
@@ -2479,11 +2479,21 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
                                 alert("Please select a document type first!");
                                 return;
                               }
-                              const cleanType = leasedDocType.split('(')[0].trim().replace(/\s+/g, '_');
-                              setUploadedLeasedDoc(`${cleanType}_Signed.pdf`);
+                              document.getElementById('leased-doc-file-input').click();
                             }}
                             style={{ border: '2px dashed #cbd5e1', borderRadius: '8px', padding: '18px', textAlign: 'center', background: '#f8fafc', cursor: 'pointer' }}
                           >
+                            <input 
+                              id="leased-doc-file-input"
+                              type="file" 
+                              accept="image/*,application/pdf"
+                              style={{ display: 'none' }}
+                              onChange={(e) => {
+                                if (e.target.files && e.target.files[0]) {
+                                  setUploadedLeasedDoc(e.target.files[0].name);
+                                }
+                              }}
+                            />
                             {uploadedLeasedDoc ? (
                               <div style={{ fontSize: '11px', color: '#15803d', fontWeight: 'bold' }}>
                                 ✓ Attached: {uploadedLeasedDoc} (Click to replace)
@@ -2522,10 +2532,21 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
                                 alert("Please select a document type first!");
                                 return;
                               }
-                              setUploadedRelationshipDoc(`Relationship_Proof_${relationshipDocType.replace(/\s+/g,'_')}.pdf`);
+                              document.getElementById('relationship-doc-file-input').click();
                             }}
                             style={{ border: '2px dashed #cbd5e1', borderRadius: '8px', padding: '18px', textAlign: 'center', background: '#f8fafc', cursor: 'pointer' }}
                           >
+                            <input 
+                              id="relationship-doc-file-input"
+                              type="file" 
+                              accept="image/*,application/pdf"
+                              style={{ display: 'none' }}
+                              onChange={(e) => {
+                                if (e.target.files && e.target.files[0]) {
+                                  setUploadedRelationshipDoc(e.target.files[0].name);
+                                }
+                              }}
+                            />
                             {uploadedRelationshipDoc ? (
                               <div style={{ fontSize: '11px', color: '#15803d', fontWeight: 'bold' }}>
                                 ✓ Attached: {uploadedRelationshipDoc} (Click to replace)
