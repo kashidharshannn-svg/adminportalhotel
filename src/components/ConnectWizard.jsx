@@ -191,6 +191,7 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
   const [isPhotoUploadSummaryActive, setIsPhotoUploadSummaryActive] = useState(false);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [tagDropdownOpen, setTagDropdownOpen] = useState(false);
   const [tagSearchQuery, setTagSearchQuery] = useState('');
   const [tempSelectedTags, setTempSelectedTags] = useState([]);
@@ -591,12 +592,14 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
     };
 
     try {
+      setIsSaving(true);
       await connectAddProperty(newProperty, activeUser.uid);
       localStorage.removeItem('connect_wizard_autosave'); // Clear autosave on success!
       alert("Congratulations! Your property onboarding is complete and listing is saved.");
       onFinished();
     } catch (err) {
       alert(err.message);
+      setIsSaving(false);
     }
   };
 
@@ -608,6 +611,20 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
           100% { transform: rotate(360deg); }
         }
       `}</style>
+
+      {/* SUBMIT PROGRESS LOADER OVERLAY */}
+      {isSaving && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
+          background: 'rgba(9, 21, 34, 0.85)', backdropFilter: 'blur(4px)',
+          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+          zIndex: 500000, color: '#f8fafc'
+        }}>
+          <div style={{ width: '50px', height: '50px', border: '4px solid rgba(255,255,255,0.1)', borderTopColor: '#ff4f5a', borderRadius: '50%', animation: 'spin 1s linear infinite', marginBottom: '20px' }} />
+          <h3 style={{ fontSize: '18px', fontWeight: '850', margin: 0 }}>Registering Your Property...</h3>
+          <p style={{ fontSize: '12px', color: '#94a3b8', marginTop: '6px' }}>Uploading compliance documents & listing configurations to MakeMyTrip Connect</p>
+        </div>
+      )}
       
       {/* Top connect navbar */}
       <header style={{ background: '#ffffff', padding: '14px 40px', borderBottom: '1px solid #e6ebf3', display: 'flex', justifyContent: 'space-between', alignItems: 'center', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}>

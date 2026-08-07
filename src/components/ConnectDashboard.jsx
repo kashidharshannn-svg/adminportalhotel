@@ -19,6 +19,7 @@ export default function ConnectDashboard({ activeUser, onLogout, onStartOnboardi
   const [editingCoverPhoto, setEditingCoverPhoto] = useState('');
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   // Chatbot Support Widget States
   const [isChatOpen, setIsChatOpen] = useState(false);
@@ -153,6 +154,7 @@ export default function ConnectDashboard({ activeUser, onLogout, onStartOnboardi
         alert("Please upload/keep at least one property photo.");
         return;
       }
+      setIsSaving(true);
       if (!editingCoverPhoto && editingPhotos.length > 0) {
         await dbUpdatePropertyDetails(editingProperty.id, editingRooms, editingPhotos, editingPhotos[0]);
       } else {
@@ -165,6 +167,8 @@ export default function ConnectDashboard({ activeUser, onLogout, onStartOnboardi
     } catch (err) {
       console.error(err);
       alert("Failed to update property details.");
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -463,8 +467,21 @@ export default function ConnectDashboard({ activeUser, onLogout, onStartOnboardi
           <div style={{
             background: '#ffffff', width: '100%', maxWidth: '520px', borderRadius: '16px',
             boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
-            overflow: 'hidden', textAlign: 'left', display: 'flex', flexDirection: 'column', maxHeight: '90vh'
+            overflow: 'hidden', textAlign: 'left', display: 'flex', flexDirection: 'column', maxHeight: '90vh',
+            position: 'relative'
           }}>
+            {/* SAVING PROGRESS LOADER OVERLAY */}
+            {isSaving && (
+              <div style={{
+                position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
+                background: 'rgba(255, 255, 255, 0.85)', display: 'flex', flexDirection: 'column',
+                alignItems: 'center', justifyContent: 'center', zIndex: 100, borderRadius: '16px'
+              }}>
+                <div style={{ width: '40px', height: '40px', border: '3px solid #f3f4f6', borderTopColor: '#ff4f5a', borderRadius: '50%', animation: 'spin 1s linear infinite', marginBottom: '12px' }} />
+                <span style={{ fontSize: '14px', fontWeight: 'bold', color: '#1e293b' }}>Saving Property Details...</span>
+                <span style={{ fontSize: '11px', color: '#64748b', marginTop: '4px' }}>Writing configuration update to database</span>
+              </div>
+            )}
             {/* Header */}
             <div style={{ padding: '20px 24px', borderBottom: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#f8fafc', flexShrink: 0 }}>
               <div>
