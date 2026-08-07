@@ -204,6 +204,19 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
   const [guestsBelow18, setGuestsBelow18] = useState('');
   const [maleOnlyGroups, setMaleOnlyGroups] = useState('');
 
+  const convertFilesToBase64 = (files) => {
+    return Promise.all(
+      files.map(file => {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = (e) => resolve(e.target.result);
+          reader.onerror = (err) => reject(err);
+          reader.readAsDataURL(file);
+        });
+      })
+    );
+  };
+
   const [allowedIds, setAllowedIds] = useState([]);
   const [sameCityIds, setSameCityIds] = useState('');
 
@@ -1242,10 +1255,14 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
                         onChange={(e) => {
                           const files = Array.from(e.target.files || []);
                           if (files.length > 0) {
-                            const newPhotoUrls = files.map(file => URL.createObjectURL(file));
-                            setUploadedPhotos([...uploadedPhotos, ...newPhotoUrls]);
-                            if (!coverPhoto) setCoverPhoto(newPhotoUrls[0]);
-                            if (!activePreviewPhoto) setActivePreviewPhoto(newPhotoUrls[0]);
+                            convertFilesToBase64(files).then(newPhotoUrls => {
+                              setUploadedPhotos(prev => {
+                                const updated = [...prev, ...newPhotoUrls];
+                                if (!coverPhoto) setCoverPhoto(updated[0]);
+                                if (!activePreviewPhoto) setActivePreviewPhoto(updated[0]);
+                                return updated;
+                              });
+                            }).catch(err => console.error(err));
                           }
                         }}
                         style={{ display: 'none' }}
@@ -1258,10 +1275,14 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
                             e.preventDefault();
                             const files = Array.from(e.dataTransfer.files || []);
                             if (files.length > 0) {
-                              const newPhotoUrls = files.map(file => URL.createObjectURL(file));
-                              setUploadedPhotos([...uploadedPhotos, ...newPhotoUrls]);
-                              if (!coverPhoto) setCoverPhoto(newPhotoUrls[0]);
-                              if (!activePreviewPhoto) setActivePreviewPhoto(newPhotoUrls[0]);
+                              convertFilesToBase64(files).then(newPhotoUrls => {
+                                setUploadedPhotos(prev => {
+                                  const updated = [...prev, ...newPhotoUrls];
+                                  if (!coverPhoto) setCoverPhoto(updated[0]);
+                                  if (!activePreviewPhoto) setActivePreviewPhoto(updated[0]);
+                                  return updated;
+                                });
+                              }).catch(err => console.error(err));
                             }
                           }}
                           onClick={() => fileInputRef.current?.click()}
@@ -1732,11 +1753,15 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
                           onChange={(e) => {
                             const files = Array.from(e.target.files || []);
                             if (files.length > 0) {
-                              const newPhotoUrls = files.map(file => URL.createObjectURL(file));
-                              setUploadedPhotos([...uploadedPhotos, ...newPhotoUrls]);
-                              if (!coverPhoto) setCoverPhoto(newPhotoUrls[0]);
-                              if (!activePreviewPhoto) setActivePreviewPhoto(newPhotoUrls[0]);
-                              setIsUploadModalOpen(false); // close modal after upload
+                              convertFilesToBase64(files).then(newPhotoUrls => {
+                                setUploadedPhotos(prev => {
+                                  const updated = [...prev, ...newPhotoUrls];
+                                  if (!coverPhoto) setCoverPhoto(updated[0]);
+                                  if (!activePreviewPhoto) setActivePreviewPhoto(updated[0]);
+                                  return updated;
+                                });
+                                setIsUploadModalOpen(false); // close modal after upload
+                              }).catch(err => console.error(err));
                             }
                           }}
                           style={{ display: 'none' }}
@@ -1748,11 +1773,15 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
                             e.preventDefault();
                             const files = Array.from(e.dataTransfer.files || []);
                             if (files.length > 0) {
-                              const newPhotoUrls = files.map(file => URL.createObjectURL(file));
-                              setUploadedPhotos([...uploadedPhotos, ...newPhotoUrls]);
-                              if (!coverPhoto) setCoverPhoto(newPhotoUrls[0]);
-                              if (!activePreviewPhoto) setActivePreviewPhoto(newPhotoUrls[0]);
-                              setIsUploadModalOpen(false);
+                              convertFilesToBase64(files).then(newPhotoUrls => {
+                                setUploadedPhotos(prev => {
+                                  const updated = [...prev, ...newPhotoUrls];
+                                  if (!coverPhoto) setCoverPhoto(updated[0]);
+                                  if (!activePreviewPhoto) setActivePreviewPhoto(updated[0]);
+                                  return updated;
+                                });
+                                setIsUploadModalOpen(false);
+                              }).catch(err => console.error(err));
                             }
                           }}
                           onClick={() => fileInputRef.current?.click()}
