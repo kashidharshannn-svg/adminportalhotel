@@ -254,10 +254,27 @@ export default function ConnectLogin({ onLoginSuccess, forcedRole }) {
         zIndex: 1000,
         boxShadow: '0 1px 3px rgba(0,0,0,0.02)'
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <span style={{ fontSize: '26px', fontWeight: '850', color: '#ff4f5a', background: 'linear-gradient(135deg, #008cff 0%, #ff4f5a 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-            ∞ connect
-          </span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          {/* Trip Customizer Logo */}
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ filter: 'drop-shadow(0 2px 4px rgba(0, 140, 255, 0.15))' }}>
+            <rect width="32" height="32" rx="8" fill="url(#logoBG)" />
+            <path d="M16 7L24 23L16 19L8 23L16 7Z" fill="#ffffff" />
+            <circle cx="16" cy="15" r="3" stroke="#ff4f5a" strokeWidth="1.5" />
+            <defs>
+              <linearGradient id="logoBG" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stopColor="#008cff" />
+                <stop offset="100%" stopColor="#ff4f5a" />
+              </linearGradient>
+            </defs>
+          </svg>
+          <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1, textAlign: 'left' }}>
+            <span style={{ fontSize: '15px', fontWeight: '900', color: '#0f172a', letterSpacing: '-0.3px' }}>
+              trip customizer
+            </span>
+            <span style={{ fontSize: '10px', fontWeight: '850', color: '#ff4f5a', letterSpacing: '1px', marginTop: '2px', textTransform: 'uppercase' }}>
+              connect
+            </span>
+          </div>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
           <span style={{ fontSize: '14px', fontWeight: '600', color: '#475569', cursor: 'pointer' }}>Features</span>
@@ -1117,9 +1134,28 @@ export default function ConnectLogin({ onLoginSuccess, forcedRole }) {
           
           {/* Brand header */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: '30px', marginBottom: '40px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <span style={{ fontSize: '28px', fontWeight: '850', color: '#ffffff' }}>∞ connect</span>
-              <span style={{ fontSize: '11px', color: '#a3b2c2', background: 'rgba(255,255,255,0.1)', padding: '2px 8px', borderRadius: '4px' }}>Formerly InGo</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              {/* Trip Customizer Logo */}
+              <svg width="36" height="36" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect width="32" height="32" rx="8" fill="url(#footerLogoBG)" />
+                <path d="M16 7L24 23L16 19L8 23L16 7Z" fill="#ffffff" />
+                <circle cx="16" cy="15" r="3" stroke="#ff4f5a" strokeWidth="1.5" />
+                <defs>
+                  <linearGradient id="footerLogoBG" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+                    <stop offset="0%" stopColor="#008cff" />
+                    <stop offset="100%" stopColor="#ff4f5a" />
+                  </linearGradient>
+                </defs>
+              </svg>
+              <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1, textAlign: 'left' }}>
+                <span style={{ fontSize: '16px', fontWeight: '900', color: '#ffffff', letterSpacing: '-0.3px' }}>
+                  trip customizer
+                </span>
+                <span style={{ fontSize: '10.5px', fontWeight: '850', color: '#ff4f5a', letterSpacing: '1px', marginTop: '2.5px', textTransform: 'uppercase' }}>
+                  connect
+                </span>
+              </div>
+              <span style={{ fontSize: '11px', color: '#a3b2c2', background: 'rgba(255,255,255,0.1)', padding: '2px 8px', borderRadius: '4px', marginLeft: '10px' }}>Formerly InGo</span>
             </div>
           </div>
 
