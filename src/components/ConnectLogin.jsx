@@ -885,13 +885,13 @@ export default function ConnectLogin({ onLoginSuccess, forcedRole }) {
         </div>
       </div>
 
-      {/* 6. DIVERSE BUSINESS OFFERINGS */}
+      {/* 6. PROPERTY LISTING CATEGORIES */}
       <div style={{ padding: '80px 60px', textAlign: 'center', background: '#f8fafc', borderTop: '1px solid #e2e8f0' }}>
         <h2 style={{ fontSize: '32px', fontWeight: '900', color: '#0f172a', margin: '0 0 16px 0' }}>
-          Sell on all our partner websites and boost revenue <br /> with our diverse business offerings
+          List various property categories & reach different guests
         </h2>
         <p style={{ fontSize: '15px', color: '#475569', maxWidth: '800px', margin: '0 auto 60px auto', lineHeight: '1.6' }}>
-          Reach diverse travellers seeking unique stay experiences, like corporate travellers through MyBiz, high-value loyalty program members and more - all from a single, user-friendly platform.
+          Whether you run a luxury resort or a budget pilgrim homestay, list your property with us under custom categories tailored to your guest offerings.
         </p>
 
         <div style={{
@@ -901,32 +901,32 @@ export default function ConnectLogin({ onLoginSuccess, forcedRole }) {
         }}>
           {[
             {
-              title: "MyBiz",
-              desc: "Attract travellers from 50,000+ corporates. Highlight relevant business amenities & boost revenue with MyBiz special offers.",
-              tag: "Biz",
+              title: "Hotels & Resorts",
+              desc: "List your hotels, wellness resorts, and lodges. Highlight room configurations, premium services, and amenities to attract global travellers.",
+              tag: "Hotel",
               tagColor: "#ff4f5a",
-              image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=600&q=80"
+              image: "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80"
             },
             {
-              title: "myPartner Network",
-              desc: "Connect with a vast network of 40,000+ travel agents for additional bookings. Reach a wider audience with MyPartner platform!",
-              tag: "Partner",
+              title: "Homestays & Cottages",
+              desc: "List your bungalows, forest cottages, and budget homestays. Perfect for travelers seeking local warmth, home-cooked food, and peaceful retreats.",
+              tag: "Homestay",
               tagColor: "#008cff",
-              image: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=600&q=80"
+              image: "https://images.unsplash.com/photo-1507089947368-19c1da9775ae?auto=format&fit=crop&w=600&q=80"
             },
             {
-              title: "Loyalty Programs",
-              desc: "Loyalty program members on Trip Customizer spend 1.5 times more per booking. Tap into this high-value volume with exclusive benefits.",
-              tag: "MMTBlack",
+              title: "Villas & Apartments",
+              desc: "List private luxury villas and spacious service apartments. Ideal for family groups and long-stay guests looking for kitchen amenities & privacy.",
+              tag: "Villa",
               tagColor: "#1e293b",
-              image: "https://images.unsplash.com/photo-1589758438368-0ad531db3366?auto=format&fit=crop&w=600&q=80"
+              image: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=600&q=80"
             },
             {
-              title: "Homestays, Apartments & Villas",
-              desc: "Cater to travellers seeking authentic local experience in unique properties. Host on Trip Customizer & get more bookings.",
-              tag: "Stay",
+              title: "Dharamshalas & Lodges",
+              desc: "Register pilgrim guest houses, ashrams, and budget lodges. Provide simple, clean, and comfortable lodging options for religious travellers.",
+              tag: "Pilgrim",
               tagColor: "#e0532b",
-              image: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=600&q=80"
+              image: "https://images.unsplash.com/photo-1542282088-fe8426682b8f?auto=format&fit=crop&w=600&q=80"
             }
           ].map((item, idx) => (
             <div key={idx} style={{
