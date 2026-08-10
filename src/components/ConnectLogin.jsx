@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { connectLoginPartner, connectRegisterPartner } from '../data/dbService';
-import { Mail, Lock, User, CheckCircle2, ArrowRight } from 'lucide-react';
+import { Mail, Lock, User, Check, ChevronDown, ChevronUp, Download, Building2, TrendingUp, Percent, ShieldCheck } from 'lucide-react';
 
 export default function ConnectLogin({ onLoginSuccess, forcedRole }) {
   const [isLogin, setIsLogin] = useState(true);
@@ -9,7 +9,58 @@ export default function ConnectLogin({ onLoginSuccess, forcedRole }) {
   const [name, setName] = useState('');
   const [error, setError] = useState('');
 
-  // Default helper credentials filled on launch
+  // 1. Typewriter property types cycler
+  const propertyTypes = ["Hotel", "Resort", "Homestay & Villa", "Lodge, Bed & B'fast", "Apartment", "Dharamshala"];
+  const [propIndex, setPropIndex] = useState(0);
+  const [fade, setFade] = useState(true);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setFade(false);
+      setTimeout(() => {
+        setPropIndex(prev => (prev + 1) % propertyTypes.length);
+        setFade(true);
+      }, 300);
+    }, 3000);
+    return () => clearInterval(timer);
+  }, []);
+
+  // 2. Interactive Feature Accordion state
+  const [activeFeature, setActiveFeature] = useState(0);
+  const features = [
+    {
+      title: "Digital onboarding in minutes",
+      description: "Get your property listed for free, in just 30 minutes with our smart step-by-step onboarding wizard.",
+      mockupType: "onboarding"
+    },
+    {
+      title: "Full control on rates & availability and bookings",
+      description: "Manage room inventories, set flexible rates, and block/unblock rooms dynamically at a moment's notice.",
+      mockupType: "rates"
+    },
+    {
+      title: "Real-time analytics for better decision making",
+      description: "Track guest occupancy rates, revenue statistics, and booking patterns via a detailed graphical dashboard.",
+      mockupType: "analytics"
+    },
+    {
+      title: "Customisable promotions & offers",
+      description: "Set targeted discounts, coupon codes, and corporate offers to stand out and attract high-value guests.",
+      mockupType: "promotions"
+    },
+    {
+      title: "Guest reviews & ratings",
+      description: "Monitor guest feedback, reply to user ratings, and enhance your marketplace quality score directly.",
+      mockupType: "reviews"
+    },
+    {
+      title: "Simplified payments",
+      description: "Receive timely payouts for your bookings with detailed invoice reports and easy-to-track payment histories.",
+      mockupType: "payments"
+    }
+  ];
+
+  // Fillers for testing
   const fillDefaultCredentials = () => {
     setEmail('rj@makemytrip.com');
     setPassword('rj123');
@@ -43,310 +94,552 @@ export default function ConnectLogin({ onLoginSuccess, forcedRole }) {
 
   return (
     <div style={{
-      display: 'flex',
-      minHeight: '100vh',
       fontFamily: "'Inter', sans-serif",
-      background: '#f8fafc',
-      flexDirection: window.innerWidth < 850 ? 'column' : 'row'
+      color: '#1e293b',
+      background: '#ffffff',
+      minHeight: '100vh',
+      display: 'flex',
+      flexDirection: 'column'
     }}>
-      {/* LEFT SIDEBAR - BRANDING & MARKETING SHOWCASE */}
-      <div style={{
-        flex: '1.2',
-        background: 'linear-gradient(135deg, #091c34 0%, #031024 100%)',
-        padding: window.innerWidth < 850 ? '40px 24px' : '60px',
+      {/* 1. TOP NAVBAR */}
+      <header style={{
+        background: '#ffffff',
+        borderBottom: '1px solid #e2e8f0',
+        padding: '16px 40px',
         display: 'flex',
-        flexDirection: 'column',
         justifyContent: 'space-between',
-        color: '#ffffff',
-        position: 'relative',
-        overflow: 'hidden',
-        minHeight: window.innerWidth < 850 ? 'auto' : '100vh',
-        boxSizing: 'border-box'
-      }}>
-        {/* Decorative background glows */}
-        <div style={{
-          position: 'absolute', top: '-10%', left: '-10%', width: '400px', height: '400px',
-          borderRadius: '50%', background: 'radial-gradient(circle, rgba(0, 140, 255, 0.15) 0%, rgba(0,0,0,0) 70%)',
-          pointerEvents: 'none'
-        }} />
-        <div style={{
-          position: 'absolute', bottom: '-10%', right: '-10%', width: '400px', height: '400px',
-          borderRadius: '50%', background: 'radial-gradient(circle, rgba(255, 79, 90, 0.12) 0%, rgba(0,0,0,0) 70%)',
-          pointerEvents: 'none'
-        }} />
-
-        {/* Top Branding Section */}
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '40px' }}>
-            <span style={{ fontSize: '32px', fontWeight: '800', color: '#ff4f5a', background: 'linear-gradient(135deg, #008cff 0%, #ff4f5a 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-              ∞ connect
-            </span>
-          </div>
-
-          <h1 style={{ fontSize: window.innerWidth < 850 ? '28px' : '38px', fontWeight: '800', lineHeight: '1.2', marginBottom: '24px', letterSpacing: '-0.5px' }}>
-            Grow your business with Trip Customizer Partner Connect
-          </h1>
-          <p style={{ fontSize: '15px', color: '#94a3b8', lineHeight: '1.6', marginBottom: '40px', maxWidth: '520px' }}>
-            List your hotel, resort, or homestay to instantly showcase it to millions of eager travelers. Manage bookings, pricing, and guest chats seamlessly in one centralized extranet portal.
-          </p>
-
-          {/* Benefits Bullet List */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-            {[
-              {
-                title: "50 Million+ Active Reach",
-                desc: "Tap into India's fastest-growing holiday planning and packages network."
-              },
-              {
-                title: "Instant Secure Payouts",
-                desc: "Direct settlements credited to your registered bank account on guest check-in."
-              },
-              {
-                title: "Smart Extranet Sync",
-                desc: "Dynamic pricing recommendations, occupancy triggers, and live inventory sync."
-              },
-              {
-                title: "Real-time Chat Assistant",
-                desc: "Directly chat with guests, resolve booking queries, and boost your ratings."
-              }
-            ].map((benefit, idx) => (
-              <div key={idx} style={{ display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
-                <div style={{ color: '#f16825', marginTop: '3px' }}>
-                  <CheckCircle2 size={20} fill="rgba(241, 104, 37, 0.1)" />
-                </div>
-                <div>
-                  <h4 style={{ fontSize: '15px', fontWeight: '700', margin: 0, color: '#f8fafc' }}>{benefit.title}</h4>
-                  <p style={{ fontSize: '13px', color: '#94a3b8', margin: '4px 0 0 0', lineHeight: '1.4' }}>{benefit.desc}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Testimonial Banner at Bottom */}
-        <div style={{
-          background: 'rgba(255, 255, 255, 0.04)',
-          border: '1px solid rgba(255, 255, 255, 0.08)',
-          borderRadius: '12px',
-          padding: '20px',
-          marginTop: '40px'
-        }}>
-          <p style={{ fontSize: '13px', fontStyle: 'italic', color: '#cbd5e1', margin: 0, lineHeight: '1.5' }}>
-            "Onboarding our properties on Trip Customizer was incredibly smooth. Within the first month, our room occupancy grew by 35% and payouts have been absolutely punctual."
-          </p>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '12px' }}>
-            <span style={{ fontSize: '11px', color: '#94a3b8', fontWeight: '600' }}>— General Manager, Grand Candolim Palace & Spa</span>
-            <span style={{ fontSize: '11px', color: '#f16825', fontWeight: '700' }}>★★★★★</span>
-          </div>
-        </div>
-      </div>
-
-      {/* RIGHT COLUMN - LOGIN FORM SECTION */}
-      <div style={{
-        flex: '1',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
         alignItems: 'center',
-        padding: window.innerWidth < 850 ? '40px 20px' : '40px',
-        position: 'relative',
-        boxSizing: 'border-box'
+        position: 'sticky',
+        top: 0,
+        zIndex: 1000,
+        boxShadow: '0 1px 3px rgba(0,0,0,0.02)'
       }}>
-        {/* Quick Credentials Toolbar Helper (Subtle & Elegant) */}
-        <div style={{
-          position: window.innerWidth < 850 ? 'relative' : 'absolute',
-          top: window.innerWidth < 850 ? '0' : '24px',
-          right: window.innerWidth < 850 ? '0' : '24px',
-          marginBottom: window.innerWidth < 850 ? '24px' : '0',
-          display: 'flex',
-          gap: '10px'
-        }}>
-          <button 
-            type="button"
-            onClick={fillDefaultCredentials}
-            style={{
-              padding: '8px 14px', fontSize: '11px', fontWeight: '700', borderRadius: '20px',
-              border: '1px solid #cbd5e1', background: '#ffffff', color: '#475569', cursor: 'pointer',
-              transition: 'all 0.2s', boxShadow: '0 1px 3px rgba(0,0,0,0.05)'
-            }}
-            onMouseOver={(e) => { e.currentTarget.style.borderColor = '#94a3b8'; e.currentTarget.style.background = '#f8fafc'; }}
-            onMouseOut={(e) => { e.currentTarget.style.borderColor = '#cbd5e1'; e.currentTarget.style.background = '#ffffff'; }}
-          >
-            🔑 Quick Partner Login
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <span style={{ fontSize: '26px', fontWeight: '850', color: '#ff4f5a', background: 'linear-gradient(135deg, #008cff 0%, #ff4f5a 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+            ∞ connect
+          </span>
+          <span style={{ fontSize: '12px', color: '#64748b', fontWeight: '600', borderLeft: '1px solid #e2e8f0', paddingLeft: '8px' }}>
+            by Trip Customizer
+          </span>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+          <span style={{ fontSize: '14px', fontWeight: '600', color: '#475569', cursor: 'pointer' }}>Features</span>
+          <button style={{
+            display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 16px', borderRadius: '20px',
+            border: '1px solid #cbd5e1', background: 'transparent', fontSize: '13px', fontWeight: '700',
+            color: '#334155', cursor: 'pointer'
+          }}>
+            <Download size={14} /> Download App
           </button>
-          <button 
-            type="button"
-            onClick={fillAdminCredentials}
-            style={{
-              padding: '8px 14px', fontSize: '11px', fontWeight: '700', borderRadius: '20px',
-              border: '1px solid #cbd5e1', background: '#ffffff', color: '#475569', cursor: 'pointer',
-              transition: 'all 0.2s', boxShadow: '0 1px 3px rgba(0,0,0,0.05)'
-            }}
-            onMouseOver={(e) => { e.currentTarget.style.borderColor = '#94a3b8'; e.currentTarget.style.background = '#f8fafc'; }}
-            onMouseOut={(e) => { e.currentTarget.style.borderColor = '#cbd5e1'; e.currentTarget.style.background = '#ffffff'; }}
-          >
-            🛡️ Quick Admin Login
+          <button onClick={() => setIsLogin(false)} style={{
+            background: '#e0532b', color: '#ffffff', border: 'none', padding: '10px 20px',
+            borderRadius: '6px', fontSize: '13px', fontWeight: '700', cursor: 'pointer',
+            boxShadow: '0 4px 6px -1px rgba(224, 83, 43, 0.2)'
+          }}>
+            List New Property For Free
           </button>
         </div>
+      </header>
 
-        {/* Main Card */}
-        <div style={{
-          width: '100%',
-          maxWidth: '440px',
-          background: '#ffffff',
-          borderRadius: '16px',
-          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 10px 15px -3px rgba(0, 0, 0, 0.08)',
-          border: '1px solid #f1f5f9',
-          padding: window.innerWidth < 850 ? '30px 20px' : '40px',
-          boxSizing: 'border-box'
-        }}>
-          {/* Card Title */}
-          <div style={{ marginBottom: '32px', textAlign: 'center' }}>
-            <h2 style={{ fontSize: '24px', fontWeight: '800', color: '#0f172a', margin: 0 }}>
-              {isAdminOnly ? "Compliance Admin Sign In" : isLogin ? "B2B Partner Sign In" : "Register as Partner"}
-            </h2>
-            <p style={{ fontSize: '13px', color: '#64748b', marginTop: '6px', margin: '6px 0 0 0' }}>
-              {isAdminOnly ? "Trip Customizer Approvals & Verification Console" : "Onboard and manage your hotel accommodations"}
-            </p>
+      {/* 2. HERO SECTION WITH INTEGRATED GLASSMORPHIC LOGIN CARD */}
+      <div style={{
+        backgroundImage: `linear-gradient(rgba(10, 34, 64, 0.7), rgba(3, 16, 36, 0.85)), url('https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1600&q=80')`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        padding: '80px 60px 100px 60px',
+        display: 'grid',
+        gridTemplateColumns: '1.2fr 1fr',
+        gap: '40px',
+        alignItems: 'center',
+        position: 'relative'
+      }}>
+        {/* Left marketing columns */}
+        <div style={{ color: '#ffffff', textAlign: 'left' }}>
+          <h2 style={{
+            fontSize: '44px', fontWeight: '900', lineHeight: '1.2', margin: 0,
+            letterSpacing: '-1px', height: '110px'
+          }}>
+            List your <span style={{
+              color: '#ff6b3d',
+              borderBottom: '3px solid #ff6b3d',
+              transition: 'opacity 0.3s ease-in-out',
+              opacity: fade ? 1 : 0,
+              display: 'inline-block'
+            }}>{propertyTypes[propIndex]}</span> <br />
+            for free & grow your business
+          </h2>
+          <p style={{ fontSize: '18px', color: '#cbd5e1', marginTop: '16px', fontWeight: '500' }}>
+            Partner with Trip Customizer group
+          </p>
+          
+          {/* Logo labels */}
+          <div style={{ display: 'flex', gap: '16px', alignItems: 'center', marginTop: '24px' }}>
+            <span style={{ fontSize: '14px', fontWeight: '850', color: '#ff4f5a' }}>∞ connect</span>
+            <span style={{ color: '#64748b', fontSize: '16px' }}>|</span>
+            <span style={{ fontSize: '13px', fontWeight: '700', color: '#008cff' }}>trip customizer</span>
+            <span style={{ color: '#64748b', fontSize: '16px' }}>|</span>
+            <span style={{ fontSize: '13px', fontWeight: '700', color: '#e0532b' }}>b2b connect</span>
+            <span style={{ color: '#64748b', fontSize: '16px' }}>|</span>
+            <span style={{ fontSize: '13px', fontWeight: '700', color: '#ffffff' }}>partner network</span>
           </div>
 
-          {error && (
-            <div style={{
-              background: '#fef2f2', border: '1px solid #fecaca', padding: '12px 16px',
-              borderRadius: '8px', fontSize: '12.5px', color: '#ef4444', marginBottom: '24px',
-              display: 'flex', alignItems: 'center', gap: '8px'
-            }}>
-              <span>⚠️</span>
-              <span>{error}</span>
-            </div>
-          )}
+          <p style={{ fontSize: '13px', color: '#94a3b8', marginTop: '30px' }}>
+            Join a community of 15,00,000+ registered listings across India.
+          </p>
+        </div>
 
-          {/* Form */}
-          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-            {!isLogin && !isAdminOnly && (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                <label style={{ fontSize: '12px', fontWeight: '700', color: '#334155', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                  Contact Name
-                </label>
-                <div style={{ position: 'relative' }}>
-                  <span style={{ position: 'absolute', left: '14px', top: '13px', color: '#94a3b8' }}>
-                    <User size={16} />
-                  </span>
-                  <input 
-                    type="text" 
-                    required 
-                    placeholder="Enter your name" 
-                    value={name} 
-                    onChange={(e) => setName(e.target.value)} 
-                    style={{
-                      width: '100%', padding: '12px 14px 12px 42px', borderRadius: '8px',
-                      border: '1px solid #cbd5e1', fontSize: '14px', transition: 'all 0.2s', outline: 'none',
-                      boxSizing: 'border-box'
-                    }}
-                    onFocus={(e) => { e.currentTarget.style.borderColor = '#008cff'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(0, 140, 255, 0.1)'; }}
-                    onBlur={(e) => { e.currentTarget.style.borderColor = '#cbd5e1'; e.currentTarget.style.boxShadow = 'none'; }}
-                  />
-                </div>
+        {/* Right Glassmorphic Form Card */}
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative' }}>
+          {/* Developer Quick-fill buttons */}
+          <div style={{ display: 'flex', gap: '8px', marginBottom: '12px', zIndex: 10 }}>
+            <button onClick={fillDefaultCredentials} style={{
+              background: 'rgba(255,255,255,0.15)', backdropFilter: 'blur(4px)', color: '#ffffff',
+              border: '1px solid rgba(255,255,255,0.2)', padding: '5px 12px', borderRadius: '20px',
+              fontSize: '11px', fontWeight: '700', cursor: 'pointer'
+            }}>
+              🔑 Quick Partner Login
+            </button>
+            <button onClick={fillAdminCredentials} style={{
+              background: 'rgba(255,255,255,0.15)', backdropFilter: 'blur(4px)', color: '#ffffff',
+              border: '1px solid rgba(255,255,255,0.2)', padding: '5px 12px', borderRadius: '20px',
+              fontSize: '11px', fontWeight: '700', cursor: 'pointer'
+            }}>
+              🛡️ Quick Admin Login
+            </button>
+          </div>
+
+          <div style={{
+            background: 'rgba(255, 255, 255, 0.1)',
+            backdropFilter: 'blur(20px)',
+            border: '1px solid rgba(255, 255, 255, 0.15)',
+            borderRadius: '16px',
+            width: '100%',
+            maxWidth: '420px',
+            padding: '36px',
+            boxShadow: '0 20px 40px rgba(0,0,0,0.3)',
+            color: '#ffffff',
+            boxSizing: 'border-box',
+            textAlign: 'left'
+          }}>
+            <h3 style={{ fontSize: '22px', fontWeight: '800', margin: '0 0 6px 0' }}>
+              {isAdminOnly ? "Compliance Admin Sign In" : isLogin ? "Sign in to manage your property" : "Create your partner account"}
+            </h3>
+            <p style={{ fontSize: '13px', color: '#cbd5e1', margin: '0 0 24px 0', lineHeight: 1.4 }}>
+              {isAdminOnly ? "Admin Verification & Compliance Portal" : isLogin ? "Welcome back! Please enter your details." : "Register and list your hotel today."}
+            </p>
+
+            {error && (
+              <div style={{ background: 'rgba(239, 68, 68, 0.2)', border: '1px solid rgba(239, 68, 68, 0.4)', padding: '10px 14px', borderRadius: '6px', fontSize: '12px', color: '#fca5a5', marginBottom: '20px' }}>
+                ⚠️ {error}
               </div>
             )}
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-              <label style={{ fontSize: '12px', fontWeight: '700', color: '#334155', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                {isAdminOnly ? "Admin Email" : "Partner Email"}
-              </label>
-              <div style={{ position: 'relative' }}>
-                <span style={{ position: 'absolute', left: '14px', top: '13px', color: '#94a3b8' }}>
-                  <Mail size={16} />
-                </span>
-                <input 
-                  type="email" 
-                  required 
-                  placeholder={isAdminOnly ? "admin@makemytrip.com" : "e.g. partner@myhotel.com"} 
-                  value={email} 
-                  onChange={(e) => setEmail(e.target.value)} 
-                  style={{
-                    width: '100%', padding: '12px 14px 12px 42px', borderRadius: '8px',
-                    border: '1px solid #cbd5e1', fontSize: '14px', transition: 'all 0.2s', outline: 'none',
-                    boxSizing: 'border-box'
-                  }}
-                  onFocus={(e) => { e.currentTarget.style.borderColor = '#008cff'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(0, 140, 255, 0.1)'; }}
-                  onBlur={(e) => { e.currentTarget.style.borderColor = '#cbd5e1'; e.currentTarget.style.boxShadow = 'none'; }}
-                />
+            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              {!isLogin && !isAdminOnly && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                  <label style={{ fontSize: '11px', fontWeight: '700', color: '#94a3b8', textTransform: 'uppercase' }}>Contact Name</label>
+                  <div style={{ position: 'relative' }}>
+                    <span style={{ position: 'absolute', left: '12px', top: '12px', color: '#cbd5e1' }}><User size={14} /></span>
+                    <input 
+                      type="text" required placeholder="Enter contact name" value={name} onChange={(e) => setName(e.target.value)}
+                      style={{
+                        width: '100%', padding: '10px 12px 10px 36px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.2)',
+                        background: 'rgba(255,255,255,0.08)', color: '#ffffff', outline: 'none', boxSizing: 'border-box', fontSize: '13px'
+                      }}
+                    />
+                  </div>
+                </div>
+              )}
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                <label style={{ fontSize: '11px', fontWeight: '700', color: '#94a3b8', textTransform: 'uppercase' }}>Username/Email address</label>
+                <div style={{ position: 'relative' }}>
+                  <span style={{ position: 'absolute', left: '12px', top: '12px', color: '#cbd5e1' }}><Mail size={14} /></span>
+                  <input 
+                    type="email" required placeholder="Enter email address" value={email} onChange={(e) => setEmail(e.target.value)}
+                    style={{
+                      width: '100%', padding: '10px 12px 10px 36px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.2)',
+                      background: 'rgba(255,255,255,0.08)', color: '#ffffff', outline: 'none', boxSizing: 'border-box', fontSize: '13px'
+                    }}
+                  />
+                </div>
               </div>
-            </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-              <label style={{ fontSize: '12px', fontWeight: '700', color: '#334155', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                Password
-              </label>
-              <div style={{ position: 'relative' }}>
-                <span style={{ position: 'absolute', left: '14px', top: '13px', color: '#94a3b8' }}>
-                  <Lock size={16} />
-                </span>
-                <input 
-                  type="password" 
-                  required 
-                  placeholder="••••••••" 
-                  value={password} 
-                  onChange={(e) => setPassword(e.target.value)} 
-                  style={{
-                    width: '100%', padding: '12px 14px 12px 42px', borderRadius: '8px',
-                    border: '1px solid #cbd5e1', fontSize: '14px', transition: 'all 0.2s', outline: 'none',
-                    boxSizing: 'border-box'
-                  }}
-                  onFocus={(e) => { e.currentTarget.style.borderColor = '#008cff'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(0, 140, 255, 0.1)'; }}
-                  onBlur={(e) => { e.currentTarget.style.borderColor = '#cbd5e1'; e.currentTarget.style.boxShadow = 'none'; }}
-                />
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                <label style={{ fontSize: '11px', fontWeight: '700', color: '#94a3b8', textTransform: 'uppercase' }}>Password</label>
+                <div style={{ position: 'relative' }}>
+                  <span style={{ position: 'absolute', left: '12px', top: '12px', color: '#cbd5e1' }}><Lock size={14} /></span>
+                  <input 
+                    type="password" required placeholder="Enter password" value={password} onChange={(e) => setPassword(e.target.value)}
+                    style={{
+                      width: '100%', padding: '10px 12px 10px 36px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.2)',
+                      background: 'rgba(255,255,255,0.08)', color: '#ffffff', outline: 'none', boxSizing: 'border-box', fontSize: '13px'
+                    }}
+                  />
+                </div>
               </div>
-            </div>
 
-            {/* Customizer Orange-red Button */}
-            <button 
-              type="submit" 
-              style={{
-                width: '100%',
-                padding: '14px',
-                borderRadius: '8px',
-                background: 'linear-gradient(135deg, #f16825 0%, #ff5c26 100%)',
-                color: '#ffffff',
-                fontSize: '15px',
-                fontWeight: '700',
-                border: 'none',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '8px',
-                boxShadow: '0 4px 12px rgba(241, 104, 37, 0.25)',
-                transition: 'all 0.2s',
-                marginTop: '10px'
-              }}
-              onMouseOver={(e) => { e.currentTarget.style.boxShadow = '0 6px 16px rgba(241, 104, 37, 0.35)'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
-              onMouseOut={(e) => { e.currentTarget.style.boxShadow = '0 4px 12px rgba(241, 104, 37, 0.25)'; e.currentTarget.style.transform = 'none'; }}
-            >
-              <span>{isAdminOnly ? "Sign In to Admin Panel" : isLogin ? "Sign In to Partner Console" : "Register Partner Account"}</span>
-              <ArrowRight size={16} />
-            </button>
-          </form>
+              {isLogin && <span style={{ fontSize: '11.5px', color: '#cbd5e1', cursor: 'pointer', textAlign: 'right', marginTop: '-4px' }}>Forgot your password?</span>}
 
-          {/* Toggle state */}
-          {!isAdminOnly && (
-            <div style={{ textAlign: 'center', marginTop: '28px', fontSize: '13px', color: '#64748b', borderTop: '1px solid #f1f5f9', paddingTop: '20px' }}>
-              {isLogin ? "New partner to Trip Customizer network?" : "Already registered as partner?"}{' '}
-              <button 
-                type="button"
-                style={{
-                  color: '#f16825', fontWeight: '700', textDecoration: 'underline',
-                  background: 'transparent', border: 'none', cursor: 'pointer', padding: 0
-                }}
-                onClick={() => setIsLogin(!isLogin)}
-              >
-                {isLogin ? "Register Now" : "Sign In"}
+              <button type="submit" style={{
+                background: '#e0532b', color: '#ffffff', border: 'none', padding: '12px',
+                borderRadius: '6px', fontSize: '14px', fontWeight: '700', cursor: 'pointer',
+                transition: 'background 0.2s', marginTop: '10px', width: '100%'
+              }}>
+                {isAdminOnly ? "Sign In to Admin Panel" : isLogin ? "Sign In" : "Register Partner Account"}
               </button>
-            </div>
-          )}
+            </form>
+
+            {!isAdminOnly && (
+              <div style={{ textAlign: 'center', marginTop: '20px', fontSize: '12.5px', color: '#cbd5e1', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '16px' }}>
+                {isLogin ? "New to Connect?" : "Already registered?"}{' '}
+                <button onClick={() => setIsLogin(!isLogin)} style={{
+                  color: '#ff6b3d', fontWeight: '700', textDecoration: 'underline', background: 'transparent',
+                  border: 'none', cursor: 'pointer', padding: 0
+                }}>
+                  {isLogin ? "Create an account" : "Sign in here"}
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
+
+      {/* 3. OVERLAPPING STATS BANNER */}
+      <div style={{
+        padding: '0 60px',
+        marginTop: '-40px',
+        position: 'relative',
+        zIndex: 5,
+        display: 'grid',
+        gridTemplateColumns: 'repeat(3, 1fr)',
+        gap: '24px'
+      }}>
+        {[
+          { stat: "48.2 Cr+", desc: "Annual visitors, globally. Reach travellers actively searching for unique stays on Trip Customizer platforms." },
+          { stat: "3.1 Cr+", desc: "Room check-ins per year, across the world." },
+          { stat: "80+", desc: "Channel Managers network. Connect seamlessly with us & enjoy hassle-free property management." }
+        ].map((item, index) => (
+          <div key={index} style={{
+            background: '#ffffff',
+            borderRadius: '12px',
+            padding: '24px 30px',
+            boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05)',
+            border: '1px solid #f1f5f9',
+            textAlign: 'left'
+          }}>
+            <h3 style={{ fontSize: '32px', fontWeight: '900', color: '#e0532b', margin: '0 0 10px 0' }}>{item.stat}</h3>
+            <p style={{ fontSize: '13px', color: '#475569', margin: 0, lineHeight: '1.5' }}>{item.desc}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* 4. FEATURES ACCORDION & MOCKUP SHOWCASE */}
+      <div style={{ padding: '80px 60px', background: '#f8fafc', textAlign: 'left' }}>
+        <span style={{ fontSize: '12px', fontWeight: '800', color: '#e0532b', textTransform: 'uppercase', letterSpacing: '1px' }}>Features</span>
+        <h2 style={{ fontSize: '32px', fontWeight: '850', color: '#0f172a', margin: '8px 0 40px 0' }}>Manage & grow your business</h2>
+
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: '60px', alignItems: 'center' }}>
+          {/* Left Feature List Accordion */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            {features.map((feat, idx) => {
+              const isOpen = activeFeature === idx;
+              return (
+                <div 
+                  key={idx} 
+                  onClick={() => setActiveFeature(idx)}
+                  style={{
+                    background: '#ffffff',
+                    border: isOpen ? '1px solid #e0532b' : '1px solid #e2e8f0',
+                    borderLeft: isOpen ? '4px solid #e0532b' : '1px solid #e2e8f0',
+                    borderRadius: '8px',
+                    padding: '16px 20px',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s'
+                  }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontSize: '15px', fontWeight: '750', color: isOpen ? '#e0532b' : '#334155' }}>
+                      {feat.title}
+                    </span>
+                    {isOpen ? <ChevronUp size={16} color="#e0532b" /> : <ChevronDown size={16} color="#64748b" />}
+                  </div>
+                  {isOpen && (
+                    <p style={{ fontSize: '13px', color: '#475569', marginTop: '10px', margin: '10px 0 0 0', lineHeight: 1.5 }}>
+                      {feat.description}
+                    </p>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Right Live CSS Dashboard Mockup (Interactive based on selection!) */}
+          <div style={{
+            background: '#0a2240',
+            borderRadius: '16px',
+            padding: '24px',
+            boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04)',
+            height: '380px',
+            display: 'flex',
+            flexDirection: 'column',
+            position: 'relative',
+            overflow: 'hidden'
+          }}>
+            {/* Mockup Top Header */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '12px', marginBottom: '16px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#ff5f56' }} />
+                <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#ffbd2e' }} />
+                <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#27c93f' }} />
+                <span style={{ fontSize: '11px', color: '#94a3b8', marginLeft: '10px', fontWeight: '600' }}>Trip Customizer Extranet Panel</span>
+              </div>
+              <span style={{ fontSize: '10px', background: 'rgba(255, 79, 90, 0.15)', color: '#ff4f5a', padding: '2px 8px', borderRadius: '10px', fontWeight: '700' }}>LIVE MODE</span>
+            </div>
+
+            {/* Mockup Dynamic Content */}
+            <div style={{ flexGrow: 1, display: 'flex', flexDirection: 'column', color: '#ffffff' }}>
+              {features[activeFeature].mockupType === 'onboarding' && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', textAlign: 'left' }}>
+                  <div style={{ background: 'rgba(255,255,255,0.05)', padding: '16px', borderRadius: '8px', border: '1px dashed rgba(255,255,255,0.15)' }}>
+                    <h5 style={{ margin: '0 0 6px 0', fontSize: '13px', color: '#ff6b3d' }}>Step 3 of 4: Finance & Legal Upload</h5>
+                    <div style={{ display: 'flex', gap: '8px', marginTop: '12px' }}>
+                      <div style={{ flex: 1, background: 'rgba(255,255,255,0.05)', padding: '10px', borderRadius: '6px', fontSize: '11px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                        📄 Leased_Document.pdf <br /> <span style={{ color: '#10b981', fontWeight: 'bold' }}>✓ Uploaded</span>
+                      </div>
+                      <div style={{ flex: 1, background: 'rgba(255,255,255,0.05)', padding: '10px', borderRadius: '6px', fontSize: '11px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                        📄 GST_Certificate.pdf <br /> <span style={{ color: '#10b981', fontWeight: 'bold' }}>✓ Uploaded</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(16, 185, 129, 0.1)', padding: '10px 14px', borderRadius: '8px', border: '1px solid rgba(16, 185, 129, 0.2)' }}>
+                    <span style={{ fontSize: '11.5px', color: '#34d399', fontWeight: 'bold' }}>onboarding status</span>
+                    <span style={{ fontSize: '11px', background: '#10b981', padding: '3px 8px', borderRadius: '4px', fontWeight: '800' }}>90% COMPLETE</span>
+                  </div>
+                </div>
+              )}
+
+              {features[activeFeature].mockupType === 'rates' && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', textAlign: 'left' }}>
+                  <span style={{ fontSize: '11.5px', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 'bold' }}>Inventory & Dynamic Rates</span>
+                  {[
+                    { type: "Deluxe Ocean View", price: "₹8,500", status: "Active", rooms: "12 Available" },
+                    { type: "Luxury Lagoon Suite", price: "₹15,000", status: "Active", rooms: "4 Available" }
+                  ].map((row, i) => (
+                    <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(255,255,255,0.04)', padding: '12px 16px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                      <div>
+                        <div style={{ fontSize: '13px', fontWeight: 'bold' }}>{row.type}</div>
+                        <span style={{ fontSize: '11px', color: '#94a3b8' }}>{row.rooms}</span>
+                      </div>
+                      <div style={{ textAlign: 'right' }}>
+                        <div style={{ fontSize: '14px', fontWeight: 'bold', color: '#10b981' }}>{row.price}</div>
+                        <span style={{ fontSize: '10px', background: 'rgba(16, 185, 129, 0.15)', color: '#34d399', padding: '1px 5px', borderRadius: '3px' }}>{row.status}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {features[activeFeature].mockupType === 'analytics' && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', textAlign: 'left' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
+                    <div style={{ background: 'rgba(255,255,255,0.04)', padding: '10px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                      <span style={{ fontSize: '10px', color: '#94a3b8' }}>Occupancy</span>
+                      <div style={{ fontSize: '16px', fontWeight: '800', color: '#38bdf8', marginTop: '2px' }}>84.2%</div>
+                    </div>
+                    <div style={{ background: 'rgba(255,255,255,0.04)', padding: '10px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                      <span style={{ fontSize: '10px', color: '#94a3b8' }}>Est. Revenue</span>
+                      <div style={{ fontSize: '16px', fontWeight: '800', color: '#34d399', marginTop: '2px' }}>₹3.8L</div>
+                    </div>
+                    <div style={{ background: 'rgba(255,255,255,0.04)', padding: '10px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                      <span style={{ fontSize: '10px', color: '#94a3b8' }}>Avg. Room Rate</span>
+                      <div style={{ fontSize: '16px', fontWeight: '800', color: '#a78bfa', marginTop: '2px' }}>₹8,450</div>
+                    </div>
+                  </div>
+                  {/* Graphical chart visualization */}
+                  <div style={{ flexGrow: 1, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '8px', padding: '12px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                    <span style={{ fontSize: '10px', color: '#94a3b8', fontWeight: 'bold' }}>Monthly Booking Trend</span>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', height: '80px', paddingTop: '10px' }}>
+                      {[40, 60, 45, 80, 70, 95, 85].map((h, idx) => (
+                        <div key={idx} style={{ width: '22px', height: `${h}%`, background: idx === 5 ? '#e0532b' : '#008cff', borderRadius: '4px 4px 0 0', position: 'relative' }} />
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {features[activeFeature].mockupType === 'promotions' && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', textAlign: 'left' }}>
+                  <span style={{ fontSize: '12px', color: '#cbd5e1', fontWeight: '700' }}>Active Campaign Promos</span>
+                  {[
+                    { code: "FESTIVE20", value: "20% FLAT DISCOUNT", reach: "All Travelers", color: "#f59e0b" },
+                    { code: "BIZCLASS", value: "FREE UPGRADES", reach: "Corporate Customers", color: "#10b981" },
+                    { code: "WEEKEND15", value: "15% DISCOUNT", reach: "Friday-Sunday Bookings", color: "#3b82f6" }
+                  ].map((p, i) => (
+                    <div key={i} style={{ display: 'flex', justifySelf: 'stretch', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(255,255,255,0.04)', padding: '10px 14px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <span style={{ background: p.color, color: 'white', padding: '3px 8px', borderRadius: '4px', fontSize: '10px', fontWeight: '800' }}>{p.code}</span>
+                        <span style={{ fontSize: '12px', fontWeight: 'bold' }}>{p.value}</span>
+                      </div>
+                      <span style={{ fontSize: '11px', color: '#94a3b8' }}>{p.reach}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {features[activeFeature].mockupType === 'reviews' && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', textAlign: 'left' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontSize: '12px', color: '#cbd5e1', fontWeight: '700' }}>Recent Guest Reviews</span>
+                    <span style={{ fontSize: '13px', color: '#f59e0b', fontWeight: 'bold' }}>★ 4.8 / 5.0 Rating</span>
+                  </div>
+                  <div style={{ background: 'rgba(255,255,255,0.04)', padding: '12px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#94a3b8' }}>
+                      <strong>Rishabh J.</strong>
+                      <span>Guest stayed: 2 days ago</span>
+                    </div>
+                    <p style={{ fontSize: '12.5px', margin: '6px 0 0 0', fontStyle: 'italic', lineHeight: 1.4 }}>
+                      "Excellent hospitality and very clean rooms. The staff went out of their way to ensure our check-in process was comfortable."
+                    </p>
+                  </div>
+                  <div style={{ background: 'rgba(16, 185, 129, 0.1)', padding: '8px 12px', borderRadius: '6px', border: '1px solid rgba(16, 185, 129, 0.2)' }}>
+                    <span style={{ fontSize: '10.5px', color: '#34d399', display: 'block', fontWeight: 'bold' }}>Your response:</span>
+                    <span style={{ fontSize: '11.5px', color: '#a7f3d0' }}>"Thank you Rishabh! We look forward to welcoming you back soon."</span>
+                  </div>
+                </div>
+              )}
+
+              {features[activeFeature].mockupType === 'payments' && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', textAlign: 'left' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                    <span style={{ fontSize: '12px', color: '#cbd5e1', fontWeight: '700' }}>Payout Account Ledger</span>
+                    <span style={{ fontSize: '11px', color: '#34d399', fontWeight: 'bold' }}>Payout Period: Monthly</span>
+                  </div>
+                  {[
+                    { id: "TXN-88402", date: "08 Aug 2026", amount: "₹48,500", status: "Transferred" },
+                    { id: "TXN-88231", date: "01 Aug 2026", amount: "₹1,24,000", status: "Transferred" },
+                    { id: "TXN-87980", date: "25 Jul 2026", amount: "₹82,600", status: "Transferred" }
+                  ].map((tx, idx) => (
+                    <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(255,255,255,0.04)', padding: '10px 14px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                      <div>
+                        <div style={{ fontSize: '12.5px', fontWeight: 'bold' }}>{tx.id}</div>
+                        <span style={{ fontSize: '11px', color: '#94a3b8' }}>{tx.date}</span>
+                      </div>
+                      <div style={{ textAlign: 'right' }}>
+                        <div style={{ fontSize: '13px', fontWeight: 'bold', color: '#ffffff' }}>{tx.amount}</div>
+                        <span style={{ fontSize: '9px', background: 'rgba(16, 185, 129, 0.15)', color: '#34d399', padding: '1px 4px', borderRadius: '2px', fontWeight: 'bold' }}>{tx.status}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* 5. DIVERSE BUSINESS OFFERINGS */}
+      <div style={{ padding: '80px 60px', textAlign: 'center', background: '#ffffff' }}>
+        <h2 style={{ fontSize: '32px', fontWeight: '900', color: '#0f172a', margin: '0 0 16px 0' }}>
+          Sell on all our partner websites and boost revenue <br /> with our diverse business offerings
+        </h2>
+        <p style={{ fontSize: '15px', color: '#475569', maxWidth: '800px', margin: '0 auto 60px auto', lineHeight: '1.6' }}>
+          Reach diverse travellers seeking unique stay experiences, like corporate travellers through MyBiz, high-value loyalty program members and more - all from a single, user-friendly platform.
+        </p>
+
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(4, 1fr)',
+          gap: '24px'
+        }}>
+          {[
+            {
+              title: "MyBiz",
+              desc: "Attract travellers from 50,000+ corporates. Highlight relevant business amenities & boost revenue with MyBiz special offers.",
+              tag: "Biz",
+              tagColor: "#ff4f5a",
+              image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=600&q=80"
+            },
+            {
+              title: "myPartner Network",
+              desc: "Connect with a vast network of 40,000+ travel agents for additional bookings. Reach a wider audience with MyPartner platform!",
+              tag: "Partner",
+              tagColor: "#008cff",
+              image: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=600&q=80"
+            },
+            {
+              title: "Loyalty Programs",
+              desc: "Loyalty program members on Trip Customizer spend 1.5 times more per booking. Tap into this high-value volume with exclusive benefits.",
+              tag: "MMTBlack",
+              tagColor: "#1e293b",
+              image: "https://images.unsplash.com/photo-1589758438368-0ad531db3366?auto=format&fit=crop&w=600&q=80"
+            },
+            {
+              title: "Homestays, Apartments & Villas",
+              desc: "Cater to travellers seeking authentic local experience in unique properties. Host on Trip Customizer & get more bookings.",
+              tag: "Stay",
+              tagColor: "#e0532b",
+              image: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=600&q=80"
+            }
+          ].map((item, idx) => (
+            <div key={idx} style={{
+              background: '#ffffff',
+              borderRadius: '12px',
+              border: '1px solid #e2e8f0',
+              overflow: 'hidden',
+              boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -1px rgba(0, 0, 0, 0.02)',
+              textAlign: 'left',
+              display: 'flex',
+              flexDirection: 'column',
+              transition: 'transform 0.2s, box-shadow 0.2s',
+              cursor: 'pointer'
+            }}
+            onMouseOver={(e) => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 10px 15px -3px rgba(0,0,0,0.05), 0 4px 6px -2px rgba(0,0,0,0.05)'; }}
+            onMouseOut={(e) => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -1px rgba(0, 0, 0, 0.02)'; }}
+            >
+              <div style={{ position: 'relative', height: '140px' }}>
+                <img src={item.image} alt={item.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                <span style={{
+                  position: 'absolute', bottom: '12px', right: '12px', background: item.tagColor,
+                  color: 'white', padding: '3px 8px', borderRadius: '4px', fontSize: '9px', fontWeight: '800',
+                  textTransform: 'uppercase', letterSpacing: '0.5px'
+                }}>{item.tag}</span>
+              </div>
+              <div style={{ padding: '20px', flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                <div>
+                  <h4 style={{ fontSize: '15px', fontWeight: '800', color: '#0f172a', margin: '0 0 8px 0' }}>{item.title}</h4>
+                  <p style={{ fontSize: '12px', color: '#475569', margin: 0, lineHeight: '1.5' }}>{item.desc}</p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* 6. COMPACT PARTNER FOOTER */}
+      <footer style={{
+        background: '#091c34',
+        color: '#94a3b8',
+        padding: '40px 60px',
+        borderTop: '1px solid rgba(255,255,255,0.05)',
+        textAlign: 'left',
+        fontSize: '12px'
+      }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '20px' }}>
+          <div>
+            <span style={{ fontSize: '18px', fontWeight: '850', color: '#ff4f5a', background: 'linear-gradient(135deg, #008cff 0%, #ff4f5a 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', display: 'block', marginBottom: '6px' }}>
+              ∞ connect
+            </span>
+            <span>© 2026 Trip Customizer India Private Limited. All rights reserved.</span>
+          </div>
+          <div style={{ display: 'flex', gap: '24px' }}>
+            <span style={{ cursor: 'pointer' }}>Terms of Service</span>
+            <span style={{ cursor: 'pointer' }}>Privacy Policy</span>
+            <span style={{ cursor: 'pointer' }}>Partner Guidelines</span>
+            <span style={{ cursor: 'pointer' }}>Help Desk Support</span>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
