@@ -260,7 +260,7 @@ export default function ConnectDashboard({ activeUser, onLogout, onStartOnboardi
             ∞ connect
           </span>
           <span style={{ background: '#e0f2fe', padding: '3px 10px', borderRadius: '12px', fontSize: '10px', fontWeight: '700', color: '#0369a1', textTransform: 'uppercase' }}>
-            MMT & Goibibo Partner Console
+            Trip Customizer Partner Console
           </span>
         </div>
         
@@ -351,7 +351,7 @@ export default function ConnectDashboard({ activeUser, onLogout, onStartOnboardi
                   <div style={{ fontSize: '48px', marginBottom: '16px' }}>🏨</div>
                   <h4 style={{ fontWeight: '800', fontSize: '16px', color: '#1a1a1a' }}>No properties onboarded yet</h4>
                   <p style={{ fontSize: '12px', color: '#64748b', marginTop: '6px', maxWidth: '380px', margin: '6px auto 20px auto', lineHeight: 1.5 }}>
-                    Onboard your hotel, homestay, or resort on MakeMyTrip Connect to start accepting customer bookings.
+                    Onboard your hotel, homestay, or resort on Trip Customizer Connect to start accepting customer bookings.
                   </p>
                   <button onClick={onStartOnboarding} className="btn-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
                     <PlusCircle size={16} />
@@ -704,7 +704,7 @@ export default function ConnectDashboard({ activeUser, onLogout, onStartOnboardi
           {/* Header */}
           <div style={{ padding: '16px 20px', borderBottom: '1px solid #e2e8f0', background: 'linear-gradient(90deg, #ff4f5a 0%, #ff6872 100%)', color: '#ffffff', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div>
-              <h5 style={{ fontSize: '13px', fontWeight: '800', margin: 0 }}>MakeMyTrip Connect Support</h5>
+              <h5 style={{ fontSize: '13px', fontWeight: '800', margin: 0 }}>Trip Customizer Connect Support</h5>
               <span style={{ fontSize: '9px', color: '#ffe4e6', marginTop: '2px', display: 'block' }}>We respond in real-time</span>
             </div>
             <button 
@@ -724,8 +724,8 @@ export default function ConnectDashboard({ activeUser, onLogout, onStartOnboardi
                 border: '1px solid #e2e8f0', color: '#1e293b', padding: '8px 12px',
                 borderRadius: '12px', borderBottomLeftRadius: '2px', fontSize: '11px', lineHeight: 1.4
               }}>
-                <span style={{ fontSize: '9px', color: '#94a3b8', display: 'block', marginBottom: '2px', fontWeight: 'bold' }}>MMT Support Assistant</span>
-                Hi there! Welcome to the MakeMyTrip onboarding help desk. How can we help you resolve pricing updates, compliance documents, or approvals?
+                <span style={{ fontSize: '9px', color: '#94a3b8', display: 'block', marginBottom: '2px', fontWeight: 'bold' }}>Trip Customizer Support Assistant</span>
+                Hi there! Welcome to the Trip Customizer onboarding help desk. How can we help you resolve pricing updates, compliance documents, or approvals?
               </div>
             )}
 

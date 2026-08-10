@@ -133,13 +133,13 @@ export default function VendorPortal({ isOpen, onClose }) {
       stars: Number(hotelStars),
       price: Number(hotelPrice),
       image: imageUrl,
-      description: hotelDescription || "A luxury hospitality property listed under MakeMyTrip marketplace.",
+      description: hotelDescription || "A luxury hospitality property listed under Trip Customizer marketplace.",
       amenities: hotelAmenities.split(',').map(a => a.trim()).filter(a => a)
     };
 
     try {
       await dbAddHotel(hotelObj, vendorUser.uid);
-      alert("Property submitted for verification! It will go live once verified by MakeMyTrip Admin.");
+      alert("Property submitted for verification! It will go live once verified by Trip Customizer Admin.");
       setHotelName('');
       setHotelCity('');
       setHotelAddress('');
@@ -174,7 +174,7 @@ export default function VendorPortal({ isOpen, onClose }) {
 
     try {
       await dbAddPackage(packageObj, vendorUser.uid);
-      alert("Tour Package submitted for verification! It will go live once verified by MakeMyTrip Admin.");
+      alert("Tour Package submitted for verification! It will go live once verified by Trip Customizer Admin.");
       setPackageTitle('');
       setPackageDest('');
       setPackagePrice('');
@@ -194,7 +194,7 @@ export default function VendorPortal({ isOpen, onClose }) {
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <ShieldCheck size={24} style={{ color: '#008cff' }} />
             <div>
-              <h3 style={{ fontSize: '18px', fontWeight: '800' }}>MakeMyTrip B2B Business Portal</h3>
+              <h3 style={{ fontSize: '18px', fontWeight: '800' }}>Trip Customizer B2B Business Portal</h3>
               <span style={{ fontSize: '10px', color: '#a3b8cc' }}>Multi-Vendor Properties & Packages Management Console</span>
             </div>
           </div>
@@ -214,7 +214,7 @@ export default function VendorPortal({ isOpen, onClose }) {
                   💼
                 </div>
                 <h4 style={{ fontWeight: '800', fontSize: '20px' }}>{isLoginView ? "B2B Merchant Login" : "B2B Merchant Sign Up"}</h4>
-                <p style={{ fontSize: '12px', color: 'var(--text-light)', marginTop: '2px' }}>List your properties or tour packages on MakeMyTrip</p>
+                <p style={{ fontSize: '12px', color: 'var(--text-light)', marginTop: '2px' }}>List your properties or tour packages on Trip Customizer</p>
               </div>
 
               <form onSubmit={handleAuthSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -250,7 +250,7 @@ export default function VendorPortal({ isOpen, onClose }) {
               </form>
 
               <div style={{ textAlign: 'center', marginTop: '20px', fontSize: '12px', color: 'var(--text-medium)' }}>
-                {isLoginView ? "New to MakeMyTrip business?" : "Already registered as seller?"}{' '}
+                {isLoginView ? "New to Trip Customizer business?" : "Already registered as seller?"}{' '}
                 <button 
                   style={{ color: 'var(--primary-color)', fontWeight: '700', textDecoration: 'underline' }}
                   onClick={() => setIsLoginView(!isLoginView)}

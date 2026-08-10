@@ -625,7 +625,7 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
         }}>
           <div style={{ width: '50px', height: '50px', border: '4px solid rgba(255,255,255,0.1)', borderTopColor: '#ff4f5a', borderRadius: '50%', animation: 'spin 1s linear infinite', marginBottom: '20px' }} />
           <h3 style={{ fontSize: '18px', fontWeight: '850', margin: 0 }}>Registering Your Property...</h3>
-          <p style={{ fontSize: '12px', color: '#94a3b8', marginTop: '6px' }}>Uploading compliance documents & listing configurations to MakeMyTrip Connect</p>
+          <p style={{ fontSize: '12px', color: '#94a3b8', marginTop: '6px' }}>Uploading compliance documents & listing configurations to Trip Customizer Connect</p>
         </div>
       )}
       
@@ -2887,7 +2887,7 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
                   {/* Room Name */}
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '1px solid #f1f5f9', paddingBottom: '16px', gap: '20px' }}>
                     <div style={{ width: '45%' }}>
-                      <label style={{ fontWeight: '700', fontSize: '13px', color: '#1a1a1a' }}>Room Name (as displayed on MakeMyTrip & partner websites)</label>
+                      <label style={{ fontWeight: '700', fontSize: '13px', color: '#1a1a1a' }}>Room Name (as displayed on Trip Customizer & partner websites)</label>
                       <p style={{ fontSize: '11px', color: '#64748b', marginTop: '2px', lineHeight: 1.3 }}>Add a room name that looks attractive to travellers</p>
                     </div>
                     <div style={{ width: '55%' }}>

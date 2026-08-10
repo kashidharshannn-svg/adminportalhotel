@@ -67,7 +67,7 @@ export default function ConnectLogin({ onLoginSuccess, forcedRole }) {
             ∞ connect
           </span>
           <span style={{ fontSize: '11px', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '1px', display: 'block', marginTop: '6px' }}>
-            MakeMyTrip & Goibibo Partner Network
+            Trip Customizer Partner Network
           </span>
         </div>
 
@@ -75,7 +75,7 @@ export default function ConnectLogin({ onLoginSuccess, forcedRole }) {
           {isAdminOnly ? "Compliance Admin Sign In" : isLogin ? "B2B Partner Sign In" : "Register as Partner"}
         </h3>
         <p style={{ fontSize: '12px', color: '#64748b', marginBottom: '24px', textAlign: 'center' }}>
-          {isAdminOnly ? "MMT Approvals & Verification Console" : "Onboard and manage your hotel accommodations"}
+          {isAdminOnly ? "Trip Customizer Approvals & Verification Console" : "Onboard and manage your hotel accommodations"}
         </p>
 
         {error && (
@@ -142,7 +142,7 @@ export default function ConnectLogin({ onLoginSuccess, forcedRole }) {
 
         {!isAdminOnly && (
           <div style={{ textAlign: 'center', marginTop: '24px', fontSize: '12px', color: '#64748b' }}>
-            {isLogin ? "New partner to MakeMyTrip network?" : "Already registered as partner?"}{' '}
+            {isLogin ? "New partner to Trip Customizer network?" : "Already registered as partner?"}{' '}
             <button 
               type="button"
               style={{ color: '#ff4f5a', fontWeight: '700', textDecoration: 'underline', background: 'transparent', border: 'none', cursor: 'pointer' }}

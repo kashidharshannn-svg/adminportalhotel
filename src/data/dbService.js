@@ -303,7 +303,7 @@ export async function dbGetHotels() {
         address: p.address,
         amenities: p.amenities || [],
         image: p.image || "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80",
-        description: p.description || "A premium listed property verified under MakeMyTrip network.",
+        description: p.description || "A premium listed property verified under Trip Customizer network.",
         rooms: (p.rooms || []).map(r => ({
           type: r.type || r.roomType || 'Deluxe Apartment',
           price: Number(r.price) || Number(r.baseRate) || 1200,
@@ -326,7 +326,7 @@ export async function dbGetHotels() {
         address: p.address,
         amenities: p.amenities || [],
         image: p.image || "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80",
-        description: p.description || "A premium listed property verified under MakeMyTrip network.",
+        description: p.description || "A premium listed property verified under Trip Customizer network.",
         rooms: (p.rooms || []).map(r => ({
           type: r.type || r.roomType || 'Deluxe Apartment',
           price: Number(r.price) || Number(r.baseRate) || 1200,

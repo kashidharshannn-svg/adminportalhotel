@@ -367,7 +367,7 @@ export default function CheckoutModal({ isOpen, onClose, selectedItem, searchPar
                     <div style={{ background: '#09264c', color: 'white', padding: '16px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <div>
                         <div style={{ fontSize: '10px', color: '#00b4d8', fontWeight: '700', textTransform: 'uppercase' }}>RAZORPAY SECURED MERCHANT</div>
-                        <div style={{ fontWeight: '800', fontSize: '15px' }}>MakeMyTrip India Ltd</div>
+                        <div style={{ fontWeight: '800', fontSize: '15px' }}>Trip Customizer India Ltd</div>
                       </div>
                       <span style={{ fontSize: '16px', fontWeight: '800' }}>₹{getTotalAmount().toLocaleString('en-IN')}</span>
                     </div>
