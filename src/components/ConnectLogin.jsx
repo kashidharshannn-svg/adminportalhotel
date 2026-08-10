@@ -1054,7 +1054,7 @@ export default function ConnectLogin({ onLoginSuccess, forcedRole }) {
             <div>
               <h5 style={{ color: '#ffffff', fontWeight: '800', fontSize: '13px', margin: '0 0 16px 0', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Our Sales Channel</h5>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                {["Trip Customizer", "Goibibo", "Redbus", "myBiz for Corporate Travel", "Partner Connect Portal", "Advertise with Us", "BookMyForex"].map((link, i) => (
+                {["Trip Customizer", "Partner Connect Portal", "Advertise with Us"].map((link, i) => (
                   <span key={i} style={{ cursor: 'pointer', transition: 'color 0.2s' }} onMouseOver={e => e.currentTarget.style.color = '#ffffff'} onMouseOut={e => e.currentTarget.style.color = '#a3b2c2'}>{link}</span>
                 ))}
               </div>
