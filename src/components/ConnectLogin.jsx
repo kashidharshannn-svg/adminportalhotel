@@ -269,7 +269,7 @@ export default function ConnectLogin({ onLoginSuccess, forcedRole }) {
           </svg>
           <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1, textAlign: 'left' }}>
             <span style={{ fontSize: '15px', fontWeight: '900', color: '#0f172a', letterSpacing: '-0.3px' }}>
-              trip customizer
+              Trip Customizer
             </span>
             <span style={{ fontSize: '10px', fontWeight: '850', color: '#ff4f5a', letterSpacing: '1px', marginTop: '2px', textTransform: 'uppercase' }}>
               connect
@@ -1149,7 +1149,7 @@ export default function ConnectLogin({ onLoginSuccess, forcedRole }) {
               </svg>
               <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1, textAlign: 'left' }}>
                 <span style={{ fontSize: '16px', fontWeight: '900', color: '#ffffff', letterSpacing: '-0.3px' }}>
-                  trip customizer
+                  Trip Customizer
                 </span>
                 <span style={{ fontSize: '10.5px', fontWeight: '850', color: '#ff4f5a', letterSpacing: '1px', marginTop: '2.5px', textTransform: 'uppercase' }}>
                   connect
