@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { connectLoginPartner, connectRegisterPartner } from '../data/dbService';
-import { Mail, Lock, User, Check, ChevronDown, ChevronUp, Download, Building2, TrendingUp, Percent, ShieldCheck } from 'lucide-react';
+import { Mail, Lock, User, Check, ChevronDown, ChevronUp, Download, CheckCircle2, ArrowRight } from 'lucide-react';
 
 export default function ConnectLogin({ onLoginSuccess, forcedRole }) {
   const [isLogin, setIsLogin] = useState(true);
@@ -45,17 +45,17 @@ export default function ConnectLogin({ onLoginSuccess, forcedRole }) {
     },
     {
       title: "Customisable promotions & offers",
-      description: "Set targeted discounts, coupon codes, and corporate offers to stand out and attract high-value guests.",
+      description: "Attract bookings with promotions & offers to stay ahead of competition.",
       mockupType: "promotions"
     },
     {
       title: "Guest reviews & ratings",
-      description: "Monitor guest feedback, reply to user ratings, and enhance your marketplace quality score directly.",
+      description: "View and analyse guest feedback to improve, and enhance satisfaction.",
       mockupType: "reviews"
     },
     {
       title: "Simplified payments",
-      description: "Receive timely payouts for your bookings with detailed invoice reports and easy-to-track payment histories.",
+      description: "Receive timely payouts for your bookings with easy-to-track records.",
       mockupType: "payments"
     }
   ];
@@ -334,7 +334,7 @@ export default function ConnectLogin({ onLoginSuccess, forcedRole }) {
         ))}
       </div>
 
-      {/* 4. FEATURES ACCORDION & MOCKUP SHOWCASE */}
+      {/* 4. FEATURES ACCORDION & LAYERED HIGH-FIDELITY CSS MOCKUPS */}
       <div style={{ padding: '80px 60px', background: '#f8fafc', textAlign: 'left' }}>
         <span style={{ fontSize: '12px', fontWeight: '800', color: '#e0532b', textTransform: 'uppercase', letterSpacing: '1px' }}>Features</span>
         <h2 style={{ fontSize: '32px', fontWeight: '850', color: '#0f172a', margin: '8px 0 40px 0' }}>Manage & grow your business</h2>
@@ -374,165 +374,396 @@ export default function ConnectLogin({ onLoginSuccess, forcedRole }) {
             })}
           </div>
 
-          {/* Right Live CSS Dashboard Mockup (Interactive based on selection!) */}
+          {/* Right Live Layered Mockup (Phone overlapping Tablet) */}
           <div style={{
-            background: '#0a2240',
-            borderRadius: '16px',
-            padding: '24px',
-            boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04)',
-            height: '380px',
-            display: 'flex',
-            flexDirection: 'column',
             position: 'relative',
+            width: '100%',
+            height: '420px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
             overflow: 'hidden'
           }}>
-            {/* Mockup Top Header */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '12px', marginBottom: '16px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#ff5f56' }} />
-                <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#ffbd2e' }} />
-                <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#27c93f' }} />
-                <span style={{ fontSize: '11px', color: '#94a3b8', marginLeft: '10px', fontWeight: '600' }}>Trip Customizer Extranet Panel</span>
+            
+            {/* Tablet Mockup (Back Layer) */}
+            <div style={{
+              width: '420px',
+              height: '310px',
+              background: '#ffffff',
+              borderRadius: '12px',
+              border: '10px solid #1e293b',
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+              display: 'flex',
+              flexDirection: 'column',
+              position: 'absolute',
+              right: '10px',
+              bottom: '30px',
+              zIndex: 1,
+              overflow: 'hidden'
+            }}>
+              {/* Tablet Browser bar */}
+              <div style={{ background: '#0f172a', padding: '10px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', color: '#ffffff', flexShrink: 0 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#ef4444' }} />
+                  <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#f59e0b' }} />
+                  <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#10b981' }} />
+                  <span style={{ fontSize: '10px', color: '#94a3b8', marginLeft: '10px', fontWeight: 'bold' }}>Trip Customizer Connect</span>
+                </div>
+                <span style={{ fontSize: '9px', background: 'rgba(16, 185, 129, 0.2)', color: '#34d399', padding: '1px 6px', borderRadius: '10px', fontWeight: 'bold' }}>TABLET VIEW</span>
               </div>
-              <span style={{ fontSize: '10px', background: 'rgba(255, 79, 90, 0.15)', color: '#ff4f5a', padding: '2px 8px', borderRadius: '10px', fontWeight: '700' }}>LIVE MODE</span>
-            </div>
 
-            {/* Mockup Dynamic Content */}
-            <div style={{ flexGrow: 1, display: 'flex', flexDirection: 'column', color: '#ffffff' }}>
-              {features[activeFeature].mockupType === 'onboarding' && (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', textAlign: 'left' }}>
-                  <div style={{ background: 'rgba(255,255,255,0.05)', padding: '16px', borderRadius: '8px', border: '1px dashed rgba(255,255,255,0.15)' }}>
-                    <h5 style={{ margin: '0 0 6px 0', fontSize: '13px', color: '#ff6b3d' }}>Step 3 of 4: Finance & Legal Upload</h5>
-                    <div style={{ display: 'flex', gap: '8px', marginTop: '12px' }}>
-                      <div style={{ flex: 1, background: 'rgba(255,255,255,0.05)', padding: '10px', borderRadius: '6px', fontSize: '11px', border: '1px solid rgba(255,255,255,0.1)' }}>
-                        📄 Leased_Document.pdf <br /> <span style={{ color: '#10b981', fontWeight: 'bold' }}>✓ Uploaded</span>
+              {/* Tablet View Screen */}
+              <div style={{ flexGrow: 1, padding: '16px', background: '#f8fafc', display: 'flex', flexDirection: 'column', overflowY: 'auto' }}>
+                {features[activeFeature].mockupType === 'onboarding' && (
+                  <div style={{ textAlign: 'left' }}>
+                    <h5 style={{ margin: '0 0 10px 0', fontSize: '13px', color: '#0f172a', fontWeight: '800' }}>Which property type would you like to list?</h5>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '12px' }}>
+                      <div style={{ border: '2px solid #e0532b', background: '#fff7f5', padding: '10px', borderRadius: '8px' }}>
+                        <div style={{ fontWeight: 'bold', fontSize: '12px', color: '#e0532b' }}>Hotel</div>
+                        <span style={{ fontSize: '9px', color: '#64748b' }}>Stays with room-level booking & configurations</span>
                       </div>
-                      <div style={{ flex: 1, background: 'rgba(255,255,255,0.05)', padding: '10px', borderRadius: '6px', fontSize: '11px', border: '1px solid rgba(255,255,255,0.1)' }}>
-                        📄 GST_Certificate.pdf <br /> <span style={{ color: '#10b981', fontWeight: 'bold' }}>✓ Uploaded</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(16, 185, 129, 0.1)', padding: '10px 14px', borderRadius: '8px', border: '1px solid rgba(16, 185, 129, 0.2)' }}>
-                    <span style={{ fontSize: '11.5px', color: '#34d399', fontWeight: 'bold' }}>onboarding status</span>
-                    <span style={{ fontSize: '11px', background: '#10b981', padding: '3px 8px', borderRadius: '4px', fontWeight: '800' }}>90% COMPLETE</span>
-                  </div>
-                </div>
-              )}
-
-              {features[activeFeature].mockupType === 'rates' && (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', textAlign: 'left' }}>
-                  <span style={{ fontSize: '11.5px', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 'bold' }}>Inventory & Dynamic Rates</span>
-                  {[
-                    { type: "Deluxe Ocean View", price: "₹8,500", status: "Active", rooms: "12 Available" },
-                    { type: "Luxury Lagoon Suite", price: "₹15,000", status: "Active", rooms: "4 Available" }
-                  ].map((row, i) => (
-                    <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(255,255,255,0.04)', padding: '12px 16px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                      <div>
-                        <div style={{ fontSize: '13px', fontWeight: 'bold' }}>{row.type}</div>
-                        <span style={{ fontSize: '11px', color: '#94a3b8' }}>{row.rooms}</span>
-                      </div>
-                      <div style={{ textAlign: 'right' }}>
-                        <div style={{ fontSize: '14px', fontWeight: 'bold', color: '#10b981' }}>{row.price}</div>
-                        <span style={{ fontSize: '10px', background: 'rgba(16, 185, 129, 0.15)', color: '#34d399', padding: '1px 5px', borderRadius: '3px' }}>{row.status}</span>
+                      <div style={{ border: '1px solid #cbd5e1', background: '#ffffff', padding: '10px', borderRadius: '8px' }}>
+                        <div style={{ fontWeight: 'bold', fontSize: '12px', color: '#334155' }}>Homestays & Villas</div>
+                        <span style={{ fontSize: '9px', color: '#64748b' }}>Entire villa/cottages listed as full occupancy stays</span>
                       </div>
                     </div>
-                  ))}
-                </div>
-              )}
-
-              {features[activeFeature].mockupType === 'analytics' && (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', textAlign: 'left' }}>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
-                    <div style={{ background: 'rgba(255,255,255,0.04)', padding: '10px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                      <span style={{ fontSize: '10px', color: '#94a3b8' }}>Occupancy</span>
-                      <div style={{ fontSize: '16px', fontWeight: '800', color: '#38bdf8', marginTop: '2px' }}>84.2%</div>
-                    </div>
-                    <div style={{ background: 'rgba(255,255,255,0.04)', padding: '10px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                      <span style={{ fontSize: '10px', color: '#94a3b8' }}>Est. Revenue</span>
-                      <div style={{ fontSize: '16px', fontWeight: '800', color: '#34d399', marginTop: '2px' }}>₹3.8L</div>
-                    </div>
-                    <div style={{ background: 'rgba(255,255,255,0.04)', padding: '10px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                      <span style={{ fontSize: '10px', color: '#94a3b8' }}>Avg. Room Rate</span>
-                      <div style={{ fontSize: '16px', fontWeight: '800', color: '#a78bfa', marginTop: '2px' }}>₹8,450</div>
-                    </div>
-                  </div>
-                  {/* Graphical chart visualization */}
-                  <div style={{ flexGrow: 1, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '8px', padding: '12px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                    <span style={{ fontSize: '10px', color: '#94a3b8', fontWeight: 'bold' }}>Monthly Booking Trend</span>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', height: '80px', paddingTop: '10px' }}>
-                      {[40, 60, 45, 80, 70, 95, 85].map((h, idx) => (
-                        <div key={idx} style={{ width: '22px', height: `${h}%`, background: idx === 5 ? '#e0532b' : '#008cff', borderRadius: '4px 4px 0 0', position: 'relative' }} />
+                    <span style={{ fontSize: '11px', fontWeight: 'bold', color: '#64748b', display: 'block', marginBottom: '6px' }}>Type of Hotel</span>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '6px' }}>
+                      {["Resort", "Lodge", "Guest House"].map((type, i) => (
+                        <div key={i} style={{ border: '1px solid #e2e8f0', background: '#ffffff', padding: '6px', borderRadius: '4px', textAlign: 'center', fontSize: '10px', fontWeight: '700' }}>
+                          🏨 {type}
+                        </div>
                       ))}
                     </div>
                   </div>
-                </div>
-              )}
+                )}
 
-              {features[activeFeature].mockupType === 'promotions' && (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', textAlign: 'left' }}>
-                  <span style={{ fontSize: '12px', color: '#cbd5e1', fontWeight: '700' }}>Active Campaign Promos</span>
-                  {[
-                    { code: "FESTIVE20", value: "20% FLAT DISCOUNT", reach: "All Travelers", color: "#f59e0b" },
-                    { code: "BIZCLASS", value: "FREE UPGRADES", reach: "Corporate Customers", color: "#10b981" },
-                    { code: "WEEKEND15", value: "15% DISCOUNT", reach: "Friday-Sunday Bookings", color: "#3b82f6" }
-                  ].map((p, i) => (
-                    <div key={i} style={{ display: 'flex', justifySelf: 'stretch', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(255,255,255,0.04)', padding: '10px 14px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <span style={{ background: p.color, color: 'white', padding: '3px 8px', borderRadius: '4px', fontSize: '10px', fontWeight: '800' }}>{p.code}</span>
-                        <span style={{ fontSize: '12px', fontWeight: 'bold' }}>{p.value}</span>
+                {features[activeFeature].mockupType === 'rates' && (
+                  <div style={{ textAlign: 'left', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    <h5 style={{ margin: '0 0 4px 0', fontSize: '13px', color: '#0f172a', fontWeight: '800' }}>Manage Inventory & Rates</h5>
+                    
+                    {/* Fake Calendar Spreadsheet Grid */}
+                    <div style={{ border: '1px solid #cbd5e1', borderRadius: '6px', overflow: 'hidden', background: '#ffffff' }}>
+                      <div style={{ display: 'grid', gridTemplateColumns: '1.2fr repeat(4, 1fr)', background: '#f1f5f9', borderBottom: '1px solid #cbd5e1', fontSize: '9px', fontWeight: 'bold', textAlign: 'center', padding: '6px 0' }}>
+                        <div style={{ textAlign: 'left', paddingLeft: '8px' }}>Room Categories</div>
+                        <div>Fri 12 May</div>
+                        <div>Sat 13 May</div>
+                        <div>Sun 14 May</div>
+                        <div>Mon 15 May</div>
                       </div>
-                      <span style={{ fontSize: '11px', color: '#94a3b8' }}>{p.reach}</span>
+                      {[
+                        { name: "Deluxe Ocean View", val: ["3 Sold", "₹8,500", "₹8,500", "₹8,500"] },
+                        { name: "Luxury Lagoon Suite", val: ["Blocked", "₹15,000", "₹15,000", "₹15,000"] }
+                      ].map((row, idx) => (
+                        <div key={idx} style={{ display: 'grid', gridTemplateColumns: '1.2fr repeat(4, 1fr)', borderBottom: idx === 0 ? '1px solid #e2e8f0' : 'none', fontSize: '9.5px', textAlign: 'center', padding: '8px 0', alignItems: 'center' }}>
+                          <div style={{ textAlign: 'left', paddingLeft: '8px', fontWeight: 'bold', fontSize: '8.5px' }}>{row.name}</div>
+                          {row.val.map((cell, cidx) => {
+                            const isStatus = cidx === 0;
+                            const isGreen = cell.startsWith('₹');
+                            return (
+                              <div key={cidx} style={{ 
+                                color: isStatus ? (cell === 'Blocked' ? '#ef4444' : '#10b981') : (isGreen ? '#047857' : '#ef4444'),
+                                background: isGreen ? '#d1fae5' : 'transparent',
+                                padding: '2px 4px',
+                                borderRadius: '4px',
+                                fontSize: '8.5px',
+                                fontWeight: 'bold',
+                                margin: '0 4px'
+                              }}>
+                                {cell}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      ))}
                     </div>
-                  ))}
-                </div>
-              )}
+                  </div>
+                )}
 
-              {features[activeFeature].mockupType === 'reviews' && (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', textAlign: 'left' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span style={{ fontSize: '12px', color: '#cbd5e1', fontWeight: '700' }}>Recent Guest Reviews</span>
-                    <span style={{ fontSize: '13px', color: '#f59e0b', fontWeight: 'bold' }}>★ 4.8 / 5.0 Rating</span>
-                  </div>
-                  <div style={{ background: 'rgba(255,255,255,0.04)', padding: '12px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#94a3b8' }}>
-                      <strong>Rishabh J.</strong>
-                      <span>Guest stayed: 2 days ago</span>
+                {features[activeFeature].mockupType === 'analytics' && (
+                  <div style={{ textAlign: 'left', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <h5 style={{ margin: 0, fontSize: '13px', color: '#0f172a', fontWeight: '800' }}>Performance Overview</h5>
+                      <span style={{ fontSize: '8px', background: '#e2e8f0', padding: '2px 6px', borderRadius: '4px' }}>Last 30 Days</span>
                     </div>
-                    <p style={{ fontSize: '12.5px', margin: '6px 0 0 0', fontStyle: 'italic', lineHeight: 1.4 }}>
-                      "Excellent hospitality and very clean rooms. The staff went out of their way to ensure our check-in process was comfortable."
-                    </p>
-                  </div>
-                  <div style={{ background: 'rgba(16, 185, 129, 0.1)', padding: '8px 12px', borderRadius: '6px', border: '1px solid rgba(16, 185, 129, 0.2)' }}>
-                    <span style={{ fontSize: '10.5px', color: '#34d399', display: 'block', fontWeight: 'bold' }}>Your response:</span>
-                    <span style={{ fontSize: '11.5px', color: '#a7f3d0' }}>"Thank you Rishabh! We look forward to welcoming you back soon."</span>
-                  </div>
-                </div>
-              )}
 
-              {features[activeFeature].mockupType === 'payments' && (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', textAlign: 'left' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
-                    <span style={{ fontSize: '12px', color: '#cbd5e1', fontWeight: '700' }}>Payout Account Ledger</span>
-                    <span style={{ fontSize: '11px', color: '#34d399', fontWeight: 'bold' }}>Payout Period: Monthly</span>
-                  </div>
-                  {[
-                    { id: "TXN-88402", date: "08 Aug 2026", amount: "₹48,500", status: "Transferred" },
-                    { id: "TXN-88231", date: "01 Aug 2026", amount: "₹1,24,000", status: "Transferred" },
-                    { id: "TXN-87980", date: "25 Jul 2026", amount: "₹82,600", status: "Transferred" }
-                  ].map((tx, idx) => (
-                    <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(255,255,255,0.04)', padding: '10px 14px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                      <div>
-                        <div style={{ fontSize: '12.5px', fontWeight: 'bold' }}>{tx.id}</div>
-                        <span style={{ fontSize: '11px', color: '#94a3b8' }}>{tx.date}</span>
-                      </div>
-                      <div style={{ textAlign: 'right' }}>
-                        <div style={{ fontSize: '13px', fontWeight: 'bold', color: '#ffffff' }}>{tx.amount}</div>
-                        <span style={{ fontSize: '9px', background: 'rgba(16, 185, 129, 0.15)', color: '#34d399', padding: '1px 4px', borderRadius: '2px', fontWeight: 'bold' }}>{tx.status}</span>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '6px' }}>
+                      {[
+                        { title: "Revenue", val: "₹21.7L", color: "#10b981" },
+                        { title: "ASP", val: "₹5,250", color: "#6366f1" },
+                        { title: "Visits", val: "9,898", color: "#0ea5e9" },
+                        { title: "Conv. Rate", val: "2.75%", color: "#f59e0b" }
+                      ].map((card, i) => (
+                        <div key={i} style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '6px', padding: '6px', textAlign: 'center' }}>
+                          <div style={{ fontSize: '7.5px', color: '#64748b', textTransform: 'uppercase' }}>{card.title}</div>
+                          <div style={{ fontSize: '11px', fontWeight: '850', color: card.color, marginTop: '2px' }}>{card.val}</div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Chart section */}
+                    <div style={{ flexGrow: 1, background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '6px', padding: '8px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '90px' }}>
+                      <span style={{ fontSize: '8px', color: '#64748b', fontWeight: 'bold' }}>Your Property vs Competitors Avg Booking Nights</span>
+                      <div style={{ display: 'flex', justifyContent: 'space-around', alignItems: 'flex-end', height: '60px' }}>
+                        {[
+                          { y: 60, c: 50 },
+                          { y: 80, c: 65 },
+                          { y: 75, c: 70 },
+                          { y: 95, c: 80 }
+                        ].map((bar, i) => (
+                          <div key={i} style={{ display: 'flex', gap: '3px', alignItems: 'flex-end' }}>
+                            <div style={{ width: '10px', height: `${bar.y}px`, background: '#008cff', borderRadius: '2px 2px 0 0' }} />
+                            <div style={{ width: '10px', height: `${bar.c}px`, background: '#f16825', borderRadius: '2px 2px 0 0' }} />
+                          </div>
+                        ))}
                       </div>
                     </div>
-                  ))}
-                </div>
-              )}
+                  </div>
+                )}
+
+                {features[activeFeature].mockupType === 'promotions' && (
+                  <div style={{ textAlign: 'left', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    <h5 style={{ margin: 0, fontSize: '13px', color: '#0f172a', fontWeight: '800' }}>Active Promotions Campaign</h5>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                      <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '10px' }}>
+                        <span style={{ fontSize: '8px', background: '#fee2e2', color: '#ef4444', padding: '2px 6px', borderRadius: '4px', fontWeight: 'bold' }}>RECOMMENDED</span>
+                        <div style={{ fontSize: '11px', fontWeight: 'bold', marginTop: '6px' }}>Basic Promotion</div>
+                        <p style={{ fontSize: '9px', color: '#64748b', margin: '4px 0 8px 0', lineHeight: 1.3 }}>Offer custom flat discounts to boost booking velocity</p>
+                        <button style={{ background: '#e0532b', border: 'none', color: '#ffffff', fontSize: '9px', padding: '4px 10px', borderRadius: '4px', fontWeight: 'bold' }}>Create</button>
+                      </div>
+                      <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '10px' }}>
+                        <span style={{ fontSize: '8px', background: '#e0f2fe', color: '#0369a1', padding: '2px 6px', borderRadius: '4px', fontWeight: 'bold' }}>HIGH IMPACT</span>
+                        <div style={{ fontSize: '11px', fontWeight: 'bold', marginTop: '6px' }}>Long Stay Promo</div>
+                        <p style={{ fontSize: '9px', color: '#64748b', margin: '4px 0 8px 0', lineHeight: 1.3 }}>Give deeper discounts to guests staying 3+ nights</p>
+                        <button style={{ background: '#e0532b', border: 'none', color: '#ffffff', fontSize: '9px', padding: '4px 10px', borderRadius: '4px', fontWeight: 'bold' }}>Create</button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {features[activeFeature].mockupType === 'reviews' && (
+                  <div style={{ textAlign: 'left', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                    <h5 style={{ margin: 0, fontSize: '13px', color: '#0f172a', fontWeight: '800' }}>Ratings & Reviews Breakdown</h5>
+                    
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                      {/* Left Column (MMT Ratings) */}
+                      <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '8px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <span style={{ fontSize: '9px', fontWeight: 'bold', color: '#008cff' }}>MakeMyTrip</span>
+                          <span style={{ fontSize: '11px', fontWeight: '900', color: '#008cff' }}>4.5 ★</span>
+                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', marginTop: '6px' }}>
+                          {["Hospitality", "Cleanliness", "Location"].map((metric, i) => (
+                            <div key={i} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '7.5px' }}>
+                              <span>{metric}</span>
+                              <span style={{ fontWeight: 'bold' }}>4.6</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Right Column (Goibibo Ratings) */}
+                      <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '8px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <span style={{ fontSize: '9px', fontWeight: 'bold', color: '#f16825' }}>Goibibo</span>
+                          <span style={{ fontSize: '11px', fontWeight: '900', color: '#f16825' }}>4.5 ★</span>
+                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', marginTop: '6px' }}>
+                          {["Hospitality", "Amenities", "Value for Money"].map((metric, i) => (
+                            <div key={i} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '7.5px' }}>
+                              <span>{metric}</span>
+                              <span style={{ fontWeight: 'bold' }}>4.5</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {features[activeFeature].mockupType === 'payments' && (
+                  <div style={{ textAlign: 'left', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    <h5 style={{ margin: 0, fontSize: '13px', color: '#0f172a', fontWeight: '800' }}>GSTN Invoice Details</h5>
+                    
+                    <div style={{ background: '#ffffff', border: '1px dashed #cbd5e1', borderRadius: '8px', padding: '12px', textAlign: 'center' }}>
+                      <span style={{ fontSize: '20px', display: 'block', marginBottom: '4px' }}>📤</span>
+                      <span style={{ fontSize: '10px', fontWeight: 'bold', color: '#334155', display: 'block' }}>Drag & Drop Invoices</span>
+                      <span style={{ fontSize: '8px', color: '#64748b', marginTop: '2px', display: 'block' }}>Or Click Here to upload your monthly property GST tax invoices (PDF/JPG)</span>
+                    </div>
+
+                    <div style={{ background: '#fffbeb', border: '1px solid #fef3c7', padding: '6px 10px', borderRadius: '6px', fontSize: '8.5px', color: '#b45309', lineHeight: 1.3 }}>
+                      ℹ️ Monthly payout invoice details must contain correct Booking IDs, corporate check-ins, and tax slabs.
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Phone Mockup (Front Layer, overlapping bottom-left) */}
+            <div style={{
+              width: '180px',
+              height: '330px',
+              background: '#0f172a',
+              borderRadius: '24px',
+              border: '8px solid #0f172a',
+              boxShadow: '0 25px 35px -5px rgba(0, 0, 0, 0.35)',
+              display: 'flex',
+              flexDirection: 'column',
+              position: 'absolute',
+              left: '20px',
+              bottom: '10px',
+              zIndex: 2,
+              overflow: 'hidden'
+            }}>
+              {/* Phone Speaker notch */}
+              <div style={{ height: '14px', background: '#0f172a', display: 'flex', justifyContent: 'center', alignItems: 'center', flexShrink: 0 }}>
+                <div style={{ width: '40px', height: '4px', background: '#334155', borderRadius: '2px' }} />
+              </div>
+
+              {/* Phone View Screen */}
+              <div style={{ flexGrow: 1, padding: '10px', background: '#ffffff', display: 'flex', flexDirection: 'column', overflowY: 'auto' }}>
+                {features[activeFeature].mockupType === 'onboarding' && (
+                  <div style={{ textAlign: 'left', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                    <div style={{ fontSize: '7px', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 'bold' }}>onboarding status</div>
+                    <span style={{ fontSize: '10px', fontWeight: '850', color: '#0f172a' }}>Type of property</span>
+                    
+                    {[
+                      { name: "Hotel", isSel: true },
+                      { name: "Homestay", isSel: false },
+                      { name: "Resort", isSel: false },
+                      { name: "Apartment", isSel: false }
+                    ].map((row, idx) => (
+                      <div key={idx} style={{ 
+                        display: 'flex', justifySelf: 'stretch', justifyContent: 'space-between', alignItems: 'center',
+                        border: row.isSel ? '1px solid #e0532b' : '1px solid #cbd5e1',
+                        background: row.isSel ? '#fff7f5' : 'transparent',
+                        padding: '6px 8px',
+                        borderRadius: '6px',
+                        fontSize: '9.5px',
+                        fontWeight: 'bold',
+                        color: row.isSel ? '#e0532b' : '#475569'
+                      }}>
+                        <span>🏨 {row.name}</span>
+                        {row.isSel && <span style={{ fontSize: '8px' }}>✓</span>}
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {features[activeFeature].mockupType === 'rates' && (
+                  <div style={{ textAlign: 'left', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                    <div style={{ fontSize: '7px', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 'bold' }}>Active Room rates</div>
+                    <span style={{ fontSize: '10px', fontWeight: '850', color: '#0f172a' }}>Chateau de Vasco</span>
+                    
+                    <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', padding: '6px', borderRadius: '6px', display: 'flex', flexDirection: 'column', gap: '3px' }}>
+                      <span style={{ fontSize: '9px', fontWeight: 'bold' }}>Deluxe King Room</span>
+                      <div style={{ display: 'flex', justifySelf: 'stretch', justifyContent: 'space-between', alignItems: 'center', marginTop: '2px' }}>
+                        <span style={{ fontSize: '11px', fontWeight: '850', color: '#047857' }}>₹1,271</span>
+                        <span style={{ fontSize: '7px', background: '#d1fae5', color: '#065f46', padding: '1px 4px', borderRadius: '3px', fontWeight: 'bold' }}>Active</span>
+                      </div>
+                    </div>
+
+                    <div style={{ display: 'flex', justifySelf: 'stretch', justifyContent: 'space-between', alignItems: 'center', background: '#fff7f5', border: '1px solid #fee2e2', padding: '6px', borderRadius: '6px' }}>
+                      <span style={{ fontSize: '8.5px', color: '#e0532b', fontWeight: 'bold' }}>Hourly Stays</span>
+                      <div style={{ width: '18px', height: '10px', background: '#10b981', borderRadius: '10px', position: 'relative' }}>
+                        <div style={{ width: '8px', height: '8px', background: '#white', borderRadius: '50%', position: 'absolute', right: '1px', top: '1px' }} />
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {features[activeFeature].mockupType === 'analytics' && (
+                  <div style={{ textAlign: 'left', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                    <div style={{ fontSize: '7px', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 'bold' }}>Performance Overview</div>
+                    <span style={{ fontSize: '10px', fontWeight: '850', color: '#0f172a' }}>Le Mission Stay</span>
+
+                    {[
+                      { l: "Room Nights", v: "7", c: "#3b82f6" },
+                      { l: "Revenue", v: "₹4,800", c: "#10b981" },
+                      { l: "Check-ins", v: "6", c: "#f59e0b" },
+                      { l: "Occupancy", v: "82%", c: "#8b5cf6" }
+                    ].map((metric, i) => (
+                      <div key={i} style={{ display: 'flex', justifySelf: 'stretch', justifyContent: 'space-between', alignItems: 'center', background: '#f8fafc', border: '1px solid #e2e8f0', padding: '5px 8px', borderRadius: '4px' }}>
+                        <span style={{ fontSize: '8.5px', color: '#64748b' }}>{metric.l}</span>
+                        <span style={{ fontSize: '10px', fontWeight: 'bold', color: metric.c }}>{metric.v}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {features[activeFeature].mockupType === 'promotions' && (
+                  <div style={{ textAlign: 'left', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                    <div style={{ fontSize: '7px', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 'bold' }}>active offers</div>
+                    <span style={{ fontSize: '10px', fontWeight: '850', color: '#0f172a' }}>Promos & Coupons</span>
+
+                    <div style={{ border: '1px dashed #f59e0b', background: '#fffbeb', padding: '8px', borderRadius: '6px', display: 'flex', flexDirection: 'column', gap: '3px' }}>
+                      <div style={{ fontSize: '9px', fontWeight: '900', color: '#d97706' }}>EARLYBIRD30</div>
+                      <span style={{ fontSize: '8.5px', fontWeight: 'bold' }}>30% Discount Code</span>
+                      <span style={{ fontSize: '7.5px', color: '#64748b' }}>Applicable 15 days before check-in</span>
+                    </div>
+
+                    <div style={{ display: 'flex', justifySelf: 'stretch', justifyContent: 'space-between', alignItems: 'center', fontSize: '8px', color: '#94a3b8', borderTop: '1px solid #f1f5f9', paddingTop: '6px' }}>
+                      <span>Active: 3 Campaigns</span>
+                      <span style={{ color: '#008cff', fontWeight: 'bold', cursor: 'pointer' }}>View All</span>
+                    </div>
+                  </div>
+                )}
+
+                {features[activeFeature].mockupType === 'reviews' && (
+                  <div style={{ textAlign: 'left', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                    <div style={{ fontSize: '7px', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 'bold' }}>Traveller Impressions</div>
+                    <span style={{ fontSize: '10px', fontWeight: '850', color: '#0f172a' }}>Ratings & Reviews</span>
+
+                    <div style={{ background: '#f8fafc', padding: '8px', borderRadius: '6px', border: '1px solid #e2e8f0', textAlign: 'center' }}>
+                      <div style={{ fontSize: '18px', fontWeight: '950', color: '#f59e0b' }}>4.3 ★</div>
+                      <span style={{ fontSize: '8.5px', color: '#64748b', fontWeight: 'bold' }}>120 Ratings</span>
+                    </div>
+
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
+                      {[
+                        { label: "Excellent", pct: 65, color: "#10b981" },
+                        { label: "Very Good", pct: 20, color: "#3b82f6" },
+                        { label: "Average", pct: 10, color: "#f59e0b" },
+                        { label: "Poor", pct: 5, color: "#ef4444" }
+                      ].map((item, idx) => (
+                        <div key={idx} style={{ display: 'flex', alignItems: 'center', justifySelf: 'stretch', justifyContent: 'space-between', fontSize: '8px' }}>
+                          <span style={{ width: '40px', textOverflow: 'ellipsis', overflow: 'hidden' }}>{item.label}</span>
+                          <div style={{ flexGrow: 1, height: '4px', background: '#e2e8f0', borderRadius: '2px', margin: '0 4px', position: 'relative' }}>
+                            <div style={{ width: `${item.pct}%`, height: '100%', background: item.color, borderRadius: '2px' }} />
+                          </div>
+                          <span style={{ width: '20px', textAlign: 'right' }}>{item.pct}%</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {features[activeFeature].mockupType === 'payments' && (
+                  <div style={{ textAlign: 'left', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                    <div style={{ fontSize: '7px', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 'bold' }}>ledger details</div>
+                    <span style={{ fontSize: '10px', fontWeight: '850', color: '#0f172a' }}>Price Breakup</span>
+
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', background: '#f8fafc', padding: '6px', borderRadius: '6px', border: '1px solid #e2e8f0', fontSize: '8px' }}>
+                      <div style={{ display: 'flex', justifySelf: 'stretch', justifyContent: 'space-between' }}>
+                        <span>Room Charges</span>
+                        <span style={{ fontWeight: 'bold' }}>₹6,540.75</span>
+                      </div>
+                      <div style={{ display: 'flex', justifySelf: 'stretch', justifyContent: 'space-between' }}>
+                        <span>Extra Adult Charges</span>
+                        <span style={{ fontWeight: 'bold' }}>₹0.00</span>
+                      </div>
+                      <div style={{ display: 'flex', justifySelf: 'stretch', justifyContent: 'space-between' }}>
+                        <span>GST @ 18%</span>
+                        <span style={{ fontWeight: 'bold' }}>₹1,177.33</span>
+                      </div>
+                      <div style={{ display: 'flex', justifySelf: 'stretch', justifyContent: 'space-between', borderTop: '1px dashed #cbd5e1', paddingTop: '3px', marginTop: '3px', color: '#e0532b', fontWeight: 'bold' }}>
+                        <span>Total Payable</span>
+                        <span>₹7,718.08</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
