@@ -577,3 +577,47 @@ export async function dbGetAllChatsForAdmin() {
   const chats = JSON.parse(localStorage.getItem('connect_chats')) || [];
   return chats.sort((a, b) => a.timestamp - b.timestamp);
 }
+
+export async function dbSavePropertyPhotos(propertyId, photosArray) {
+  if (IS_FIREBASE_ACTIVE && db) {
+    const photosRef = collection(db, "connect_property_photos");
+    const q = query(photosRef, where("propertyId", "==", propertyId));
+    const snap = await getDocs(q);
+    if (!snap.empty) {
+      const docRef = snap.docs[0].ref;
+      await updateDoc(docRef, { photos: photosArray });
+    } else {
+      await addDoc(photosRef, {
+        propertyId,
+        photos: photosArray
+      });
+    }
+    return true;
+  }
+
+  const allPhotos = JSON.parse(localStorage.getItem('connect_property_photos')) || [];
+  const existingIdx = allPhotos.findIndex(doc => doc.propertyId === propertyId);
+  if (existingIdx !== -1) {
+    allPhotos[existingIdx].photos = photosArray;
+  } else {
+    allPhotos.push({ propertyId, photos: photosArray });
+  }
+  localStorage.setItem('connect_property_photos', JSON.stringify(allPhotos));
+  return true;
+}
+
+export async function dbGetPropertyPhotos(propertyId) {
+  if (IS_FIREBASE_ACTIVE && db) {
+    const photosRef = collection(db, "connect_property_photos");
+    const q = query(photosRef, where("propertyId", "==", propertyId));
+    const snap = await getDocs(q);
+    if (!snap.empty) {
+      return snap.docs[0].data().photos || [];
+    }
+    return [];
+  }
+
+  const allPhotos = JSON.parse(localStorage.getItem('connect_property_photos')) || [];
+  const found = allPhotos.find(doc => doc.propertyId === propertyId);
+  return found ? found.photos : [];
+}
