@@ -330,8 +330,8 @@ export default function ConnectLogin({ onLoginSuccess, forcedRole }) {
             <span style={{ fontSize: '13px', fontWeight: '700', color: '#ffffff' }}>partner network</span>
           </div>
 
-          <p style={{ fontSize: '13px', color: '#94a3b8', marginTop: '30px' }}>
-            Join a community of 15,00,000+ registered listings across India.
+          <p style={{ fontSize: '13.5px', color: '#cbd5e1', marginTop: '30px', fontWeight: '500' }}>
+            Be among the early partners to list for free and grow with our fast-rising travel network.
           </p>
         </div>
 
