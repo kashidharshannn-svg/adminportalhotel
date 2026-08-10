@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { connectLoginPartner, connectRegisterPartner } from '../data/dbService';
-import { Mail, Lock, User, Check, ChevronDown, ChevronUp, Download, CheckCircle2, ArrowRight } from 'lucide-react';
+import { Mail, Lock, User, Check, ChevronDown, ChevronUp, Download, CheckCircle2, ArrowRight, ArrowLeft, Smartphone } from 'lucide-react';
 
 export default function ConnectLogin({ onLoginSuccess, forcedRole }) {
   const [isLogin, setIsLogin] = useState(true);
@@ -57,6 +57,56 @@ export default function ConnectLogin({ onLoginSuccess, forcedRole }) {
       title: "Simplified payments",
       description: "Receive timely payouts for your bookings with easy-to-track records.",
       mockupType: "payments"
+    }
+  ];
+
+  // 3. Testimonials / Success Stories Slider State
+  const [activeStory, setActiveStory] = useState(0);
+  const successStories = [
+    {
+      quote: "Being the market leader in the domestic market, Trip Customizer has been helpful for overall revenue maximization. Top features that helped us in the long term include key growth recommendations, matchless support by the market managers, and transparency in billing & payment terms.",
+      author: "Piyush R. Samantaray",
+      role: "AGM- Revenue | MAYFAIR Hotels & Resorts (associated since 2008)",
+      image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80"
+    },
+    {
+      quote: "Trip Customizer Connect Extranet has completely transformed how we handle last-minute room distributions. The dynamic promotions and instant check-in notifications keep our occupancy high and help us maintain full control over pricing strategy.",
+      author: "Neha Sharma",
+      role: "General Manager | Elite Stay Residences (associated since 2020)",
+      image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80"
+    }
+  ];
+
+  // 4. Interactive FAQs accordion state
+  const [openFaq, setOpenFaq] = useState(4); // Default to "When will my property be listed online?" open to match screenshots
+  const faqs = [
+    {
+      question: "Do I need to sign up for each Trip Customizer brand separately?",
+      answer: "No, a single registration on Partner Connect lists your property across all our distribution networks including Trip Customizer, B2C search index, and partner affiliate websites automatically."
+    },
+    {
+      question: "How much commission does Trip Customizer charge?",
+      answer: "Listing your property is completely free. We charge a standard competitive commission rate only on successful, checked-in bookings. No hidden monthly maintenance or listing fees."
+    },
+    {
+      question: "How can I add photos to my property?",
+      answer: "Once logged in to your partner console, navigate to 'My Properties' and click 'Edit Price & Photos'. You can upload up to 10 compressed photos with room category tags."
+    },
+    {
+      question: "How do Trip Customizer payments work?",
+      answer: "For 'Pay at Hotel' bookings, guests pay you directly at checkout. For 'Prepaid' bookings, payout settlements are credited automatically into your registered bank account on the guest's check-in date."
+    },
+    {
+      question: "When will my property be listed online?",
+      answer: "After you finish creating your listing, it goes through a quality check and validation. Your property will go online in about 5-7 working days on our site. In the meantime, explore our extranet platform and get ready to welcome your first guests!"
+    },
+    {
+      question: "Can I list my property with Trip Customizer if I already work with other online travel agents (OTAs)?",
+      answer: "Yes, you can easily list with us. You can connect your existing Channel Manager to avoid double-bookings and sync live rates/inventories in real-time."
+    },
+    {
+      question: "Can I list my house on Trip Customizer?",
+      answer: "Yes, we support homestays, apartments, villas, cottages, and alternative accommodations under our Homestays & Villas category."
     }
   ];
 
@@ -374,7 +424,7 @@ export default function ConnectLogin({ onLoginSuccess, forcedRole }) {
             })}
           </div>
 
-          {/* Right Live Layered Mockup (Phone overlapping Tablet) */}
+          {/* Right Live Layered Mockup */}
           <div style={{
             position: 'relative',
             width: '100%',
@@ -599,7 +649,7 @@ export default function ConnectLogin({ onLoginSuccess, forcedRole }) {
               </div>
             </div>
 
-            {/* Phone Mockup (Front Layer, overlapping bottom-left) */}
+            {/* Phone Mockup (Front Layer) */}
             <div style={{
               width: '180px',
               height: '330px',
@@ -769,8 +819,84 @@ export default function ConnectLogin({ onLoginSuccess, forcedRole }) {
         </div>
       </div>
 
-      {/* 5. DIVERSE BUSINESS OFFERINGS */}
-      <div style={{ padding: '80px 60px', textAlign: 'center', background: '#ffffff' }}>
+      {/* 5. SUCCESS STORIES / TESTIMONIAL SLIDER */}
+      <div style={{ padding: '80px 60px', background: '#ffffff', textAlign: 'left' }}>
+        <span style={{ fontSize: '12px', fontWeight: '800', color: '#e0532b', textTransform: 'uppercase', letterSpacing: '1px' }}>Success Stories</span>
+        <h2 style={{ fontSize: '32px', fontWeight: '850', color: '#0f172a', margin: '8px 0 40px 0' }}>What our partners say</h2>
+
+        <div style={{
+          background: '#f8fafc',
+          borderRadius: '16px',
+          border: '1px solid #e2e8f0',
+          padding: window.innerWidth < 850 ? '30px 20px' : '50px',
+          display: 'grid',
+          gridTemplateColumns: window.innerWidth < 850 ? '1fr' : '1.5fr 1fr',
+          gap: '40px',
+          alignItems: 'center',
+          position: 'relative'
+        }}>
+          {/* Quote content */}
+          <div style={{ display: 'flex', flexDirection: 'column', justifyBetween: 'space-between', height: '100%' }}>
+            <div>
+              <p style={{
+                fontSize: window.innerWidth < 850 ? '16px' : '20px',
+                lineHeight: '1.6',
+                color: '#334155',
+                fontWeight: '500',
+                margin: 0
+              }}>
+                "{successStories[activeStory].quote}"
+              </p>
+              <h4 style={{ fontSize: '16px', fontWeight: '800', color: '#0f172a', margin: '24px 0 4px 0' }}>
+                — {successStories[activeStory].author}
+              </h4>
+              <span style={{ fontSize: '13px', color: '#64748b', display: 'block' }}>
+                {successStories[activeStory].role}
+              </span>
+            </div>
+
+            {/* Slider navigation */}
+            <div style={{ display: 'flex', gap: '12px', marginTop: '40px' }}>
+              <button 
+                onClick={() => setActiveStory(prev => (prev - 1 + successStories.length) % successStories.length)}
+                style={{
+                  width: '40px', height: '40px', borderRadius: '50%', border: '1px solid #cbd5e1',
+                  background: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  cursor: 'pointer', color: '#475569', transition: 'all 0.2s'
+                }}
+                onMouseOver={(e) => e.currentTarget.style.borderColor = '#94a3b8'}
+                onMouseOut={(e) => e.currentTarget.style.borderColor = '#cbd5e1'}
+              >
+                <ArrowLeft size={16} />
+              </button>
+              <button 
+                onClick={() => setActiveStory(prev => (prev + 1) % successStories.length)}
+                style={{
+                  width: '40px', height: '40px', borderRadius: '50%', border: '1px solid #cbd5e1',
+                  background: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  cursor: 'pointer', color: '#475569', transition: 'all 0.2s'
+                }}
+                onMouseOver={(e) => e.currentTarget.style.borderColor = '#94a3b8'}
+                onMouseOut={(e) => e.currentTarget.style.borderColor = '#cbd5e1'}
+              >
+                <ArrowRight size={16} />
+              </button>
+            </div>
+          </div>
+
+          {/* Testimonial Image */}
+          <div style={{ height: '280px', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.05)' }}>
+            <img 
+              src={successStories[activeStory].image} 
+              alt={successStories[activeStory].author}
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* 6. DIVERSE BUSINESS OFFERINGS */}
+      <div style={{ padding: '80px 60px', textAlign: 'center', background: '#f8fafc', borderTop: '1px solid #e2e8f0' }}>
         <h2 style={{ fontSize: '32px', fontWeight: '900', color: '#0f172a', margin: '0 0 16px 0' }}>
           Sell on all our partner websites and boost revenue <br /> with our diverse business offerings
         </h2>
@@ -780,7 +906,7 @@ export default function ConnectLogin({ onLoginSuccess, forcedRole }) {
 
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(4, 1fr)',
+          gridTemplateColumns: window.innerWidth < 850 ? '1fr' : 'repeat(4, 1fr)',
           gap: '24px'
         }}>
           {[
@@ -847,27 +973,167 @@ export default function ConnectLogin({ onLoginSuccess, forcedRole }) {
         </div>
       </div>
 
-      {/* 6. COMPACT PARTNER FOOTER */}
-      <footer style={{
-        background: '#091c34',
-        color: '#94a3b8',
-        padding: '40px 60px',
-        borderTop: '1px solid rgba(255,255,255,0.05)',
-        textAlign: 'left',
-        fontSize: '12px'
+      {/* 7. FREQUENTLY ASKED QUESTIONS SECTION */}
+      <div style={{ padding: '80px 60px', background: '#ffffff', textAlign: 'center' }}>
+        <h2 style={{ fontSize: '32px', fontWeight: '900', color: '#0f172a', margin: '0 0 8px 0' }}>Frequently asked questions</h2>
+        <p style={{ fontSize: '15px', color: '#64748b', marginBottom: '40px' }}>Help section for partners, hosts & property owners</p>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', maxWidth: '850px', margin: '0 auto', textAlign: 'left' }}>
+          {faqs.map((faq, idx) => {
+            const isOpen = openFaq === idx;
+            return (
+              <div 
+                key={idx}
+                onClick={() => setOpenFaq(isOpen ? -1 : idx)}
+                style={{
+                  background: '#ffffff',
+                  border: isOpen ? '1px solid #e0532b' : '1px solid #f1f5f9',
+                  borderRadius: '12px',
+                  padding: '24px 30px',
+                  cursor: 'pointer',
+                  boxShadow: '0 4px 6px -1px rgba(0,0,0,0.02), 0 2px 4px -1px rgba(0,0,0,0.02)',
+                  transition: 'all 0.2s'
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '20px' }}>
+                  <span style={{ fontSize: '16px', fontWeight: '800', color: isOpen ? '#e0532b' : '#1e293b' }}>
+                    {faq.question}
+                  </span>
+                  <div style={{
+                    width: '36px', height: '36px', borderRadius: '50%', background: '#fff7f5',
+                    display: 'flex', alignItems: 'center', justifyCenter: 'center', flexShrink: 0
+                  }}>
+                    {isOpen ? <ChevronUp size={18} color="#e0532b" style={{ margin: 'auto' }} /> : <ChevronDown size={18} color="#e0532b" style={{ margin: 'auto' }} />}
+                  </div>
+                </div>
+                {isOpen && (
+                  <p style={{ fontSize: '14.5px', color: '#475569', marginTop: '16px', margin: '16px 0 0 0', lineHeight: '1.6', borderTop: '1px solid #f1f5f9', paddingTop: '16px' }}>
+                    {faq.answer}
+                  </p>
+                )}
+              </div>
+            );
+          })}
+        </div>
+
+        <button style={{
+          background: '#e0532b', color: '#ffffff', border: 'none', padding: '12px 28px',
+          borderRadius: '6px', fontSize: '14px', fontWeight: '700', cursor: 'pointer',
+          marginTop: '40px', boxShadow: '0 4px 6px -1px rgba(224, 83, 43, 0.2)'
+        }}>
+          Read all FAQs
+        </button>
+      </div>
+
+      {/* 8. APP DOWNLOAD BANNER (Scan QR Code) */}
+      <div style={{
+        background: 'linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%)',
+        padding: '60px 40px',
+        textAlign: 'center',
+        borderTop: '1px solid #fed7aa',
+        borderBottom: '1px solid #fed7aa'
       }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '20px' }}>
-          <div>
-            <span style={{ fontSize: '18px', fontWeight: '850', color: '#ff4f5a', background: 'linear-gradient(135deg, #008cff 0%, #ff4f5a 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', display: 'block', marginBottom: '6px' }}>
-              ∞ connect
-            </span>
-            <span>© 2026 Trip Customizer India Private Limited. All rights reserved.</span>
+        <div style={{ maxWidth: '800px', margin: '0 auto', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '24px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: '#e0532b' }}>
+            <Smartphone size={32} />
+            <h2 style={{ fontSize: '28px', fontWeight: '900', color: '#1e293b', margin: 0 }}>Scan QR Code & Download Connect App Now</h2>
           </div>
-          <div style={{ display: 'flex', gap: '24px' }}>
-            <span style={{ cursor: 'pointer' }}>Terms of Service</span>
-            <span style={{ cursor: 'pointer' }}>Privacy Policy</span>
-            <span style={{ cursor: 'pointer' }}>Partner Guidelines</span>
-            <span style={{ cursor: 'pointer' }}>Help Desk Support</span>
+          <p style={{ fontSize: '16px', color: '#475569', margin: 0, fontWeight: '500' }}>
+            Join <strong style={{ color: '#e0532b' }}>5.5 lakhs+</strong> happy hotel partners managing bookings on the go.
+          </p>
+
+          {/* QR & App Stores */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '30px', flexWrap: 'wrap', justifyContent: 'center', marginTop: '12px' }}>
+            <div style={{ background: '#ffffff', padding: '10px', borderRadius: '12px', border: '1px solid #cbd5e1', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}>
+              {/* Simulated QR Code via CSS blocks */}
+              <div style={{ width: '100px', height: '100px', background: '#000000', display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '4px', padding: '4px', borderRadius: '4px' }}>
+                {[...Array(16)].map((_, i) => (
+                  <div key={i} style={{ background: i % 3 === 0 || i === 0 || i === 15 ? '#ffffff' : '#000000' }} />
+                ))}
+              </div>
+            </div>
+            
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              <img src="https://upload.wikimedia.org/wikipedia/commons/3/3c/Download_on_the_App_Store_Badge.svg" alt="App Store" style={{ height: '36px', cursor: 'pointer' }} />
+              <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" alt="Google Play" style={{ height: '36px', cursor: 'pointer' }} />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* 9. EXTENDED BRAND DIRECTORY FOOTER */}
+      <footer style={{
+        background: '#2d3033',
+        color: '#a3b2c2',
+        padding: '60px 40px 30px 40px',
+        textAlign: 'left'
+      }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+          
+          {/* Brand header */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: '30px', marginBottom: '40px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span style={{ fontSize: '28px', fontWeight: '850', color: '#ffffff' }}>∞ connect</span>
+              <span style={{ fontSize: '11px', color: '#a3b2c2', background: 'rgba(255,255,255,0.1)', padding: '2px 8px', borderRadius: '4px' }}>Formerly InGo</span>
+            </div>
+            <div style={{ display: 'flex', gap: '12px' }}>
+              <img src="https://upload.wikimedia.org/wikipedia/commons/3/3c/Download_on_the_App_Store_Badge.svg" alt="App Store" style={{ height: '28px', opacity: 0.8 }} />
+              <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" alt="Google Play" style={{ height: '28px', opacity: 0.8 }} />
+            </div>
+          </div>
+
+          {/* Directory Links Grid */}
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: window.innerWidth < 850 ? '1fr' : 'repeat(4, 1fr)',
+            gap: '40px',
+            fontSize: '13px',
+            lineHeight: '1.8'
+          }}>
+            {/* Col 1 */}
+            <div>
+              <h5 style={{ color: '#ffffff', fontWeight: '800', fontSize: '13px', margin: '0 0 16px 0', textTransform: 'uppercase', letterSpacing: '0.5px' }}>About Us</h5>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                {["About Us", "Investor Relations", "MMT Foundation", "CSR Policy", "Legal Notices", "Privacy Policy", "Terms & Conditions"].map((link, i) => (
+                  <span key={i} style={{ cursor: 'pointer', transition: 'color 0.2s' }} onMouseOver={e => e.currentTarget.style.color = '#ffffff'} onMouseOut={e => e.currentTarget.style.color = '#a3b2c2'}>{link}</span>
+                ))}
+              </div>
+            </div>
+
+            {/* Col 2 */}
+            <div>
+              <h5 style={{ color: '#ffffff', fontWeight: '800', fontSize: '13px', margin: '0 0 16px 0', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Our Sales Channel</h5>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                {["Trip Customizer", "Goibibo", "Redbus", "myBiz for Corporate Travel", "myPartner - Travel Agent Portal", "Advertise with Us", "BookMyForex"].map((link, i) => (
+                  <span key={i} style={{ cursor: 'pointer', transition: 'color 0.2s' }} onMouseOver={e => e.currentTarget.style.color = '#ffffff'} onMouseOut={e => e.currentTarget.style.color = '#a3b2c2'}>{link}</span>
+                ))}
+              </div>
+            </div>
+
+            {/* Col 3 */}
+            <div>
+              <h5 style={{ color: '#ffffff', fontWeight: '800', fontSize: '13px', margin: '0 0 16px 0', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Quick Links</h5>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                {["List your Homestay on Trip Customizer", "List your Hotel on Trip Customizer", "List your Villa on Trip Customizer", "List your Apartment on Trip Customizer", "Partner Help & Support", "Go-MMT Partner Community"].map((link, i) => (
+                  <span key={i} style={{ cursor: 'pointer', transition: 'color 0.2s' }} onMouseOver={e => e.currentTarget.style.color = '#ffffff'} onMouseOut={e => e.currentTarget.style.color = '#a3b2c2'}>{link}</span>
+                ))}
+              </div>
+            </div>
+
+            {/* Col 4 */}
+            <div>
+              <h5 style={{ color: '#ffffff', fontWeight: '800', fontSize: '13px', margin: '0 0 16px 0', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Address</h5>
+              <p style={{ color: '#a3b2c2', margin: 0, fontSize: '12.5px', lineHeight: '1.6' }}>
+                19th Floor Tower B, Building No. 5, Level 19 <br />
+                DLF Epitome, near DLF Cyber City, DLF Phase 2, <br />
+                Sector 24, Gurugram, Haryana 122002
+              </p>
+            </div>
+          </div>
+
+          {/* Copyright line */}
+          <div style={{ marginTop: '50px', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '20px', textAlign: 'center', fontSize: '12px', color: '#64748b' }}>
+            © 2026 Trip Customizer India Private Limited. All rights reserved. Registered under Go-MMT Partner Network.
           </div>
         </div>
       </footer>
