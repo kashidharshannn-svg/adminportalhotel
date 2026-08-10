@@ -168,19 +168,9 @@ export default function ConnectLogin({ onLoginSuccess, forcedRole }) {
           <span style={{ fontSize: '26px', fontWeight: '850', color: '#ff4f5a', background: 'linear-gradient(135deg, #008cff 0%, #ff4f5a 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
             ∞ connect
           </span>
-          <span style={{ fontSize: '12px', color: '#64748b', fontWeight: '600', borderLeft: '1px solid #e2e8f0', paddingLeft: '8px' }}>
-            by Trip Customizer
-          </span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
           <span style={{ fontSize: '14px', fontWeight: '600', color: '#475569', cursor: 'pointer' }}>Features</span>
-          <button style={{
-            display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 16px', borderRadius: '20px',
-            border: '1px solid #cbd5e1', background: 'transparent', fontSize: '13px', fontWeight: '700',
-            color: '#334155', cursor: 'pointer'
-          }}>
-            <Download size={14} /> Download App
-          </button>
           <button onClick={() => setIsLogin(false)} style={{
             background: '#e0532b', color: '#ffffff', border: 'none', padding: '10px 20px',
             borderRadius: '6px', fontSize: '13px', fontWeight: '700', cursor: 'pointer',
@@ -366,9 +356,9 @@ export default function ConnectLogin({ onLoginSuccess, forcedRole }) {
         gap: '24px'
       }}>
         {[
-          { stat: "48.2 Cr+", desc: "Annual visitors, globally. Reach travellers actively searching for unique stays on Trip Customizer platforms." },
-          { stat: "3.1 Cr+", desc: "Room check-ins per year, across the world." },
-          { stat: "80+", desc: "Channel Managers network. Connect seamlessly with us & enjoy hassle-free property management." }
+          { stat: "100% Free Listing", desc: "Zero onboarding fees. List your hotel, homestay, resort, or apartment with absolutely no hidden monthly charges or setup costs." },
+          { stat: "Direct Settlements", desc: "Payouts are transferred directly into your registered bank account on the day of guest check-in without delays." },
+          { stat: "24x7 Partner Support", desc: "Get dedicated real-time chat support and interactive guidelines to resolve all compliance uploads and partner queries." }
         ].map((item, index) => (
           <div key={index} style={{
             background: '#ffffff',
@@ -1025,42 +1015,6 @@ export default function ConnectLogin({ onLoginSuccess, forcedRole }) {
         </button>
       </div>
 
-      {/* 8. APP DOWNLOAD BANNER (Scan QR Code) */}
-      <div style={{
-        background: 'linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%)',
-        padding: '60px 40px',
-        textAlign: 'center',
-        borderTop: '1px solid #fed7aa',
-        borderBottom: '1px solid #fed7aa'
-      }}>
-        <div style={{ maxWidth: '800px', margin: '0 auto', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '24px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: '#e0532b' }}>
-            <Smartphone size={32} />
-            <h2 style={{ fontSize: '28px', fontWeight: '900', color: '#1e293b', margin: 0 }}>Scan QR Code & Download Connect App Now</h2>
-          </div>
-          <p style={{ fontSize: '16px', color: '#475569', margin: 0, fontWeight: '500' }}>
-            Join <strong style={{ color: '#e0532b' }}>5.5 lakhs+</strong> happy hotel partners managing bookings on the go.
-          </p>
-
-          {/* QR & App Stores */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '30px', flexWrap: 'wrap', justifyContent: 'center', marginTop: '12px' }}>
-            <div style={{ background: '#ffffff', padding: '10px', borderRadius: '12px', border: '1px solid #cbd5e1', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}>
-              {/* Simulated QR Code via CSS blocks */}
-              <div style={{ width: '100px', height: '100px', background: '#000000', display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '4px', padding: '4px', borderRadius: '4px' }}>
-                {[...Array(16)].map((_, i) => (
-                  <div key={i} style={{ background: i % 3 === 0 || i === 0 || i === 15 ? '#ffffff' : '#000000' }} />
-                ))}
-              </div>
-            </div>
-            
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              <img src="https://upload.wikimedia.org/wikipedia/commons/3/3c/Download_on_the_App_Store_Badge.svg" alt="App Store" style={{ height: '36px', cursor: 'pointer' }} />
-              <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" alt="Google Play" style={{ height: '36px', cursor: 'pointer' }} />
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* 9. EXTENDED BRAND DIRECTORY FOOTER */}
       <footer style={{
         background: '#2d3033',
@@ -1076,10 +1030,6 @@ export default function ConnectLogin({ onLoginSuccess, forcedRole }) {
               <span style={{ fontSize: '28px', fontWeight: '850', color: '#ffffff' }}>∞ connect</span>
               <span style={{ fontSize: '11px', color: '#a3b2c2', background: 'rgba(255,255,255,0.1)', padding: '2px 8px', borderRadius: '4px' }}>Formerly InGo</span>
             </div>
-            <div style={{ display: 'flex', gap: '12px' }}>
-              <img src="https://upload.wikimedia.org/wikipedia/commons/3/3c/Download_on_the_App_Store_Badge.svg" alt="App Store" style={{ height: '28px', opacity: 0.8 }} />
-              <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" alt="Google Play" style={{ height: '28px', opacity: 0.8 }} />
-            </div>
           </div>
 
           {/* Directory Links Grid */}
@@ -1094,7 +1044,7 @@ export default function ConnectLogin({ onLoginSuccess, forcedRole }) {
             <div>
               <h5 style={{ color: '#ffffff', fontWeight: '800', fontSize: '13px', margin: '0 0 16px 0', textTransform: 'uppercase', letterSpacing: '0.5px' }}>About Us</h5>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                {["About Us", "Investor Relations", "MMT Foundation", "CSR Policy", "Legal Notices", "Privacy Policy", "Terms & Conditions"].map((link, i) => (
+                {["About Us", "Investor Relations", "Trip Customizer Foundation", "CSR Policy", "Legal Notices", "Privacy Policy", "Terms & Conditions"].map((link, i) => (
                   <span key={i} style={{ cursor: 'pointer', transition: 'color 0.2s' }} onMouseOver={e => e.currentTarget.style.color = '#ffffff'} onMouseOut={e => e.currentTarget.style.color = '#a3b2c2'}>{link}</span>
                 ))}
               </div>
@@ -1104,7 +1054,7 @@ export default function ConnectLogin({ onLoginSuccess, forcedRole }) {
             <div>
               <h5 style={{ color: '#ffffff', fontWeight: '800', fontSize: '13px', margin: '0 0 16px 0', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Our Sales Channel</h5>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                {["Trip Customizer", "Goibibo", "Redbus", "myBiz for Corporate Travel", "myPartner - Travel Agent Portal", "Advertise with Us", "BookMyForex"].map((link, i) => (
+                {["Trip Customizer", "Goibibo", "Redbus", "myBiz for Corporate Travel", "Partner Connect Portal", "Advertise with Us", "BookMyForex"].map((link, i) => (
                   <span key={i} style={{ cursor: 'pointer', transition: 'color 0.2s' }} onMouseOver={e => e.currentTarget.style.color = '#ffffff'} onMouseOut={e => e.currentTarget.style.color = '#a3b2c2'}>{link}</span>
                 ))}
               </div>
@@ -1114,7 +1064,7 @@ export default function ConnectLogin({ onLoginSuccess, forcedRole }) {
             <div>
               <h5 style={{ color: '#ffffff', fontWeight: '800', fontSize: '13px', margin: '0 0 16px 0', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Quick Links</h5>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                {["List your Homestay on Trip Customizer", "List your Hotel on Trip Customizer", "List your Villa on Trip Customizer", "List your Apartment on Trip Customizer", "Partner Help & Support", "Go-MMT Partner Community"].map((link, i) => (
+                {["List your Homestay on Trip Customizer", "List your Hotel on Trip Customizer", "List your Villa on Trip Customizer", "List your Apartment on Trip Customizer", "Partner Help & Support", "Trip Customizer Partner Community"].map((link, i) => (
                   <span key={i} style={{ cursor: 'pointer', transition: 'color 0.2s' }} onMouseOver={e => e.currentTarget.style.color = '#ffffff'} onMouseOut={e => e.currentTarget.style.color = '#a3b2c2'}>{link}</span>
                 ))}
               </div>
@@ -1124,16 +1074,15 @@ export default function ConnectLogin({ onLoginSuccess, forcedRole }) {
             <div>
               <h5 style={{ color: '#ffffff', fontWeight: '800', fontSize: '13px', margin: '0 0 16px 0', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Address</h5>
               <p style={{ color: '#a3b2c2', margin: 0, fontSize: '12.5px', lineHeight: '1.6' }}>
-                19th Floor Tower B, Building No. 5, Level 19 <br />
-                DLF Epitome, near DLF Cyber City, DLF Phase 2, <br />
-                Sector 24, Gurugram, Haryana 122002
+                RTO Office transport nagar, <br />
+                Ayodhya, Uttar Pradesh
               </p>
             </div>
           </div>
 
           {/* Copyright line */}
           <div style={{ marginTop: '50px', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '20px', textAlign: 'center', fontSize: '12px', color: '#64748b' }}>
-            © 2026 Trip Customizer India Private Limited. All rights reserved. Registered under Go-MMT Partner Network.
+            © 2026 Trip Customizer India Private Limited. All rights reserved. Registered under Trip Customizer Partner Network.
           </div>
         </div>
       </footer>
