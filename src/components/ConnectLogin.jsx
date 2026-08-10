@@ -151,8 +151,98 @@ export default function ConnectLogin({ onLoginSuccess, forcedRole }) {
       display: 'flex',
       flexDirection: 'column'
     }}>
+      <style dangerouslySetInnerHTML={{ __html: `
+        @media (max-width: 768px) {
+          .main-header {
+            padding: 12px 16px !important;
+          }
+          .hero-grid {
+            grid-template-columns: 1fr !important;
+            padding: 40px 16px 60px 16px !important;
+            gap: 30px !important;
+          }
+          .hero-title {
+            font-size: 28px !important;
+            height: auto !important;
+            margin-bottom: 12px !important;
+          }
+          .hero-subtitle {
+            font-size: 15px !important;
+            margin-top: 10px !important;
+          }
+          .logo-strip {
+            flex-wrap: wrap !important;
+            gap: 8px !important;
+          }
+          .stats-grid {
+            grid-template-columns: 1fr !important;
+            margin-top: 20px !important;
+            padding: 0 16px !important;
+            gap: 16px !important;
+          }
+          .stats-card {
+            padding: 20px !important;
+          }
+          .features-section {
+            padding: 40px 16px !important;
+          }
+          .features-grid {
+            grid-template-columns: 1fr !important;
+            gap: 30px !important;
+          }
+          .mockup-outer {
+            height: 350px !important;
+            transform: scale(0.9) !important;
+            margin: 0 auto !important;
+          }
+          .mockup-tablet {
+            width: 320px !important;
+            height: 250px !important;
+            bottom: 20px !important;
+            right: 0 !important;
+          }
+          .mockup-phone {
+            width: 140px !important;
+            height: 260px !important;
+            bottom: 0 !important;
+            left: 0 !important;
+          }
+          .testimonial-section {
+            padding: 40px 16px !important;
+          }
+          .testimonial-card {
+            grid-template-columns: 1fr !important;
+            padding: 24px !important;
+            gap: 20px !important;
+          }
+          .testimonial-image-container {
+            height: 200px !important;
+          }
+          .categories-section {
+            padding: 40px 16px !important;
+          }
+          .categories-grid {
+            grid-template-columns: 1fr !important;
+            gap: 20px !important;
+          }
+          .faq-section {
+            padding: 40px 16px !important;
+          }
+          .faq-card {
+            padding: 16px 20px !important;
+          }
+          .footer-section {
+            padding: 40px 16px 20px 16px !important;
+          }
+          .footer-links-grid {
+            grid-template-columns: 1fr !important;
+            gap: 30px !important;
+          }
+        }
+      ` }} />
+
       {/* 1. TOP NAVBAR */}
-      <header style={{
+      <header className="main-header" style={{
         background: '#ffffff',
         borderBottom: '1px solid #e2e8f0',
         padding: '16px 40px',
@@ -182,7 +272,7 @@ export default function ConnectLogin({ onLoginSuccess, forcedRole }) {
       </header>
 
       {/* 2. HERO SECTION WITH INTEGRATED GLASSMORPHIC LOGIN CARD */}
-      <div style={{
+      <div className="hero-grid" style={{
         backgroundImage: `linear-gradient(rgba(10, 34, 64, 0.7), rgba(3, 16, 36, 0.85)), url('https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1600&q=80')`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
@@ -195,7 +285,7 @@ export default function ConnectLogin({ onLoginSuccess, forcedRole }) {
       }}>
         {/* Left marketing columns */}
         <div style={{ color: '#ffffff', textAlign: 'left' }}>
-          <h2 style={{
+          <h2 className="hero-title" style={{
             fontSize: '44px', fontWeight: '900', lineHeight: '1.2', margin: 0,
             letterSpacing: '-1px', height: '110px'
           }}>
@@ -208,12 +298,12 @@ export default function ConnectLogin({ onLoginSuccess, forcedRole }) {
             }}>{propertyTypes[propIndex]}</span> <br />
             for free & grow your business
           </h2>
-          <p style={{ fontSize: '18px', color: '#cbd5e1', marginTop: '16px', fontWeight: '500' }}>
+          <p className="hero-subtitle" style={{ fontSize: '18px', color: '#cbd5e1', marginTop: '16px', fontWeight: '500' }}>
             Partner with Trip Customizer group
           </p>
           
           {/* Logo labels */}
-          <div style={{ display: 'flex', gap: '16px', alignItems: 'center', marginTop: '24px' }}>
+          <div className="logo-strip" style={{ display: 'flex', gap: '16px', alignItems: 'center', marginTop: '24px' }}>
             <span style={{ fontSize: '14px', fontWeight: '850', color: '#ff4f5a' }}>∞ connect</span>
             <span style={{ color: '#64748b', fontSize: '16px' }}>|</span>
             <span style={{ fontSize: '13px', fontWeight: '700', color: '#008cff' }}>trip customizer</span>
@@ -346,7 +436,7 @@ export default function ConnectLogin({ onLoginSuccess, forcedRole }) {
       </div>
 
       {/* 3. OVERLAPPING STATS BANNER */}
-      <div style={{
+      <div className="stats-grid" style={{
         padding: '0 60px',
         marginTop: '-40px',
         position: 'relative',
@@ -360,7 +450,7 @@ export default function ConnectLogin({ onLoginSuccess, forcedRole }) {
           { stat: "Direct Settlements", desc: "Payouts are transferred directly into your registered bank account on the day of guest check-in without delays." },
           { stat: "24x7 Partner Support", desc: "Get dedicated real-time chat support and interactive guidelines to resolve all compliance uploads and partner queries." }
         ].map((item, index) => (
-          <div key={index} style={{
+          <div key={index} className="stats-card" style={{
             background: '#ffffff',
             borderRadius: '12px',
             padding: '24px 30px',
@@ -375,11 +465,11 @@ export default function ConnectLogin({ onLoginSuccess, forcedRole }) {
       </div>
 
       {/* 4. FEATURES ACCORDION & LAYERED HIGH-FIDELITY CSS MOCKUPS */}
-      <div style={{ padding: '80px 60px', background: '#f8fafc', textAlign: 'left' }}>
+      <div className="features-section" style={{ padding: '80px 60px', background: '#f8fafc', textAlign: 'left' }}>
         <span style={{ fontSize: '12px', fontWeight: '800', color: '#e0532b', textTransform: 'uppercase', letterSpacing: '1px' }}>Features</span>
         <h2 style={{ fontSize: '32px', fontWeight: '850', color: '#0f172a', margin: '8px 0 40px 0' }}>Manage & grow your business</h2>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: '60px', alignItems: 'center' }}>
+        <div className="features-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: '60px', alignItems: 'center' }}>
           {/* Left Feature List Accordion */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             {features.map((feat, idx) => {
@@ -415,7 +505,7 @@ export default function ConnectLogin({ onLoginSuccess, forcedRole }) {
           </div>
 
           {/* Right Live Layered Mockup */}
-          <div style={{
+          <div className="mockup-outer" style={{
             position: 'relative',
             width: '100%',
             height: '420px',
@@ -426,7 +516,7 @@ export default function ConnectLogin({ onLoginSuccess, forcedRole }) {
           }}>
             
             {/* Tablet Mockup (Back Layer) */}
-            <div style={{
+            <div className="mockup-tablet" style={{
               width: '420px',
               height: '310px',
               background: '#ffffff',
@@ -640,7 +730,7 @@ export default function ConnectLogin({ onLoginSuccess, forcedRole }) {
             </div>
 
             {/* Phone Mockup (Front Layer) */}
-            <div style={{
+            <div className="mockup-phone" style={{
               width: '180px',
               height: '330px',
               background: '#0f172a',
@@ -810,17 +900,17 @@ export default function ConnectLogin({ onLoginSuccess, forcedRole }) {
       </div>
 
       {/* 5. SUCCESS STORIES / TESTIMONIAL SLIDER */}
-      <div style={{ padding: '80px 60px', background: '#ffffff', textAlign: 'left' }}>
+      <div className="testimonial-section" style={{ padding: '80px 60px', background: '#ffffff', textAlign: 'left' }}>
         <span style={{ fontSize: '12px', fontWeight: '800', color: '#e0532b', textTransform: 'uppercase', letterSpacing: '1px' }}>Success Stories</span>
         <h2 style={{ fontSize: '32px', fontWeight: '850', color: '#0f172a', margin: '8px 0 40px 0' }}>What our partners say</h2>
 
-        <div style={{
+        <div className="testimonial-card" style={{
           background: '#f8fafc',
           borderRadius: '16px',
           border: '1px solid #e2e8f0',
-          padding: window.innerWidth < 850 ? '30px 20px' : '50px',
+          padding: '50px',
           display: 'grid',
-          gridTemplateColumns: window.innerWidth < 850 ? '1fr' : '1.5fr 1fr',
+          gridTemplateColumns: '1.5fr 1fr',
           gap: '40px',
           alignItems: 'center',
           position: 'relative'
@@ -829,7 +919,7 @@ export default function ConnectLogin({ onLoginSuccess, forcedRole }) {
           <div style={{ display: 'flex', flexDirection: 'column', justifyBetween: 'space-between', height: '100%' }}>
             <div>
               <p style={{
-                fontSize: window.innerWidth < 850 ? '16px' : '20px',
+                fontSize: '18px',
                 lineHeight: '1.6',
                 color: '#334155',
                 fontWeight: '500',
@@ -875,7 +965,7 @@ export default function ConnectLogin({ onLoginSuccess, forcedRole }) {
           </div>
 
           {/* Testimonial Image */}
-          <div style={{ height: '280px', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.05)' }}>
+          <div className="testimonial-image-container" style={{ height: '280px', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.05)' }}>
             <img 
               src={successStories[activeStory].image} 
               alt={successStories[activeStory].author}
@@ -886,7 +976,7 @@ export default function ConnectLogin({ onLoginSuccess, forcedRole }) {
       </div>
 
       {/* 6. PROPERTY LISTING CATEGORIES */}
-      <div style={{ padding: '80px 60px', textAlign: 'center', background: '#f8fafc', borderTop: '1px solid #e2e8f0' }}>
+      <div className="categories-section" style={{ padding: '80px 60px', textAlign: 'center', background: '#f8fafc', borderTop: '1px solid #e2e8f0' }}>
         <h2 style={{ fontSize: '32px', fontWeight: '900', color: '#0f172a', margin: '0 0 16px 0' }}>
           List various property categories & reach different guests
         </h2>
@@ -894,9 +984,9 @@ export default function ConnectLogin({ onLoginSuccess, forcedRole }) {
           Whether you run a luxury resort or a budget pilgrim homestay, list your property with us under custom categories tailored to your guest offerings.
         </p>
 
-        <div style={{
+        <div className="categories-grid" style={{
           display: 'grid',
-          gridTemplateColumns: window.innerWidth < 850 ? '1fr' : 'repeat(4, 1fr)',
+          gridTemplateColumns: 'repeat(4, 1fr)',
           gap: '24px'
         }}>
           {[
@@ -964,7 +1054,7 @@ export default function ConnectLogin({ onLoginSuccess, forcedRole }) {
       </div>
 
       {/* 7. FREQUENTLY ASKED QUESTIONS SECTION */}
-      <div style={{ padding: '80px 60px', background: '#ffffff', textAlign: 'center' }}>
+      <div className="faq-section" style={{ padding: '80px 60px', background: '#ffffff', textAlign: 'center' }}>
         <h2 style={{ fontSize: '32px', fontWeight: '900', color: '#0f172a', margin: '0 0 8px 0' }}>Frequently asked questions</h2>
         <p style={{ fontSize: '15px', color: '#64748b', marginBottom: '40px' }}>Help section for partners, hosts & property owners</p>
 
@@ -975,6 +1065,7 @@ export default function ConnectLogin({ onLoginSuccess, forcedRole }) {
               <div 
                 key={idx}
                 onClick={() => setOpenFaq(isOpen ? -1 : idx)}
+                className="faq-card"
                 style={{
                   background: '#ffffff',
                   border: isOpen ? '1px solid #e0532b' : '1px solid #f1f5f9',
@@ -1016,7 +1107,7 @@ export default function ConnectLogin({ onLoginSuccess, forcedRole }) {
       </div>
 
       {/* 9. EXTENDED BRAND DIRECTORY FOOTER */}
-      <footer style={{
+      <footer className="footer-section" style={{
         background: '#2d3033',
         color: '#a3b2c2',
         padding: '60px 40px 30px 40px',
@@ -1033,9 +1124,9 @@ export default function ConnectLogin({ onLoginSuccess, forcedRole }) {
           </div>
 
           {/* Directory Links Grid */}
-          <div style={{
+          <div className="footer-links-grid" style={{
             display: 'grid',
-            gridTemplateColumns: window.innerWidth < 850 ? '1fr' : 'repeat(4, 1fr)',
+            gridTemplateColumns: 'repeat(4, 1fr)',
             gap: '40px',
             fontSize: '13px',
             lineHeight: '1.8'
