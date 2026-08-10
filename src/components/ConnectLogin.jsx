@@ -64,16 +64,16 @@ export default function ConnectLogin({ onLoginSuccess, forcedRole }) {
   const [activeStory, setActiveStory] = useState(0);
   const successStories = [
     {
-      quote: "Being the market leader in the domestic market, Trip Customizer has been helpful for overall revenue maximization. Top features that helped us in the long term include key growth recommendations, matchless support by the market managers, and transparency in billing & payment terms.",
-      author: "Piyush R. Samantaray",
-      role: "AGM- Revenue | MAYFAIR Hotels & Resorts (associated since 2008)",
-      image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80"
+      quote: "As a local hospitality provider in Ayodhya, listing on Trip Customizer has been incredibly rewarding. We onboarded Royal Palm Inn in under 30 minutes, and the flow of pilgrim bookings has been seamless. The payment settlement terms are very transparent and timely.",
+      author: "Divyanshu Shah",
+      role: "Owner | Royal Palm Inn, Ayodhya (associated since 2026)",
+      image: "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=400&q=80"
     },
     {
-      quote: "Trip Customizer Connect Extranet has completely transformed how we handle last-minute room distributions. The dynamic promotions and instant check-in notifications keep our occupancy high and help us maintain full control over pricing strategy.",
-      author: "Neha Sharma",
-      role: "General Manager | Elite Stay Residences (associated since 2020)",
-      image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80"
+      quote: "Managing rates and inventory during peak festival seasons in Varanasi used to be a huge challenge. Trip Customizer Connect gives us instant mobile controls to update availability, apply promotions, and verify guest arrivals on the fly.",
+      author: "Chirag",
+      role: "Owner | Prince Diamond Hotel, Varanasi (associated since 2026)",
+      image: "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=400&q=80"
     }
   ];
 
