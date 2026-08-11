@@ -616,15 +616,20 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
         
         /* MOBILE VIEWPORT RESPONSIVE RULES */
         @media (max-width: 768px) {
-          header {
-            padding: 10px 16px !important;
-            flex-direction: column !important;
-            align-items: flex-start !important;
-            gap: 12px !important;
-          }
-          header > div:last-child {
-            width: 100% !important;
+          .wizard-header {
+            padding: 10px 12px !important;
+            flex-direction: row !important;
+            align-items: center !important;
             justify-content: space-between !important;
+          }
+          .wizard-badge {
+            display: none !important;
+          }
+          .wizard-reset-text {
+            display: none !important;
+          }
+          .wizard-user-info {
+            display: none !important;
           }
           .wizard-outer {
             padding: 16px 12px !important;
@@ -789,14 +794,31 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
       )}
       
       {/* Top connect navbar */}
-      <header style={{ background: '#ffffff', padding: '14px 40px', borderBottom: '1px solid #e6ebf3', display: 'flex', justifyContent: 'space-between', alignItems: 'center', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}>
+      <header className="wizard-header" style={{ background: '#ffffff', padding: '14px 40px', borderBottom: '1px solid #e6ebf3', display: 'flex', justifyContent: 'space-between', alignItems: 'center', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <span style={{ fontSize: '24px', fontWeight: '800', color: '#ff4f5a', background: 'linear-gradient(135deg, #008cff 0%, #ff4f5a 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-              ∞ connect
-            </span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            {/* Trip Customizer Logo */}
+            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ filter: 'drop-shadow(0 2px 4px rgba(0, 140, 255, 0.15))' }}>
+              <rect width="32" height="32" rx="8" fill="url(#logoBG)" />
+              <path d="M16 7L24 23L16 19L8 23L16 7Z" fill="#ffffff" />
+              <circle cx="16" cy="15" r="3" stroke="#ff4f5a" strokeWidth="1.5" />
+              <defs>
+                <linearGradient id="logoBG" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+                  <stop offset="0%" stopColor="#008cff" />
+                  <stop offset="100%" stopColor="#ff4f5a" />
+                </linearGradient>
+              </defs>
+            </svg>
+            <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1, textAlign: 'left' }}>
+              <span style={{ fontSize: '15px', fontWeight: '900', color: '#0f172a', letterSpacing: '-0.3px' }}>
+                Trip Customizer
+              </span>
+              <span style={{ fontSize: '10px', fontWeight: '850', color: '#ff4f5a', letterSpacing: '1px', marginTop: '2px', textTransform: 'uppercase' }}>
+                connect
+              </span>
+            </div>
           </div>
-          <span style={{ background: '#f0f3f6', padding: '3px 10px', borderRadius: '12px', fontSize: '10px', fontWeight: '700', color: '#687b8c', textTransform: 'uppercase' }}>
+          <span className="wizard-badge" style={{ background: '#f0f3f6', padding: '3px 10px', borderRadius: '12px', fontSize: '10px', fontWeight: '700', color: '#687b8c', textTransform: 'uppercase' }}>
             Hotel: In Progress
           </span>
         </div>
@@ -804,6 +826,7 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px', fontSize: '13px' }}>
           <button 
             type="button"
+            className="wizard-reset-btn"
             onClick={() => {
               if (confirm("Are you sure you want to reset the form and clear all saved progress?")) {
                 localStorage.removeItem('connect_wizard_autosave');
@@ -812,9 +835,9 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
             }}
             style={{ background: 'transparent', border: '1px solid #ff4f5a', color: '#ff4f5a', padding: '6px 12px', borderRadius: '6px', fontSize: '11.5px', fontWeight: '800', cursor: 'pointer', transition: 'all 0.2s' }}
           >
-            🧹 Reset Form / Start Fresh
+            🧹 <span className="wizard-reset-text">Reset Form / Start Fresh</span>
           </button>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <div className="wizard-user-info" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#e0e6ff', color: 'var(--primary-color)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '700' }}>
               {activeUser?.name ? activeUser.name.substring(0, 2).toUpperCase() : 'RJ'}
             </div>

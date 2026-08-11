@@ -152,9 +152,24 @@ export default function ConnectLogin({ onLoginSuccess, forcedRole }) {
       flexDirection: 'column'
     }}>
       <style dangerouslySetInnerHTML={{ __html: `
+        .mobile-btn-text {
+          display: none;
+        }
         @media (max-width: 768px) {
           .main-header {
             padding: 12px 16px !important;
+          }
+          .features-link {
+            display: none !important;
+          }
+          .header-right-actions {
+            gap: 8px !important;
+          }
+          .desktop-btn-text {
+            display: none !important;
+          }
+          .mobile-btn-text {
+            display: inline !important;
           }
           .hero-grid {
             grid-template-columns: 1fr !important;
@@ -276,14 +291,15 @@ export default function ConnectLogin({ onLoginSuccess, forcedRole }) {
             </span>
           </div>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-          <span style={{ fontSize: '14px', fontWeight: '600', color: '#475569', cursor: 'pointer' }}>Features</span>
-          <button onClick={() => setIsLogin(false)} style={{
+        <div className="header-right-actions" style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+          <span className="features-link" style={{ fontSize: '14px', fontWeight: '600', color: '#475569', cursor: 'pointer' }}>Features</span>
+          <button className="list-property-btn" onClick={() => setIsLogin(false)} style={{
             background: '#e0532b', color: '#ffffff', border: 'none', padding: '10px 20px',
             borderRadius: '6px', fontSize: '13px', fontWeight: '700', cursor: 'pointer',
             boxShadow: '0 4px 6px -1px rgba(224, 83, 43, 0.2)'
           }}>
-            List New Property For Free
+            <span className="desktop-btn-text">List New Property For Free</span>
+            <span className="mobile-btn-text">List Property</span>
           </button>
         </div>
       </header>

@@ -251,25 +251,118 @@ export default function ConnectDashboard({ activeUser, onLogout, onStartOnboardi
           0% { transform: rotate(0deg); }
           100% { transform: rotate(360deg); }
         }
+        @media (max-width: 768px) {
+          .dashboard-header {
+            padding: 10px 14px !important;
+          }
+          .console-badge {
+            display: none !important;
+          }
+          .user-greeting {
+            display: none !important;
+          }
+          .logout-btn-text {
+            display: none !important;
+          }
+          .dashboard-user-actions {
+            gap: 10px !important;
+          }
+          .dashboard-workspace {
+            grid-template-columns: 1fr !important;
+          }
+          .dashboard-sidebar {
+            flex-direction: row !important;
+            padding: 10px 14px !important;
+            border-right: none !important;
+            border-bottom: 1px solid #e6ebf3 !important;
+            gap: 8px !important;
+            overflow-x: auto !important;
+            white-space: nowrap !important;
+            -webkit-overflow-scrolling: touch;
+          }
+          .dashboard-sidebar button {
+            width: auto !important;
+            margin-top: 0 !important;
+            padding: 8px 12px !important;
+            font-size: 12px !important;
+            flex-shrink: 0 !important;
+          }
+          .dashboard-main {
+            padding: 16px 12px !important;
+          }
+          .property-row-inner {
+            grid-template-columns: 1fr !important;
+            gap: 16px !important;
+          }
+          .property-row-inner img {
+            height: 140px !important;
+          }
+          .property-row-inner > div:last-child {
+            text-align: left !important;
+            align-items: flex-start !important;
+            width: 100% !important;
+            border-top: 1px solid #f1f5f9 !important;
+            padding-top: 12px !important;
+          }
+          .edit-modal-content {
+            max-height: 98vh !important;
+            border-radius: 12px !important;
+          }
+          .edit-modal-body {
+            padding: 16px 12px !important;
+            gap: 16px !important;
+          }
+          .floating-chat-btn {
+            bottom: 12px !important;
+            right: 12px !important;
+            width: 48px !important;
+            height: 48px !important;
+          }
+          .support-chat-popup {
+            bottom: 70px !important;
+            right: 12px !important;
+            width: calc(100% - 24px) !important;
+            height: 380px !important;
+          }
+        }
       `}</style>
       
       {/* Top Navbar */}
-      <header style={{ background: '#ffffff', padding: '14px 40px', borderBottom: '1px solid #e6ebf3', display: 'flex', justifyContent: 'space-between', alignItems: 'center', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}>
+      <header className="dashboard-header" style={{ background: '#ffffff', padding: '14px 40px', borderBottom: '1px solid #e6ebf3', display: 'flex', justifyContent: 'space-between', alignItems: 'center', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-          <span style={{ fontSize: '24px', fontWeight: '800', color: '#ff4f5a', background: 'linear-gradient(135deg, #008cff 0%, #ff4f5a 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-            ∞ connect
-          </span>
-          <span style={{ background: '#e0f2fe', padding: '3px 10px', borderRadius: '12px', fontSize: '10px', fontWeight: '700', color: '#0369a1', textTransform: 'uppercase' }}>
-            Trip Customizer Partner Console
+          {/* Trip Customizer Logo */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ filter: 'drop-shadow(0 2px 4px rgba(0, 140, 255, 0.15))' }}>
+              <rect width="32" height="32" rx="8" fill="url(#logoBG)" />
+              <path d="M16 7L24 23L16 19L8 23L16 7Z" fill="#ffffff" />
+              <circle cx="16" cy="15" r="3" stroke="#ff4f5a" strokeWidth="1.5" />
+              <defs>
+                <linearGradient id="logoBG" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+                  <stop offset="0%" stopColor="#008cff" />
+                  <stop offset="100%" stopColor="#ff4f5a" />
+                </linearGradient>
+              </defs>
+            </svg>
+            <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1, textAlign: 'left' }}>
+              <span style={{ fontSize: '15px', fontWeight: '900', color: '#0f172a', letterSpacing: '-0.3px' }}>
+                Trip Customizer
+              </span>
+              <span style={{ fontSize: '10px', fontWeight: '850', color: '#ff4f5a', letterSpacing: '1px', marginTop: '2px', textTransform: 'uppercase' }}>
+                connect
+              </span>
+            </div>
+          </div>
+          <span className="console-badge" style={{ background: '#e0f2fe', padding: '3px 10px', borderRadius: '12px', fontSize: '10px', fontWeight: '700', color: '#0369a1', textTransform: 'uppercase' }}>
+            Partner Console
           </span>
         </div>
         
-        <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+        <div className="dashboard-user-actions" style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px' }}>
             <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#e0e6ff', color: 'var(--primary-color)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '700' }}>
               {activeUser.name.substring(0, 2).toUpperCase()}
             </div>
-            <div>
+            <div className="user-greeting">
               Hi, <strong>{activeUser.name}</strong>
             </div>
           </div>
@@ -279,16 +372,16 @@ export default function ConnectDashboard({ activeUser, onLogout, onStartOnboardi
             style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', fontWeight: '700', color: '#ef4444', border: '1px solid rgba(239,68,68,0.2)', background: '#ffffff', padding: '6px 12px', borderRadius: '6px', cursor: 'pointer' }}
           >
             <LogOut size={12} />
-            Logout
+            <span className="logout-btn-text">Logout</span>
           </button>
         </div>
       </header>
 
       {/* Workspace Panel */}
-      <div style={{ display: 'grid', gridTemplateColumns: '240px 1fr', flexGrow: 1 }}>
+      <div className="dashboard-workspace" style={{ display: 'grid', gridTemplateColumns: '240px 1fr', flexGrow: 1 }}>
         
         {/* Left Sidebar */}
-        <aside style={{ background: '#ffffff', borderRight: '1px solid #e6ebf3', padding: '24px 16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+        <aside className="dashboard-sidebar" style={{ background: '#ffffff', borderRight: '1px solid #e6ebf3', padding: '24px 16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
           
           <button
             onClick={() => setActiveSidebarTab('properties')}
@@ -330,7 +423,7 @@ export default function ConnectDashboard({ activeUser, onLogout, onStartOnboardi
         </aside>
 
         {/* Right Dashboard Body */}
-        <main style={{ padding: '40px', textAlign: 'left', overflowY: 'auto' }}>
+        <main className="dashboard-main" style={{ padding: '40px', textAlign: 'left', overflowY: 'auto' }}>
           
           {/* TAB 1: PROPERTIES LIST */}
           {activeSidebarTab === 'properties' && (
@@ -371,7 +464,7 @@ export default function ConnectDashboard({ activeUser, onLogout, onStartOnboardi
                         boxShadow: '0 2px 8px rgba(0,0,0,0.02)', position: 'relative' 
                       }}
                     >
-                      <div style={{ display: 'grid', gridTemplateColumns: '120px 1fr auto', gap: '24px', alignItems: 'center' }}>
+                      <div className="property-row-inner" style={{ display: 'grid', gridTemplateColumns: '120px 1fr auto', gap: '24px', alignItems: 'center' }}>
                         <img 
                           src={prop.image || prop.coverPhoto || "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80"} 
                           alt={prop.name} 
@@ -476,7 +569,7 @@ export default function ConnectDashboard({ activeUser, onLogout, onStartOnboardi
           display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100000,
           padding: '20px'
         }}>
-          <div style={{
+          <div className="edit-modal-content" style={{
             background: '#ffffff', width: '100%', maxWidth: '520px', borderRadius: '16px',
             boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
             overflow: 'hidden', textAlign: 'left', display: 'flex', flexDirection: 'column', maxHeight: '90vh',
@@ -509,7 +602,7 @@ export default function ConnectDashboard({ activeUser, onLogout, onStartOnboardi
             </div>
 
             {/* Scrollable Content */}
-            <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '24px', overflowY: 'auto', flexGrow: 1 }}>
+            <div className="edit-modal-body" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '24px', overflowY: 'auto', flexGrow: 1 }}>
               
               {/* SECTION 1: ROOM RATES & INVENTORY */}
               <div>
@@ -682,6 +775,7 @@ export default function ConnectDashboard({ activeUser, onLogout, onStartOnboardi
       {/* ================= FLOATING HELP & SUPPORT CHAT BUTTON ================= */}
       <button
         onClick={() => setIsChatOpen(!isChatOpen)}
+        className="floating-chat-btn"
         style={{
           position: 'fixed', bottom: '24px', right: '24px', width: '56px', height: '56px',
           borderRadius: '50%', background: '#ff4f5a', border: 'none', cursor: 'pointer',
@@ -695,7 +789,7 @@ export default function ConnectDashboard({ activeUser, onLogout, onStartOnboardi
 
       {/* ================= SUPPORT CHAT POPUP WINDOW ================= */}
       {isChatOpen && (
-        <div style={{
+        <div className="support-chat-popup" style={{
           position: 'fixed', bottom: '90px', right: '24px', width: '330px', height: '440px',
           background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '16px',
           boxShadow: '0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1)', zIndex: 195000,
