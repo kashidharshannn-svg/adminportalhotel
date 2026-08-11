@@ -613,6 +613,165 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
           0% { transform: rotate(0deg); }
           100% { transform: rotate(360deg); }
         }
+        
+        /* MOBILE VIEWPORT RESPONSIVE RULES */
+        @media (max-width: 768px) {
+          header {
+            padding: 10px 16px !important;
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            gap: 12px !important;
+          }
+          header > div:last-child {
+            width: 100% !important;
+            justify-content: space-between !important;
+          }
+          .wizard-outer {
+            padding: 16px 12px !important;
+          }
+          .progress-ribbon {
+            padding: 4px !important;
+            margin-bottom: 16px !important;
+            gap: 8px !important;
+          }
+          .progress-ribbon-item {
+            font-size: 11px !important;
+            padding: 6px 10px !important;
+            white-space: nowrap !important;
+          }
+          .property-select-grid {
+            grid-template-columns: 1fr !important;
+            gap: 12px !important;
+            margin-bottom: 24px !important;
+          }
+          .subtype-select-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 12px !important;
+          }
+          .form-grid-2col {
+            grid-template-columns: 1fr !important;
+            gap: 12px !important;
+          }
+          .basic-info-inner {
+            max-width: 100% !important;
+          }
+          .location-grid {
+            grid-template-columns: 1fr !important;
+            gap: 20px !important;
+          }
+          .location-map-container {
+            min-height: 250px !important;
+          }
+          .amenities-grid {
+            grid-template-columns: 1fr !important;
+            height: auto !important;
+          }
+          .amenities-sidebar {
+            display: flex !important;
+            flex-direction: row !important;
+            overflow-x: auto !important;
+            white-space: nowrap !important;
+            border-right: none !important;
+            border-bottom: 1px solid #cbd5e1 !important;
+            height: auto !important;
+          }
+          .amenities-sidebar-item {
+            padding: 10px 16px !important;
+            border-bottom: none !important;
+            border-right: 1px solid #e2e8f0 !important;
+            flex-shrink: 0 !important;
+          }
+          .amenities-body {
+            padding: 16px !important;
+            overflow-y: visible !important;
+          }
+          .modal-content {
+            height: 92vh !important;
+            width: 95% !important;
+            max-width: 95% !important;
+          }
+          .step-header-row {
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            gap: 12px !important;
+          }
+          .room-card-row {
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            gap: 14px !important;
+          }
+          .room-card-row > div:last-child {
+            width: 100% !important;
+            justify-content: space-between !important;
+            border-top: 1px solid #f1f5f9 !important;
+            padding-top: 10px !important;
+          }
+          .wizard-row {
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            gap: 8px !important;
+          }
+          .wizard-row > div:first-child,
+          .wizard-row > div:last-child {
+            width: 100% !important;
+          }
+          .occupancy-row {
+            gap: 10px !important;
+          }
+          .occupancy-row > div:first-child {
+            max-width: calc(100% - 130px) !important;
+          }
+          .bathroom-grid {
+            grid-template-columns: 1fr !important;
+            gap: 14px !important;
+          }
+          .bathroom-grid > div:first-child {
+            width: 100% !important;
+          }
+          .room-amenities-grid {
+            grid-template-columns: 1fr !important;
+            height: auto !important;
+          }
+          .room-amenities-sidebar {
+            display: flex !important;
+            flex-direction: row !important;
+            overflow-x: auto !important;
+            white-space: nowrap !important;
+            border-right: none !important;
+            border-bottom: 1px solid #cbd5e1 !important;
+            height: auto !important;
+          }
+          .room-amenities-sidebar-item {
+            padding: 10px 16px !important;
+            border-bottom: none !important;
+            border-right: 1px solid #e2e8f0 !important;
+            flex-shrink: 0 !important;
+          }
+          .room-amenities-body {
+            padding: 16px !important;
+            overflow-y: visible !important;
+          }
+          .photo-workspace-grid {
+            grid-template-columns: 1fr !important;
+            gap: 24px !important;
+          }
+          .photo-modal-grid {
+            grid-template-columns: 1fr !important;
+            gap: 20px !important;
+          }
+          .policies-grid {
+            grid-template-columns: 1fr !important;
+            gap: 20px !important;
+          }
+          .finance-grid {
+            grid-template-columns: 1fr !important;
+            gap: 24px !important;
+          }
+          .ownership-grid {
+            grid-template-columns: 1fr !important;
+            gap: 8px !important;
+          }
+        }
       `}</style>
 
       {/* SUBMIT PROGRESS LOADER OVERLAY */}
@@ -667,11 +826,11 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
       </header>
 
       {/* Main Wizard Area */}
-      <div style={{ flexGrow: 1, padding: '30px 40px', maxWidth: '1200px', width: '100%', margin: '0 auto' }}>
+      <div className="wizard-outer" style={{ flexGrow: 1, padding: '30px 40px', maxWidth: '1200px', width: '100%', margin: '0 auto' }}>
         
         {/* Step progress ribbon */}
         {wizardStep > 0 && (
-          <div style={{ display: 'flex', background: '#ffffff', borderRadius: '8px', border: '1px solid #cbd5e1', padding: '6px', marginBottom: '24px', justifyContent: 'space-between', overflowX: 'auto' }}>
+          <div className="progress-ribbon" style={{ display: 'flex', background: '#ffffff', borderRadius: '8px', border: '1px solid #cbd5e1', padding: '6px', marginBottom: '24px', justifyContent: 'space-between', overflowX: 'auto' }}>
             {STEP_TABS.map((tab, idx) => {
               const currentStepIndex = wizardStep - 1;
               const isActive = currentStepIndex === idx;
@@ -679,6 +838,7 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
               return (
                 <div 
                   key={idx} 
+                  className="progress-ribbon-item"
                   style={{
                     padding: '8px 16px', fontSize: '12px', fontWeight: '700', borderRadius: '6px', whiteSpace: 'nowrap',
                     color: isActive ? 'white' : isPassed ? '#10b981' : '#64748b',
@@ -704,7 +864,7 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
               </h2>
               <p style={{ fontSize: '13px', color: '#64748b', marginBottom: '30px' }}>Please select your property type from below options to get started</p>
               
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '40px' }}>
+              <div className="property-select-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '40px' }}>
                  <div 
                   onClick={() => { setPropertyType('Hotel'); setSubType('Hotel'); }}
                   style={{
@@ -750,7 +910,7 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
                 <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: '30px' }}>
                   <h3 style={{ fontWeight: '800', fontSize: '18px', color: '#1a1a1a', marginBottom: '16px' }}>Type of Hotel</h3>
                   
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px' }}>
+                  <div className="subtype-select-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px' }}>
                     {HOTEL_TYPES.map((type) => (
                       <div
                         key={type.id}
@@ -892,7 +1052,7 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
                 Basic Info
               </h3>
               
-              <div style={{ maxWidth: '600px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+              <div className="basic-info-inner" style={{ maxWidth: '600px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
                 <div className="input-group">
                   <label style={{ fontWeight: '700', color: '#1a1a1a' }}>Name of the Property</label>
                   <p style={{ fontSize: '11px', color: '#64748b', marginTop: '-4px' }}>Enter the name as on the property documents</p>
@@ -906,7 +1066,7 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
                   />
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                <div className="form-grid-2col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
                   <div className="input-group">
                     <label style={{ fontWeight: '700', color: '#1a1a1a' }}>Hotel Star Rating</label>
                     <select value={stars} onChange={(e) => setStars(e.target.value)} style={{ border: '1px solid #cbd5e1', padding: '12px', borderRadius: '6px' }}>
@@ -926,7 +1086,7 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
                   </div>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                <div className="form-grid-2col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
                   <div className="input-group">
                     <label style={{ fontWeight: '700', color: '#1a1a1a' }}>Accepting booking since?</label>
                     <select value={acceptingBookingSince} onChange={(e) => setAcceptingBookingSince(e.target.value)} style={{ border: '1px solid #cbd5e1', padding: '12px', borderRadius: '6px' }}>
@@ -1015,7 +1175,7 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
                 Property Location Details
               </h3>
               
-              <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '30px' }}>
+              <div className="location-grid" style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '30px' }}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                   <div style={{ background: '#eff6ff', padding: '14px', borderRadius: '8px', border: '1px solid #bfdbfe', display: 'flex', gap: '10px', alignItems: 'center', fontSize: '12px', color: '#1e3a8a' }}>
                     <Info size={16} />
@@ -1046,7 +1206,7 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
                     <input type="text" required placeholder="Indirapuram" value={locality} onChange={(e) => setLocality(e.target.value)} style={{ border: '1px solid #cbd5e1', padding: '10px', borderRadius: '6px' }} />
                   </div>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: '14px' }}>
+                  <div className="form-grid-2col" style={{ display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: '14px' }}>
                     <div className="input-group">
                       <label>Pincode</label>
                       <input type="text" required placeholder="224010" value={pincode} onChange={(e) => setPincode(e.target.value)} style={{ border: '1px solid #cbd5e1', padding: '10px', borderRadius: '6px' }} />
@@ -1063,7 +1223,7 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
                   </div>
                 </div>
 
-                <div style={{ border: '1px solid #cbd5e1', borderRadius: '8px', overflow: 'hidden', height: '100%', minHeight: '350px', background: '#e2e8f0', position: 'relative' }}>
+                <div className="location-map-container" style={{ border: '1px solid #cbd5e1', borderRadius: '8px', overflow: 'hidden', height: '100%', minHeight: '350px', background: '#e2e8f0', position: 'relative' }}>
                   <iframe 
                     title="location-map"
                     width="100%" 
@@ -1102,8 +1262,8 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
                 </span>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '280px 1fr', gap: '30px', height: '520px', border: '1px solid #cbd5e1', borderRadius: '8px', overflow: 'hidden' }}>
-                <div style={{ background: '#f8fafc', borderRight: '1px solid #cbd5e1', overflowY: 'auto' }}>
+              <div className="amenities-grid" style={{ display: 'grid', gridTemplateColumns: '280px 1fr', gap: '30px', height: '520px', border: '1px solid #cbd5e1', borderRadius: '8px', overflow: 'hidden' }}>
+                <div className="amenities-sidebar" style={{ background: '#f8fafc', borderRight: '1px solid #cbd5e1', overflowY: 'auto' }}>
                   {AMENITIES_CATEGORIES.map((cat) => {
                     const count = getSelectedCountForCategory(cat.items);
                     const isActive = activeAmenityCategory === cat.id;
@@ -1111,6 +1271,7 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
                       <div
                         key={cat.id}
                         onClick={() => setActiveAmenityCategory(cat.id)}
+                        className="amenities-sidebar-item"
                         style={{
                           padding: '14px 20px', cursor: 'pointer', borderBottom: '1px solid #e2e8f0',
                           background: isActive ? '#ffffff' : 'transparent',
@@ -1128,7 +1289,7 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
                   })}
                 </div>
 
-                <div style={{ padding: '24px', overflowY: 'auto', background: '#ffffff' }}>
+                <div className="amenities-body" style={{ padding: '24px', overflowY: 'auto', background: '#ffffff' }}>
                   <h4 style={{ fontWeight: '800', fontSize: '15px', borderBottom: '1px dashed #cbd5e1', paddingBottom: '10px', marginBottom: '20px', color: '#1a1a1a' }}>
                     Please answer the {AMENITIES_CATEGORIES.find(c => c.id === activeAmenityCategory)?.label} Amenities available below
                   </h4>
@@ -1186,7 +1347,7 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
           {/* STEP 4: ROOMS SELECTION */}
           {wizardStep === 4 && (
             <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #e2e8f0', paddingBottom: '14px', marginBottom: '24px' }}>
+              <div className="step-header-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #e2e8f0', paddingBottom: '14px', marginBottom: '24px' }}>
                 <div>
                   <h3 style={{ fontFamily: 'var(--font-display)', fontWeight: '800', fontSize: '22px' }}>Rooms & Inventory</h3>
                   <p style={{ fontSize: '12px', color: '#64748b', marginTop: '2px' }}>Configure different categories of rooms and their per-night pricing rates</p>
@@ -1210,6 +1371,7 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
                   {rooms.map((rm) => (
                     <div 
                       key={rm.id} 
+                      className="room-card-row"
                       style={{ border: '1px solid #cbd5e1', padding: '16px', borderRadius: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#ffffff', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}
                     >
                       <div>
@@ -1306,7 +1468,7 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
                     </button>
                   </div>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '30px', alignItems: 'start' }}>
+                  <div className="photo-workspace-grid" style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '30px', alignItems: 'start' }}>
                     
                     {/* Left Area: Drag Box & Item Cards */}
                     <div>
@@ -1818,7 +1980,7 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
                     </div>
 
                     {/* Modal Body */}
-                    <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '30px', padding: '24px', overflowY: 'auto', background: '#ffffff' }}>
+                    <div className="photo-modal-grid" style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '30px', padding: '24px', overflowY: 'auto', background: '#ffffff' }}>
                       {/* Left Column: Drag Box */}
                       <div>
                         <input 
@@ -1936,7 +2098,7 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
           {/* STEP 6: POLICIES */}
           {wizardStep === 6 && (
             <div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '30px', alignItems: 'start' }}>
+              <div className="policies-grid" style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '30px', alignItems: 'start' }}>
                 
                 {/* Left Side: Policies & Rules Forms */}
                 <div>
@@ -1950,7 +2112,7 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
                     <h4 style={{ fontWeight: '800', fontSize: '15px', color: '#1a1a1a', marginBottom: '16px' }}>Check-in & Check-out Time</h4>
                     <p style={{ fontSize: '11px', color: '#64748b', marginTop: '-12px', marginBottom: '20px' }}>Specify the check-in & check-out time at your property</p>
                     
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                    <div className="form-grid-2col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
                       <div className="input-group">
                         <label style={{ fontSize: '12px', fontWeight: '700' }}>Check-in Time</label>
                         <select value={checkInTime} onChange={(e) => setCheckInTime(e.target.value)} style={{ border: '1px solid #cbd5e1', padding: '10px', borderRadius: '6px' }}>
@@ -2435,7 +2597,7 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
                 Finance & Legal
               </h3>
               
-              <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '30px', alignItems: 'start', textAlign: 'left' }}>
+              <div className="finance-grid" style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '30px', alignItems: 'start', textAlign: 'left' }}>
                 
                 {/* Left Side: Financial Forms & Uploaders */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
@@ -2446,7 +2608,7 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
                       🏦 Bank Account Information
                     </h4>
                     
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
+                    <div className="form-grid-2col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
                       <div className="input-group">
                         <label style={{ fontSize: '11px', fontWeight: '700' }}>Bank Account Number</label>
                         <input 
@@ -2472,7 +2634,7 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
                       </div>
                     </div>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                    <div className="form-grid-2col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
                       <div className="input-group">
                         <label style={{ fontSize: '11px', fontWeight: '700' }}>Bank IFSC Code</label>
                         <input 
@@ -2505,7 +2667,7 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
                       📝 Tax and MSME Information
                     </h4>
                     
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                    <div className="form-grid-2col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
                       <div className="input-group">
                         <label style={{ fontSize: '11px', fontWeight: '700' }}>PAN Number</label>
                         <input 
@@ -2541,7 +2703,7 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
                     {/* Ownership Toggles */}
                     <div style={{ marginBottom: '20px' }}>
                       <label style={{ fontSize: '12px', fontWeight: '800', color: '#334155', display: 'block', marginBottom: '8px' }}>Select Business Ownership Type</label>
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px' }}>
+                      <div className="ownership-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px' }}>
                         <div 
                           onClick={() => setOwnershipType('Owned')}
                           style={{ border: '1px solid' + (ownershipType === 'Owned' ? ' #ff4f5a' : ' #cbd5e1'), borderRadius: '6px', padding: '10px', cursor: 'pointer', background: ownershipType === 'Owned' ? 'rgba(255,79,90,0.02)' : 'white' }}
@@ -2779,7 +2941,7 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
             </div>
 
             {/* Modal Ribbon progress bar */}
-            <div style={{ display: 'flex', background: '#f1f5f9', padding: '10px 24px', gap: '12px', borderBottom: '1px solid #e2e8f0', overflowX: 'auto', justifyContent: 'space-between' }}>
+            <div className="progress-ribbon" style={{ display: 'flex', background: '#f1f5f9', padding: '10px 24px', gap: '12px', borderBottom: '1px solid #e2e8f0', overflowX: 'auto', justifyContent: 'space-between' }}>
               {[
                 "1 Room Details", 
                 "2 Sleeping Occupancy", 
@@ -2793,6 +2955,7 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
                 return (
                   <div 
                     key={idx} 
+                    className="progress-ribbon-item"
                     style={{
                       fontSize: '11px', fontWeight: '800', padding: '6px 12px', borderRadius: '4px',
                       background: isActive ? '#ff4f5a' : 'transparent',
@@ -2819,7 +2982,7 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
                   </div>
                   
                   {/* Room Type */}
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '1px solid #f1f5f9', paddingBottom: '16px', gap: '20px' }}>
+                  <div className="wizard-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '1px solid #f1f5f9', paddingBottom: '16px', gap: '20px' }}>
                     <div style={{ width: '45%' }}>
                       <label style={{ fontWeight: '700', fontSize: '13px', color: '#1a1a1a' }}>Room type</label>
                       <p style={{ fontSize: '11px', color: '#64748b', marginTop: '2px' }}>Choose the type that best describes this room</p>
@@ -2837,7 +3000,7 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
                   </div>
 
                   {/* Room View */}
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '1px solid #f1f5f9', paddingBottom: '16px', gap: '20px' }}>
+                  <div className="wizard-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '1px solid #f1f5f9', paddingBottom: '16px', gap: '20px' }}>
                     <div style={{ width: '45%' }}>
                       <label style={{ fontWeight: '700', fontSize: '13px', color: '#1a1a1a' }}>Room view</label>
                       <p style={{ fontSize: '11px', color: '#64748b', marginTop: '2px', lineHeight: 1.3 }}>Describe what the guest will see from this room, like pool, garden, or city views</p>
@@ -2855,7 +3018,7 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
                   </div>
 
                   {/* Room Size */}
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '1px solid #f1f5f9', paddingBottom: '16px', gap: '20px' }}>
+                  <div className="wizard-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '1px solid #f1f5f9', paddingBottom: '16px', gap: '20px' }}>
                     <div style={{ width: '45%' }}>
                       <label style={{ fontWeight: '700', fontSize: '13px', color: '#1a1a1a' }}>Room Size (Area)</label>
                       <p style={{ fontSize: '11px', color: '#64748b', marginTop: '2px', lineHeight: 1.3 }}>Specify the Indoor area only, excluding shared & outdoor spaces</p>
@@ -2885,7 +3048,7 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
                   </div>
 
                   {/* Room Name */}
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '1px solid #f1f5f9', paddingBottom: '16px', gap: '20px' }}>
+                  <div className="wizard-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '1px solid #f1f5f9', paddingBottom: '16px', gap: '20px' }}>
                     <div style={{ width: '45%' }}>
                       <label style={{ fontWeight: '700', fontSize: '13px', color: '#1a1a1a' }}>Room Name (as displayed on Trip Customizer & partner websites)</label>
                       <p style={{ fontSize: '11px', color: '#64748b', marginTop: '2px', lineHeight: 1.3 }}>Add a room name that looks attractive to travellers</p>
@@ -2902,7 +3065,7 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
                   </div>
 
                   {/* Bedrooms & Living rooms */}
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', borderBottom: '1px solid #f1f5f9', paddingBottom: '16px' }}>
+                  <div className="form-grid-2col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', borderBottom: '1px solid #f1f5f9', paddingBottom: '16px' }}>
                     <div className="input-group">
                       <label style={{ fontWeight: '700', fontSize: '12px' }}>Number of bedroom(s)</label>
                       <select value={numBedrooms} onChange={(e) => setNumBedrooms(e.target.value)}>
@@ -2923,7 +3086,7 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
                   </div>
 
                   {/* Number of rooms inventory */}
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: '14px' }}>
+                  <div className="form-grid-2col" style={{ display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: '14px' }}>
                     <div className="input-group">
                       <label style={{ fontWeight: '700', fontSize: '12px' }}>Number of rooms (of this type)</label>
                       <input type="number" placeholder="1" value={roomInventory} onChange={(e) => setRoomInventory(e.target.value)} />
@@ -2949,7 +3112,7 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
                     <h5 style={{ fontWeight: '800', fontSize: '14px', color: '#1a1a1a', marginBottom: '8px' }}>Select the bed type for all the bedrooms below</h5>
                     
                     {/* Bedroom 1 Setup */}
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', paddingBottom: '16px', borderBottom: '1px solid #f1f5f9', gap: '20px' }}>
+                    <div className="wizard-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', paddingBottom: '16px', borderBottom: '1px solid #f1f5f9', gap: '20px' }}>
                       <div style={{ width: '40%' }}>
                         <span style={{ fontSize: '13px', fontWeight: '800', color: '#1e293b' }}>Bedroom 1</span>
                         <p style={{ fontSize: '11px', color: '#64748b', marginTop: '2px' }}>Select the types of beds available in this room</p>
@@ -3028,7 +3191,7 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
                     </div>
 
                     {/* Living Room 1 Setup (Optional) */}
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', paddingBottom: '16px', borderBottom: '1px solid #f1f5f9', gap: '20px' }}>
+                    <div className="wizard-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', paddingBottom: '16px', borderBottom: '1px solid #f1f5f9', gap: '20px' }}>
                       <div style={{ width: '40%' }}>
                         <span style={{ fontSize: '13px', fontWeight: '800', color: '#1e293b' }}>Living Room 1 (Optional)</span>
                         <p style={{ fontSize: '11px', color: '#64748b', marginTop: '2px' }}>Select the types of beds available in this room</p>
@@ -3140,7 +3303,7 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
                     <p style={{ fontSize: '11px', color: '#64748b', marginTop: '-4px', borderBottom: '1px solid #f1f5f9', paddingBottom: '8px' }}>Occupancy details have been pre-filled based on the selected bed arrangement above</p>
                     
                     {/* Base Adults */}
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #f1f5f9', paddingBottom: '8px' }}>
+                    <div className="occupancy-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #f1f5f9', paddingBottom: '8px' }}>
                       <div>
                         <div style={{ fontSize: '13px', fontWeight: '700', color: '#1e293b' }}>Base adults</div>
                         <div style={{ fontSize: '11px', color: '#64748b', marginTop: '2px' }}>Ideal number of adults supported by the standard sleeping arrangement</div>
@@ -3153,7 +3316,7 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
                     </div>
 
                     {/* Maximum Adults */}
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #f1f5f9', paddingBottom: '8px' }}>
+                    <div className="occupancy-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #f1f5f9', paddingBottom: '8px' }}>
                       <div>
                         <div style={{ fontSize: '13px', fontWeight: '700', color: '#1e293b' }}>Maximum adults</div>
                         <div style={{ fontSize: '11px', color: '#64748b', marginTop: '2px' }}>Maximum number of adults that can be accommodated in this room</div>
@@ -3166,7 +3329,7 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
                     </div>
 
                     {/* Base Children */}
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #f1f5f9', paddingBottom: '8px' }}>
+                    <div className="occupancy-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #f1f5f9', paddingBottom: '8px' }}>
                       <div>
                         <div style={{ fontSize: '13px', fontWeight: '700', color: '#1e293b' }}>Base children</div>
                         <div style={{ fontSize: '11px', color: '#64748b', marginTop: '2px' }}>Maximum number of children allowed to stay for free within the free child age limit</div>
@@ -3179,7 +3342,7 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
                     </div>
 
                     {/* Maximum Children */}
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #f1f5f9', paddingBottom: '8px' }}>
+                    <div className="occupancy-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #f1f5f9', paddingBottom: '8px' }}>
                       <div>
                         <div style={{ fontSize: '13px', fontWeight: '700', color: '#1e293b' }}>Maximum children</div>
                         <div style={{ fontSize: '11px', color: '#64748b', marginTop: '2px' }}>Maximum number of children that can be accommodated in this room</div>
@@ -3187,12 +3350,12 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
                       <div style={{ display: 'flex', alignItems: 'center', border: '1px solid #cbd5e1', borderRadius: '6px', overflow: 'hidden' }}>
                         <button type="button" onClick={() => { if (Number(maxChildren || 0) > 0) setMaxChildren(String(Number(maxChildren) - 1)) }} style={{ padding: '6px 12px', background: '#f8fafc', border: 'none', cursor: 'pointer', fontWeight: 'bold' }}>-</button>
                         <input type="text" value={maxChildren} readOnly style={{ width: '40px', textAlign: 'center', border: 'none', padding: '6px 0', fontWeight: '700' }} />
-                        <button type="button" onClick={() => setMaxChildren(String(Number(maxChildren || 0) + 1))} style={{ padding: '6px 12px', background: '#f8fafc', border: 'none', cursor: 'pointer', fontWeight: 'bold' }}>+</button>
+                        <button type="button" onClick={() => setMaxChildren(String(Number(maxChildren || 0) + 1))} style={{ padding: '6px 12px', background: '#f8fafc', border: 'none', cursor: 'pointer', fontWeight: 'bold' }} >+</button>
                       </div>
                     </div>
 
                     {/* Maximum Occupancy */}
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div className="occupancy-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <div>
                         <div style={{ fontSize: '13px', fontWeight: '700', color: '#1e293b' }}>Maximum occupancy</div>
                         <div style={{ fontSize: '11px', color: '#64748b', marginTop: '2px' }}>Maximum number of guests that can be accommodated in this room</div>
@@ -3218,7 +3381,7 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
                   <div style={{ border: '1px solid #cbd5e1', borderRadius: '8px', padding: '20px', background: '#ffffff' }}>
                     <h5 style={{ fontWeight: '800', fontSize: '14px', color: '#1a1a1a', marginBottom: '16px' }}>Bathroom options in this room</h5>
                     
-                    <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr 1fr', gap: '20px', alignItems: 'flex-start' }}>
+                    <div className="bathroom-grid" style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr 1fr', gap: '20px', alignItems: 'flex-start' }}>
                       {/* Left Label column */}
                       <div>
                         <span style={{ fontSize: '13px', fontWeight: '800', color: '#1e293b', display: 'block' }}>Bathroom</span>
@@ -3326,7 +3489,7 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
                     <h5 style={{ fontWeight: '800', fontSize: '14px', color: '#1a1a1a', marginBottom: '12px' }}>Inventory Calendar</h5>
                     <p style={{ fontSize: '11px', color: '#64748b', marginTop: '-4px', marginBottom: '12px' }}>Select a date range</p>
                     
-                    <div style={{ display: 'flex', gap: '14px' }}>
+                    <div className="form-grid-2col" style={{ display: 'flex', gap: '14px' }}>
                       {/* Start Date input wrapper */}
                       <div className="input-group" style={{ flexGrow: 1, position: 'relative' }}>
                         <label style={{ fontSize: '11.5px', fontWeight: '700', color: '#475569', display: 'block', marginBottom: '6px' }}>Start Date</label>
@@ -3424,9 +3587,9 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
                     />
                   </div>
                   
-                  <div style={{ display: 'grid', gridTemplateColumns: '220px 1fr', gap: '20px', height: '380px', border: '1px solid #cbd5e1', borderRadius: '8px', overflow: 'hidden' }}>
+                  <div className="room-amenities-grid" style={{ display: 'grid', gridTemplateColumns: '220px 1fr', gap: '20px', height: '380px', border: '1px solid #cbd5e1', borderRadius: '8px', overflow: 'hidden' }}>
                     {/* Left categories list */}
-                    <div style={{ background: '#f8fafc', borderRight: '1px solid #cbd5e1', overflowY: 'auto' }}>
+                    <div className="room-amenities-sidebar" style={{ background: '#f8fafc', borderRight: '1px solid #cbd5e1', overflowY: 'auto' }}>
                       {ROOM_AMENITIES_CATEGORIES.map((cat) => {
                         const isActive = activeRoomAmenityCategory === cat.id;
                         const selectedCount = cat.items.filter(item => roomAmenitiesAnswers[item] === 'Yes').length;
@@ -3434,6 +3597,7 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
                           <div
                             key={cat.id}
                             onClick={() => setActiveRoomAmenityCategory(cat.id)}
+                            className="room-amenities-sidebar-item"
                             style={{
                               padding: '12px 14px', fontSize: '12px', fontWeight: isActive ? '800' : '600', cursor: 'pointer',
                               background: isActive ? 'white' : 'transparent', color: isActive ? '#ff4f5a' : '#475569',
@@ -3447,7 +3611,7 @@ export default function ConnectWizard({ activeUser, onFinished, onCancel }) {
                     </div>
 
                     {/* Right items checklists */}
-                    <div style={{ padding: '16px', overflowY: 'auto', background: '#ffffff', textAlign: 'left' }}>
+                    <div className="room-amenities-body" style={{ padding: '16px', overflowY: 'auto', background: '#ffffff', textAlign: 'left' }}>
                       <div style={{ display: 'flex', flexDirection: 'column' }}>
                         {ROOM_AMENITIES_CATEGORIES.find(c => c.id === activeRoomAmenityCategory)?.items
                           .filter(item => item.toLowerCase().includes(roomAmenitySearch.toLowerCase()))
